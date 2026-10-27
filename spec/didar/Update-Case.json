@@ -1,0 +1,296 @@
+{
+  "page": "Update-Case",
+  "title": "Update Case",
+  "heading": "ویرایش کارت",
+  "intro": "این Endpoint برای تغییر اطلاعات یک کارت موجود استفاده می‌شود. با ارسال `Case.Id` می‌توانید مرحله، وضعیت، مسئول، اولویت، مخاطبان، معامله مرتبط، برچسب‌ها و سایر اطلاعات کارت را به‌روزرسانی کنید.",
+  "http": "POST {{baseURL}}/api/Case/Save_v2?apikey={{API_KEY}}",
+  "params": [
+    {
+      "name": "Case",
+      "type": "object",
+      "required": false,
+      "sections": [],
+      "description": "اطلاعات کارت داخل این آبجکت ارسال می‌شود؛ از عنوان و نوع کارت گرفته تا مسئول، کاریز، مرحله و رکوردهای مرتبط."
+    },
+    {
+      "name": "Case.Id",
+      "type": "string",
+      "required": true,
+      "sections": [],
+      "description": "در این فیلد باید شناسه کارتی که میخواهید ویرایش کنید را قرار دهید"
+    },
+    {
+      "name": "Case.Title",
+      "type": "string",
+      "required": true,
+      "sections": [],
+      "description": "عنوان کارت که در نمای کاریز و فهرست کارت‌ها نمایش داده می‌شود."
+    },
+    {
+      "name": "Case.PipelineStageId",
+      "type": "string",
+      "required": true,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "شناسه مرحله باید متعلق به یکی از کاریزهای کارت در همین اکانت باشد.\n\n* [List Case Pipelines](https://developers.didar.me/List-Case-Pipelines.md) — `Response[].Stages[].Id` شناسه مرحله کاریز کارت است"
+        }
+      ],
+      "description": "شناسه مرحله کاریز کارت است و مشخص می‌کند کارت الان در کدام مرحله فرایند قرار دارد."
+    },
+    {
+      "name": "Case.OwnerId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد نام کاربر را نمی‌پذیرد؛ باید `UserId` یک User موجود در دیدار را بفرستید.\n\n* [User List](https://developers.didar.me/User-List.md) — مقدار `UserId` کاربر موردنظر را بردارید"
+        }
+      ],
+      "description": "شناسه User مسئول رسیدگی و پیگیری کارت است."
+    },
+    {
+      "name": "Case.Description",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "توضیحات تکمیلی کارت برای ثبت موضوع، نیاز یا جزئیات پیگیری."
+    },
+    {
+      "name": "Case.CompanyId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد نام شرکت را نمی‌پذیرد؛ باید `Id` شرکت موجود در دیدار را بفرستید.\n\n* [Create Company](https://developers.didar.me/Create-Company.md) — اگر شرکت هنوز ساخته نشده است\n* [Get Company By Id](https://developers.didar.me/Get-Company-By-Id.md) — اگر `Id` شرکت را دارید\n* [Search Company](https://developers.didar.me/Search-Company.md) — برای جست‌وجوی شرکت"
+        }
+      ],
+      "description": "شناسه شرکت مرتبط با کارت است. برای زمانی که میخواهید کارت به یک شرکت هم متصل باشد"
+    },
+    {
+      "name": "Case.PersonId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد نام یا موبایل شخص را نمی‌پذیرد؛ باید `Id` شخص موجود در دیدار را بفرستید.\n\n* [Create Person](https://developers.didar.me/Create-Person.md) — اگر شخص هنوز در دیدار ساخته نشده است\n* [Get Person By Id](https://developers.didar.me/Get-Person-By-Id.md) — اگر `Id` شخص را دارید\n* [Get Person By Mobile](https://developers.didar.me/Get-Person-By-Mobile.md) — اگر شماره موبایل شخص را دارید\n* [Search Person](https://developers.didar.me/Search-Person.md) — برای جست‌وجوی شخص"
+        }
+      ],
+      "description": "شناسه شخص اصلی مرتبط با کارت است؛ یعنی کارتی که فرایند یا پیگیری آن برای این شخص انجام می‌شود."
+    },
+    {
+      "name": "Case.CaseCategoryId",
+      "type": "string",
+      "required": true,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `00000000-0000-0000-0000-000000000000` — کارت فعالیت‌محور؛ امکان اتصال فعالیت دارد\n* `cd06853c-35df-4d9b-b124-9556474d84a1` — کارت کانبان؛ برای حرکت در مراحل فرایند و بدون افزودن فعالیت\n* `37375848-a403-4186-8460-d45754f49e4c` — کارت تیکت؛ برای پیگیری ارتباط تیکتی با مشتری"
+        }
+      ],
+      "description": "شناسه دسته‌بندی کارت که نوع یا فرایند کارت را مشخص می‌کند."
+    },
+    {
+      "name": "Case.DealId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "مقدار این فیلد باید `Id` یک معامله موجود در دیدار باشد.\n\n* [Create Deal](https://developers.didar.me/Create-Deal.md) — اگر معامله هنوز ساخته نشده است\n* [Get Deal By Id](https://developers.didar.me/Get-Deal-By-Id.md) — اگر `Id` معامله را دارید\n* [Search Deal](https://developers.didar.me/Search-Deal.md) — برای جست‌وجوی معامله"
+        }
+      ],
+      "description": "شناسه معامله‌ای است که این کارت از آن ایجاد شده یا باید به آن مرتبط باشد."
+    },
+    {
+      "name": "Case.IsDeleted",
+      "type": "boolean",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `true` — کارت حذف‌شده در نظر گرفته می‌شود\n* `false` — کارت فعال است"
+        }
+      ],
+      "description": "مشخص می‌کند کارت حذف شده است یا همچنان فعال است."
+    },
+    {
+      "name": "Case.Status",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `InProgress` — کارت در حال انجام است\n* `Done` — کار کارت تمام شده است"
+        }
+      ],
+      "description": "وضعیت جاری کارت در چرخه انجام کار."
+    },
+    {
+      "name": "Case.DueDate",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "تاریخ سررسید کارت؛ زمانی که انتظار می‌رود کار تا آن انجام شود."
+    },
+    {
+      "name": "Case.Priority",
+      "type": "number",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `-2` — کمترین اهمیت و مقدار پیش‌فرض\n* `-1` — اهمیت کم\n* `0` — اهمیت متوسط\n* `1` — اهمیت بالا"
+        }
+      ],
+      "description": "اولویت کارت برای مرتب‌سازی و تعیین تقدم رسیدگی."
+    },
+    {
+      "name": "Case.UserIds[]",
+      "type": "array",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد نام کاربر را نمی‌پذیرد؛ باید `UserId` یک User موجود در دیدار را بفرستید.\n\n* [User List](https://developers.didar.me/User-List.md) — مقدار `UserId` کاربر موردنظر را بردارید"
+        }
+      ],
+      "description": "فهرست شناسه مسئول های دیگری است که باید به کارت مرتبط باشند. برای زمانی که بیش از یک مسئول به کارت مرتبط هستند"
+    },
+    {
+      "name": "Case.OtherContactIds",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "هر مقدار باید `Id` یک شخص یا شرکت موجود در دیدار باشد.\n\n* [Create Person](https://developers.didar.me/Create-Person.md) — ساخت شخص جدید\n* [Get Person By Mobile](https://developers.didar.me/Get-Person-By-Mobile.md) — پیداکردن شخص با موبایل\n* [Search Person](https://developers.didar.me/Search-Person.md) — جست‌وجوی شخص\n* [Create Company](https://developers.didar.me/Create-Company.md) — ساخت شرکت جدید\n* [Search Company](https://developers.didar.me/Search-Company.md) — جست‌وجوی شرکت"
+        }
+      ],
+      "description": "شناسه سایر مخاطبان مرتبط با کارت است؛ یعنی افراد یا شرکت‌هایی غیر از مخاطب اصلی که باید به کارت وصل باشند."
+    },
+    {
+      "name": "Case.ResultNote",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "نتیجه یا جمع‌بندی ثبت‌شده پس از تکمیل کارت."
+    },
+    {
+      "name": "Case.VisibilityType",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `0 / Owner` — فقط مسئول کارت\n* `1 / OwnerGroup` — مسئول و گروه او\n* `2 / OwnerSubGroup` — مسئول، گروه و زیرگروه او\n* `3 / All` — همه کاربران مجاز"
+        }
+      ],
+      "description": "سطح مشاهده کارت؛ تعیین می‌کند چه کاربران یا گروه‌هایی امکان دیدن آن را دارند."
+    },
+    {
+      "name": "Case.Fields[]",
+      "type": "object",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "فقط از کلید Custom Fieldهایی استفاده کنید که `FieldType` آن‌ها مربوط به Case است.\n\n* [Get Custom Fields](https://developers.didar.me/Get-Custom-Fields.md) — کلید فنی فیلد متناسب با Entity را بردارید"
+        }
+      ],
+      "description": "مقدار Custom Fieldهای کارت است. کلید هر پراپرتی، کلید فنی فیلد و مقدار آن، دیتایی است که باید در همان فیلد ذخیره شود."
+    },
+    {
+      "name": "Case.CanDelete",
+      "type": "boolean",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `true` — کاربر اجازه حذف کارت دارد\n* `false` — کاربر اجازه حذف کارت ندارد"
+        }
+      ],
+      "description": "مشخص می‌کند کاربر فعلی اجازه حذف کارت را دارد یا خیر."
+    },
+    {
+      "name": "Case.CanEdit",
+      "type": "boolean",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `true` — کاربر اجازه ویرایش کارت دارد\n* `false` — کاربر اجازه ویرایش کارت ندارد"
+        }
+      ],
+      "description": "مشخص می‌کند کاربر فعلی اجازه ویرایش کارت را دارد یا خیر."
+    },
+    {
+      "name": "Case.IsCaseCategoryActive",
+      "type": "boolean",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `true` — نوع فعلی کارت فعال است\n* `false` — نوع فعلی کارت غیرفعال است"
+        }
+      ],
+      "description": "مشخص می‌کند دسته‌بندی فعلی کارت فعال و قابل استفاده است یا خیر."
+    },
+    {
+      "name": "Case.InProgressTime",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "تاریخ و زمان ورود کارت به وضعیت در حال انجام."
+    },
+    {
+      "name": "Case.NextActivityDate",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "تاریخ نزدیک‌ترین فعالیت باز مرتبط با کارت."
+    },
+    {
+      "name": "Case.LastActivityUpdateTime",
+      "type": "",
+      "required": false,
+      "sections": [],
+      "description": "تاریخ و زمان آخرین تغییر در فعالیت‌های مرتبط با کارت."
+    },
+    {
+      "name": "Case.DoneTime",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "تاریخ و زمان تکمیل کارت."
+    },
+    {
+      "name": "Case.PipelineChangeTime",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "تاریخ و زمان آخرین انتقال کارت بین کاریزها یا مراحل."
+    },
+    {
+      "name": "Case.LabelIds",
+      "type": "array",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "هر مقدار باید `Id` یکی از برچسب‌های کارت باشد.\n\n* [Case Labels](https://developers.didar.me/Case-Labels.md) — `Id` برچسب کارت را بردارید\n\n\n\n\n\nThis documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform."
+        }
+      ],
+      "description": "فهرست شناسه برچسب‌هایی است که باید به کارت وصل شوند."
+    }
+  ],
+  "rules": [],
+  "related": [],
+  "requestBody": "{\n  \"Case\": {\n    \"Id\": \"04c4f658-64a5-4231-8850-36089c8a77d5\",\n    \"Title\": \" 1231 123123123 تست\",\n    \"PipelineStageId\": \"422dfd72-549e-4443-9c32-6336e2275059\",\n    \"OwnerId\": \"f1599895-3d58-44a8-a830-e77b42d8e4c6\",\n    \"Description\": \"asdfas asdf adfs asdf\",\n    \"CompanyId\": \"c867d72d-a5ca-47dd-8e0c-e65db830dea6\",\n    \"PersonId\": \"c86978d0-7d19-45ad-9c54-bfb270b97c07\",\n    \"CaseCategoryId\": \"37375848-a403-4186-8460-d45754f49e4c\",\n    \"DealId\": \"16d952cc-2321-4680-a951-957c3eb21423\",\n    \"IsDeleted\": false,\n    \"Status\": \"InProgress\",\n    \"DueDate\": \"2025-08-31T11:19:58.4577817Z\",\n    \"Priority\": -2,\n    \"UserIds\": [\n      \"f1599895-3d58-44a8-a830-e77b42d8e4c6\",\n      \"04c4f658-64a5-4231-8850-36089c8a77d5\"\n    ],\n    \"OtherContactIds\": \"b868fc4c-f8bc-460e-ac4e-a302cae45a1a,c8968598-9720-494c-8894-cbf728f40255\",\n    \"ResultNote\": \"sdfasd  asdf a asdf\",\n    \"VisibilityType\": \"OwnerSubGroup\",\n    \"Fields\": {\n      \"Field_8785_0_13\": \"123123\"\n    },\n    \"CanDelete\": true,\n    \"CanEdit\": true,\n    \"IsCaseCategoryActive\": null,\n    \"InProgressTime\": \"2025-08-31T11:19:58.4577817Z\",\n    \"NextActivityDate\": \"2000-08-31T11:19:58.4577817Z\",\n    \"LastActivityUpdateTime\": null,\n    \"DoneTime\": \"2025-08-31T11:19:58.4577817Z\",\n    \"PipelineChangeTime\": \"2025-08-31T11:19:58.4577817Z\",\n    \"Category\": null,\n    \"IdleStatus\": null,\n    \"RottenInPipelineStatus\": null,\n    \"RottenInStageStatus\": null,\n    \"CaseRating\": null\n  },\n    \"LabelIds\": [\n      \"196d9122-3547-4386-b316-06a792e78958\",\n      \"19c80b4f-6b4a-4bdc-ab06-76d891406d2f\"\n    ]\n}",
+  "curl": "curl --location --request POST '{{baseURL}}/api/Case/Save_v2?apikey={{API_KEY}}' \\\n--header 'Content-Type: application/json' \\\n--data '{\n  \"Case\": {\n    \"Id\": \"04c4f658-64a5-4231-8850-36089c8a77d5\",\n    \"Title\": \" 1231 123123123 تست\",\n    \"PipelineStageId\": \"422dfd72-549e-4443-9c32-6336e2275059\",\n    \"OwnerId\": \"f1599895-3d58-44a8-a830-e77b42d8e4c6\",\n    \"Description\": \"asdfas asdf adfs asdf\",\n    \"CompanyId\": \"c867d72d-a5ca-47dd-8e0c-e65db830dea6\",\n    \"PersonId\": \"c86978d0-7d19-45ad-9c54-bfb270b97c07\",\n    \"CaseCategoryId\": \"37375848-a403-4186-8460-d45754f49e4c\",\n    \"DealId\": \"16d952cc-2321-4680-a951-957c3eb21423\",\n    \"IsDeleted\": false,\n    \"Status\": \"InProgress\",\n    \"DueDate\": \"2025-08-31T11:19:58.4577817Z\",\n    \"Priority\": -2,\n    \"UserIds\": [\n      \"f1599895-3d58-44a8-a830-e77b42d8e4c6\",\n      \"04c4f658-64a5-4231-8850-36089c8a77d5\"\n    ],\n    \"OtherContactIds\": \"b868fc4c-f8bc-460e-ac4e-a302cae45a1a,c8968598-9720-494c-8894-cbf728f40255\",\n    \"ResultNote\": \"sdfasd  asdf a asdf\",\n    \"VisibilityType\": \"OwnerSubGroup\",\n    \"Fields\": {\n      \"Field_8785_0_13\": \"123123\"\n    },\n    \"CanDelete\": true,\n    \"CanEdit\": true,\n    \"IsCaseCategoryActive\": null,\n    \"InProgressTime\": \"2025-08-31T11:19:58.4577817Z\",\n    \"NextActivityDate\": \"2000-08-31T11:19:58.4577817Z\",\n    \"LastActivityUpdateTime\": null,\n    \"DoneTime\": \"2025-08-31T11:19:58.4577817Z\",\n    \"PipelineChangeTime\": \"2025-08-31T11:19:58.4577817Z\",\n    \"Category\": null,\n    \"IdleStatus\": null,\n    \"RottenInPipelineStatus\": null,\n    \"RottenInStageStatus\": null,\n    \"CaseRating\": null\n  },\n  \"SetLabelDto\": {\n    \"UpdatedLabels\": [],\n    \"AddedLabels\": [],\n    \"LabelIds\": [\n      \"196d9122-3547-4386-b316-06a792e78958\",\n      \"19c80b4f-6b4a-4bdc-ab06-76d891406d2f\"\n    ]\n  }\n}'",
+  "response": "{\n    \"Response\": {\n        \"Id\": \"04c4f658-64a5-4231-8850-36089c8a77d5\",\n        \"OwnerId\": \"00000000-0000-0000-0000-000000000000\",\n        \"OwnerId_Old\": \"00000000-0000-0000-0000-000000000000\",\n        \"Title\": \" 1231  تست\",\n        \"CanDelete\": true,\n        \"CanEdit\": true,\n        \"IsCaseCategoryActive\": true,\n        \"Description\": \"\",\n        \"CompanyId\": \"00000000-0000-0000-0000-000000000000\",\n        \"PersonId\": \"00000000-0000-0000-0000-000000000000\",\n        \"ContactId\": \"00000000-0000-0000-0000-000000000000\",\n        \"IsDeleted\": false,\n        \"Status\": \"InProgress\",\n        \"CreateTime\": \"2026-07-28T16:35:51.9663563Z\",\n        \"DueDate\": \"2026-07-28T16:35:51.9663563Z\",\n        \"InProgressTime\": \"2026-07-28T16:35:51.9663563Z\",\n        \"DoneTime\": \"2026-07-28T16:35:51.9663563Z\",\n        \"CaseType\": \"Simple\",\n        \"DealId\": \"00000000-0000-0000-0000-000000000000\",\n        \"LabelId\": \"048cba4c-c168-421d-949b-4ca2bb84ebb4\",\n        \"Code\": 4,\n        \"Color\": \"\",\n        \"Priority\": 0,\n        \"UserIds\": [],\n        \"PipelineStageId\": \"2d34c424-62e5-4fcc-b0f0-bfbd11bf440a\",\n        \"PipelineId\": \"f7861340-b22c-49b1-bb5a-d96b5cdba979\",\n        \"PipelineChangeTime\": \"2026-07-28T16:35:51.9663563Z\",\n        \"CaseCategoryId\": \"00000000-0000-0000-0000-000000000000\",\n        \"OtherContactIds\": null,\n        \"ResultNote\": null,\n        \"NextActivityDate\": null,\n        \"LastActivityUpdateTime\": null,\n        \"VisibilityType\": \"Owner\",\n        \"CategoryType\": \"ActivityOriented\",\n        \"CreatorId\": \"00000000-0000-0000-0000-000000000000\",\n        \"Creator\": {\n            \"UserId\": \"00000000-0000-0000-0000-000000000000\",\n            \"DisplayName\": \"کاربر میهمان \",\n            \"PictureUrl\": \"/PortalData/Subsystems/Profile/UserPics/nopicture.png\",\n            \"Email\": \"\"\n        },\n        \"Owner\": {\n            \"UserId\": \"00000000-0000-0000-0000-000000000000\",\n            \"DisplayName\": \"کاربر میهمان \",\n            \"PictureUrl\": \"/PortalData/Subsystems/Profile/UserPics/nopicture.png\",\n            \"Email\": \"\"\n        },\n        \"Category\": null,\n        \"Fields\": {},\n        \"Contact\": null,\n        \"Person\": null,\n        \"Company\": null,\n        \"OtherContacts\": [],\n        \"Deal\": null,\n        \"_Type\": null,\n        \"LabelIds\": [\n            \"048cba4c-c168-421d-949b-4ca2bb84ebb4\"\n        ],\n        \"IdleStatus\": null,\n        \"RottenInPipelineStatus\": null,\n        \"RottenInStageStatus\": null,\n        \"CaseRating\": null\n    }\n}",
+  "source": "https://developers.didar.me/Update-Case"
+}

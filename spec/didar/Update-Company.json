@@ -1,0 +1,391 @@
+{
+  "page": "Update-Company",
+  "title": "Update Company",
+  "heading": "ویرایش شرکت",
+  "intro": "این Endpoint اطلاعات شرکتی را که از قبل در دیدار ثبت شده تغییر می‌دهد. با ارسال ID شرکت می‌توانید مشخصات تماس، اطلاعات ثبتی، مسئول، آدرس‌ها و فیلدهای اضافه آن را به‌روزرسانی کنید.",
+  "http": "POST {{baseURL}}/api/contact/save?apikey={{API_KEY}}",
+  "params": [
+    {
+      "name": "Contact",
+      "type": "object",
+      "required": true,
+      "sections": [],
+      "description": "اطلاعات شرکت جدید داخل این آبجکت ارسال می‌شود. شرکت در اینجا یکی از مشتریان یا طرف‌های تجاری ثبت‌شده در CRM است، نه شرکت صاحب اکانت دیدار."
+    },
+    {
+      "name": "Contact.Id",
+      "type": "string",
+      "required": true,
+      "sections": [],
+      "description": "شناسه شرکتی که قصد دارید ویرایش کنید در این فیلد ارسال کنید"
+    },
+    {
+      "name": "Contact.Type",
+      "type": "string",
+      "required": true,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `company` — رکورد به‌عنوان شرکت ساخته می‌شود"
+        }
+      ],
+      "description": "نوع مخاطب؛ تعیین می‌کند داده ارسالی به‌عنوان شخص یا شرکت ذخیره و اعتبارسنجی شود. در ایجاد شخص باید مقدار این فیلد برابر با مقدار زیر باشد: `Company`"
+    },
+    {
+      "name": "Contact.FirstName",
+      "type": "string",
+      "required": true,
+      "sections": [],
+      "description": "نام شرکت را در این فیلد باید وارد کنید مثلا دیدار"
+    },
+    {
+      "name": "Contact.Title",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "عنوانی که قبل از عنوان شرکت نمایش داده می شود، مثلا شرکت"
+    },
+    {
+      "name": "Contact.OwnerId",
+      "type": "string",
+      "required": true,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد نام کاربر را نمی‌پذیرد؛ باید `UserId` یک User موجود در دیدار را بفرستید.\n\n* [User List](https://developers.didar.me/User-List.md) — مقدار `UserId` کاربر موردنظر را بردارید"
+        }
+      ],
+      "description": "شناسه User مسئول پیگیری این شخص یا شرکت است."
+    },
+    {
+      "name": "Contact.BirthDate",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "تاریخ تولد شخص؛ برای اطلاعات پروفایل و برنامه‌های یادآوری تولد استفاده می‌شود."
+    },
+    {
+      "name": "Contact.BirthDateMessageId",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "شناسه پیام یا الگوی مرتبط با یادآوری تولد مخاطب."
+    },
+    {
+      "name": "Contact.MobilePhone",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "شماره تلفن همراه اصلی شرکت که برای جست‌وجو، تماس و شناسایی مخاطب استفاده می‌شود. این مقدار باید منحصر به فرد باشد و تکراری نباشد"
+    },
+    {
+      "name": "Contact.WorkPhone",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "شماره تلفن ثابت یا محل کار."
+    },
+    {
+      "name": "Contact.WorkPhoneExtension",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "عنوان یا داخلی ثبت‌شده کنار شماره محل کار است؛ مثلا «دفتر» یا شماره داخلی واحد مربوط."
+    },
+    {
+      "name": "Contact.Fax",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "شماره فکس شخص یا شرکت."
+    },
+    {
+      "name": "Contact.Email",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "نشانی ایمیل اصلی مخاطب برای ارتباط و جست‌وجو."
+    },
+    {
+      "name": "Contact.IsVIP",
+      "type": "boolean",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `true` — مخاطب به‌عنوان مشتری ویژه علامت می‌خورد\n* `false` — مخاطب ویژه نیست"
+        }
+      ],
+      "description": "مشخص می‌کند مخاطب به‌عنوان مشتری ویژه علامت‌گذاری شود یا خیر."
+    },
+    {
+      "name": "Contact.BackgroundInfo",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "یادداشت زمینه‌ای درباره شخص یا شرکت؛ برای ثبت اطلاعات مهمی که در فیلدهای ساختاریافته قرار نمی‌گیرند."
+    },
+    {
+      "name": "Contact.Position",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "عنوان شغلی یا سمت شخص در شرکت مرتبط."
+    },
+    {
+      "name": "Contact.CustomerCode",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "کد مشتری در سیستم یا فرایند مالی کسب‌وکار؛ برای تطبیق مخاطب با رکوردهای خارجی نیز قابل استفاده است."
+    },
+    {
+      "name": "Contact.EconomicIssue",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "کد اقتصادی مخاطب برای اطلاعات مالیاتی و صدور فاکتور رسمی."
+    },
+    {
+      "name": "Contact.RegistrationNumber",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "شماره ثبت شرکت یا شخص حقوقی."
+    },
+    {
+      "name": "Contact.NationalID",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "شناسه ملی شرکت برای اطلاعات حقوقی و صدور اسناد رسمی."
+    },
+    {
+      "name": "Contact.ZipCode",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "کد پستی نشانی اصلی مخاطب."
+    },
+    {
+      "name": "Contact.CityId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "شناسه را از فهرست استان‌ها و شهرهای دیدار بردارید.\n\n* [Get Locations](https://developers.didar.me/Get-Locations.md) — `Id` استان یا شهر موردنظر را بردارید"
+        }
+      ],
+      "description": "شناسه شهر مخاطب است و باید از فهرست مکان‌های دیدار انتخاب شود."
+    },
+    {
+      "name": "Contact.ProvinceId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "شناسه را از فهرست استان‌ها و شهرهای دیدار بردارید.\n\n* [Get Locations](https://developers.didar.me/Get-Locations.md) — `Id` استان یا شهر موردنظر را بردارید"
+        }
+      ],
+      "description": "شناسه استان مخاطب است و باید از فهرست مکان‌های دیدار انتخاب شود."
+    },
+    {
+      "name": "Contact.VisibilityType",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `0 / Owner` — فقط مسئول رکورد\n* `1 / OwnerGroup` — مسئول و گروه او\n* `2 / OwnerSubGroup` — مسئول، گروه و زیرگروه او\n* `3 / All` — همه کاربران مجاز"
+        }
+      ],
+      "description": "سطح مشاهده مخاطب؛ تعیین می‌کند چه کاربران یا گروه‌هایی بر اساس دسترسی‌ها امکان مشاهده رکورد را دارند."
+    },
+    {
+      "name": "Contact.Fields",
+      "type": "object",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "فقط از کلید Custom Fieldهایی استفاده کنید که `FieldType` آن‌ها مربوط به Contact است.\n\n* [Get Custom Fields](https://developers.didar.me/Get-Custom-Fields.md) — کلید فنی فیلد متناسب با Entity را بردارید"
+        }
+      ],
+      "description": "مقدار Custom Fieldهای شخص یا شرکت است. هر کلید باید متعلق به فیلد اضافه مخاطب باشد."
+    },
+    {
+      "name": "Contact.OtherPhones",
+      "type": "object",
+      "required": false,
+      "sections": [],
+      "description": "مجموعه شماره‌های تلفن فرعی مخاطب، همراه با عنوان هر شماره مانند خانه یا پشتیبانی."
+    },
+    {
+      "name": "Contact.OtherPhones.KeyValues[]",
+      "type": "array",
+      "required": false,
+      "sections": [],
+      "description": "فهرست شماره‌های تلفن فرعی مخاطب؛ هر عضو عنوان و مقدار یک شماره را نگهداری می‌کند."
+    },
+    {
+      "name": "Contact.OtherPhones.KeyValues[].Key",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "کلید داخلی این شماره تلفن فرعی برای تطبیق آن در زمان ویرایش مخاطب."
+    },
+    {
+      "name": "Contact.OtherPhones.KeyValues[].Value",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "شماره تلفن فرعی مخاطب."
+    },
+    {
+      "name": "Contact.OtherEmails",
+      "type": "object",
+      "required": false,
+      "sections": [],
+      "description": "مجموعه ایمیل‌های فرعی مخاطب، همراه با عنوان کاربرد هر ایمیل."
+    },
+    {
+      "name": "Contact.OtherEmails.KeyValues[]",
+      "type": "array",
+      "required": false,
+      "sections": [],
+      "description": "فهرست ایمیل‌های فرعی مخاطب؛ هر عضو عنوان و نشانی یک ایمیل را نگهداری می‌کند."
+    },
+    {
+      "name": "Contact.OtherEmails.KeyValues[].Key",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "کلید داخلی این ایمیل فرعی برای تطبیق آن در زمان ویرایش مخاطب."
+    },
+    {
+      "name": "Contact.OtherEmails.KeyValues[].Value",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "نشانی ایمیل فرعی مخاطب."
+    },
+    {
+      "name": "Contact.Websites",
+      "type": "object",
+      "required": false,
+      "sections": [],
+      "description": "مجموعه نشانی‌های وب مرتبط با مخاطب، همراه با عنوان هر نشانی."
+    },
+    {
+      "name": "Contact.Websites.KeyValues[]",
+      "type": "array",
+      "required": false,
+      "sections": [],
+      "description": "فهرست وب‌سایت‌های مرتبط با مخاطب؛ هر عضو عنوان و نشانی یک وب‌سایت را نگهداری می‌کند."
+    },
+    {
+      "name": "Contact.Websites.KeyValues[].Key",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "کلید داخلی این وب‌سایت برای تطبیق آن در زمان ویرایش مخاطب."
+    },
+    {
+      "name": "Contact.Websites.KeyValues[].Value",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "نشانی وب‌سایت مرتبط با مخاطب."
+    },
+    {
+      "name": "Contact.BankAccounts",
+      "type": "object",
+      "required": false,
+      "sections": [],
+      "description": "اطلاعات حساب‌های بانکی مخاطب برای استفاده در فرایندهای مالی."
+    },
+    {
+      "name": "Contact.BankAccounts.Values[]",
+      "type": "array",
+      "required": false,
+      "sections": [],
+      "description": "فهرست حساب‌های بانکی مخاطب؛ اجزای هر عضو، اطلاعات یک حساب را در ساختار داخلی دیدار نگهداری می‌کنند."
+    },
+    {
+      "name": "Contact.BankAccounts.Values[].Value1",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "بخش اول اطلاعات حساب بانکی در ساختار داخلی دیدار؛ جایگاه دقیق آن مانند شماره حساب یا شبا باید با قرارداد Backend تطبیق داده شود."
+    },
+    {
+      "name": "Contact.BankAccounts.Values[].Value2",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "بخش دوم اطلاعات حساب بانکی؛ معنای دقیق آن به ساختار حساب بانکی Backend وابسته است."
+    },
+    {
+      "name": "Contact.BankAccounts.Values[].Value3",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "بخش سوم اطلاعات حساب بانکی؛ معنای دقیق آن به ساختار حساب بانکی Backend وابسته است."
+    },
+    {
+      "name": "Contact.BankAccounts.Values[].Value4",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "بخش چهارم اطلاعات حساب بانکی؛ معنای دقیق آن به ساختار حساب بانکی Backend وابسته است."
+    },
+    {
+      "name": "Contact.Addresses",
+      "type": "object",
+      "required": false,
+      "sections": [],
+      "description": "مجموعه نشانی‌های پستی مخاطب، همراه با عنوان هر نشانی."
+    },
+    {
+      "name": "Contact.Addresses.KeyValues[]",
+      "type": "array",
+      "required": false,
+      "sections": [],
+      "description": "فهرست نشانی‌های مخاطب؛ هر عضو عنوان و متن کامل یک نشانی را نگهداری می‌کند."
+    },
+    {
+      "name": "Contact.Addresses.KeyValues[].Key",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "کلید داخلی این نشانی برای تطبیق آن در زمان ویرایش مخاطب."
+    },
+    {
+      "name": "Contact.Addresses.KeyValues[].Value",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "متن کامل یکی از نشانی‌های مخاطب."
+    },
+    {
+      "name": "SegmentIds[]",
+      "type": "array",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد باید `Id` یک گروه موجود در دیدار را بگیرد.\n\n* [Segments](https://developers.didar.me/Segments.md) — `Id` گروه موردنظر را بردارید"
+        }
+      ],
+      "description": "فهرست شناسه گروه‌هایی است که شخص یا شرکت باید عضو آن‌ها شود."
+    }
+  ],
+  "rules": [],
+  "related": [],
+  "requestBody": "{\n    \"Contact\": {\n        \"Id\": \"dcf1a8bf-ca04-4cc9-bdcd-1fb1af697141\",\n\t   \"Type\": \"Company\", \n        \"FirstName\": \"12\", \n        \"Title\": \"جناب آقای\",\n        \"OwnerId\": \"f1599895-3d58-44a8-a830-e77b42d8e4c6\",\n        \"BirthDate\": \"2025-08-31T08:02:06.5247888Z\",\n        \"BirthDateMessageId\": \"88356367-c004-4263-98e5-6b4e8bbc9852\",\n        \"MobilePhone\": \"تلفن منشی 09344454323\",\n        \"WorkPhone\": \"تلفن منشی 09344454323\",\n        \"WorkPhoneExtension\": \"تلفن منشی\",\n        \"Fax\": \"فکس منشی 09344454323\",\n        \"Email\": \"ایمیل منشی mad@sdf.com\",\n        \"IsVIP\": true, \n        \"BackgroundInfo\": \"12312\",\n        \"Position\": \"مدیر واحد\",\n        \"CustomerCode\": \"123-site\",\n        \"EconomicIssue\": \"sdaf23\",\n        \"RegistrationNumber\": \"asdf2134\",\n        \"NationalID\": \"safdasdf12\",\n        \"ZipCode\": \"123asdf\",\n        \"CityId\": \"314409ce-ee7f-424e-ab88-c578d0ca187f\",\n        \"ProvinceId\": \"c990e86b-a13a-40f4-b21d-79bf09e6e579\",\n        \"VisibilityType\": \"Owner\", \n        \"Fields\": {\n            \"Field_996_0_7\": \"sdf\"\n        },\n        \"OtherPhones\": {\n            \"KeyValues\": [\n                {\n                \"Key\": \"همراه\",\n                \"Value\": \"تلفن 0123\"\n                },\n                {\n                \"Key\": \"محل کار\",\n                \"Value\": \"موبایل 09123\"\n                },\n                {\n                \"Key\": \"منزل\",\n                \"Value\": \"موبایل 09123\"\n                },\n                {\n                \"Key\": \"سایر\",\n                \"Value\": \"موبایل 09123\"\n                }\n            ]\n        },\n        \"OtherEmails\": {\n            \"KeyValues\": [\n                {\n                    \"Key\": \"کاری\",\n                    \"Value\": \"mamo@sd.comsd\"\n                },\n                {\n                    \"Key\": \"شخصی\",\n                    \"Value\": \"masmo@sd.com\"\n                },\n                {\n                    \"Key\": \"سایر\",\n                    \"Value\": \"msdfamo@sd.com\"\n                }\n            ]\n        },\n        \"Websites\": {\n            \"KeyValues\": [\n                {\n                    \"Key\": \"asdf\",\n                    \"Value\": \"asdfasdfasdf\"\n                },\n                {\n                    \"Key\": \"asdf\",\n                    \"Value\": \"asdfasdfasdf\"\n                }\n            ]\n        },\n        \"BankAccounts\": {\n            \"Values\": [\n                {\n                    \"Value1\": \"\",\n                    \"Value2\": \"asdf\",\n                    \"Value3\": \"asdf\",\n                    \"Value4\": \"asdf\"\n                },\n                {\n                    \"Value1\": \"Card\",\n                    \"Value2\": \"asdfasfd\",\n                    \"Value3\": \"asdfasdf\",\n                    \"Value4\": \"asdfasdf\"\n                },\n                {\n                    \"Value1\": \"Account\",\n                    \"Value2\": \"sadfasdf\",\n                    \"Value3\": \"asdfasdf\",\n                    \"Value4\": \"asdfasdf\"\n                }\n            ]\n        },\n        \"Addresses\": {\n            \"KeyValues\": [\n                {\n                    \"Key\": \"\",\n                    \"Value\": \"ASasdfasdfDF\"\n                },\n                {\n                    \"Key\": \"محل کار\",\n                    \"Value\": \"ASDF\"\n                },\n                {\n                    \"Key\": \"منزل\",\n                    \"Value\": \"ASDFASDF\"\n                },\n                {\n                    \"Key\": \"سایر\",\n                    \"Value\": \"ASDFSDF\"\n                }\n            ]\n        },\n    },\n    \"SegmentIds\": [\n        \"e09a05a9-bf99-4f8b-9017-e06b42480078\",\n        \"0837c9fc-2018-4834-82f8-b505a5a51de6\"\n    ],\n}",
+  "curl": "curl --location 'https://app.didar.me/api/contact/save?apikey={{API_KEY}}' \\\n--header 'Content-Type: application/json' \\\n--data-raw '{\n    \"Contact\": {\n        \"Type\": \"Company\", \n        \"FirstName\": \"12\", \n        \"Title\": \"جناب آقای\",\n        \"OwnerId\": \"f1599895-3d58-44a8-a830-e77b42d8e4c6\",\n        \"BirthDate\": \"2025-08-31T08:02:06.5247888Z\",\n        \"BirthDateMessageId\": \"88356367-c004-4263-98e5-6b4e8bbc9852\",\n        \"MobilePhone\": \"تلفن منشی 09344454323\",\n        \"WorkPhone\": \"تلفن منشی 09344454323\",\n        \"WorkPhoneExtension\": \"تلفن منشی\",\n        \"Fax\": \"فکس منشی 09344454323\",\n        \"Email\": \"ایمیل منشی mad@sdf.com\",\n        \"IsVIP\": true, \n        \"BackgroundInfo\": \"12312\",\n        \"Position\": \"مدیر واحد\",\n        \"CustomerCode\": \"123-site\",\n        \"EconomicIssue\": \"sdaf23\",\n        \"RegistrationNumber\": \"asdf2134\",\n        \"NationalID\": \"safdasdf12\",\n        \"ZipCode\": \"123asdf\",\n        \"CityId\": \"314409ce-ee7f-424e-ab88-c578d0ca187f\",\n        \"ProvinceId\": \"c990e86b-a13a-40f4-b21d-79bf09e6e579\",\n        \"VisibilityType\": \"Owner\", \n        \"Fields\": {\n            \"Field_996_0_7\": \"sdf\"\n        },\n        \"OtherPhones\": {\n            \"KeyValues\": [\n                {\n                \"Key\": \"همراه\",\n                \"Value\": \"تلفن 0123\"\n                },\n                {\n                \"Key\": \"محل کار\",\n                \"Value\": \"موبایل 09123\"\n                },\n                {\n                \"Key\": \"منزل\",\n                \"Value\": \"موبایل 09123\"\n                },\n                {\n                \"Key\": \"سایر\",\n                \"Value\": \"موبایل 09123\"\n                }\n            ]\n        },\n        \"OtherEmails\": {\n            \"KeyValues\": [\n                {\n                    \"Key\": \"کاری\",\n                    \"Value\": \"mamo@sd.comsd\"\n                },\n                {\n                    \"Key\": \"شخصی\",\n                    \"Value\": \"masmo@sd.com\"\n                },\n                {\n                    \"Key\": \"سایر\",\n                    \"Value\": \"msdfamo@sd.com\"\n                }\n            ]\n        },\n        \"Websites\": {\n            \"KeyValues\": [\n                {\n                    \"Key\": \"asdf\",\n                    \"Value\": \"asdfasdfasdf\"\n                },\n                {\n                    \"Key\": \"asdf\",\n                    \"Value\": \"asdfasdfasdf\"\n                }\n            ]\n        },\n        \"BankAccounts\": {\n            \"Values\": [\n                {\n                    \"Value1\": \"\",\n                    \"Value2\": \"asdf\",\n                    \"Value3\": \"asdf\",\n                    \"Value4\": \"asdf\"\n                },\n                {\n                    \"Value1\": \"Card\",\n                    \"Value2\": \"asdfasfd\",\n                    \"Value3\": \"asdfasdf\",\n                    \"Value4\": \"asdfasdf\"\n                },\n                {\n                    \"Value1\": \"Account\",\n                    \"Value2\": \"sadfasdf\",\n                    \"Value3\": \"asdfasdf\",\n                    \"Value4\": \"asdfasdf\"\n                }\n            ]\n        },\n        \"Addresses\": {\n            \"KeyValues\": [\n                {\n                    \"Key\": \"\",\n                    \"Value\": \"ASasdfasdfDF\"\n                },\n                {\n                    \"Key\": \"محل کار\",\n                    \"Value\": \"ASDF\"\n                },\n                {\n                    \"Key\": \"منزل\",\n                    \"Value\": \"ASDFASDF\"\n                },\n                {\n                    \"Key\": \"سایر\",\n                    \"Value\": \"ASDFSDF\"\n                }\n            ]\n        },\n    },\n    \"SegmentIds\": [\n        \"e09a05a9-bf99-4f8b-9017-e06b42480078\",\n        \"0837c9fc-2018-4834-82f8-b505a5a51de6\"\n    ],\n}'",
+  "response": "{\n    \"Response\": {\n        \"Id\": \"dcf1a8bf-ca04-4cc9-bdcd-1fb1af697141\",\n        \"Code\": 14504,\n        \"Title\": \"\",\n        \"FirstName\": \"12\",\n        \"LastName\": \"\",\n        \"DisplayName\": \"12\",\n        \"OwnerId\": \"f1599895-3d58-44a8-a830-e77b42d8e4c6\",\n        \"CompanyId\": \"00000000-0000-0000-0000-000000000000\",\n        \"BirthDate\": \"2025-08-31T08:02:06.5247888Z\",\n        \"BirthDateMessageId\": \"88356367-c004-4263-98e5-6b4e8bbc9852\",\n        \"BirthDateisValid\": false,\n        \"MobilePhone\": \"تلفن منشی 09344454323\",\n        \"WorkPhone\": \"تلفن منشی 09344454323\",\n        \"WorkPhoneExtension\": \"تلفن منشی\",\n        \"Fax\": \"فکس منشی 09344454323\",\n        \"Email\": \"ایمیل منشی mad@sdf.com\",\n        \"CanDelete\": true,\n        \"CanEdit\": true,\n        \"IsDeleted\": false,\n        \"IsVIP\": true,\n        \"IsMine\": true,\n        \"HasAccess\": true,\n        \"LeadGenerationType\": \"Manual\",\n        \"LeadStatus\": \"None\",\n        \"LeadType\": \"General\",\n        \"ContactType\": \"General\",\n        \"IsCustomer\": false,\n        \"IsProspect\": false,\n        \"Type\": \"Company\",\n        \"BackgroundInfo\": \"12312\",\n        \"RegisterTime\": \"2026-07-28T11:12:03.2546375Z\",\n        \"Position\": \"مدیر واحد\",\n        \"CustomerCode\": \"123-site\",\n        \"EconomicIssue\": \"sdaf23\",\n        \"NationalCode\": \"\",\n        \"RegistrationNumber\": \"asdf2134\",\n        \"NationalID\": \"safdasdf12\",\n        \"ZipCode\": \"123asdf\",\n        \"CityTitle\": \"اسکو\",\n        \"ProvinceTitle\": \"آذربایجان شرقی\",\n        \"ProvinceId\": \"c990e86b-a13a-40f4-b21d-79bf09e6e579\",\n        \"CityId\": \"314409ce-ee7f-424e-ab88-c578d0ca187f\",\n        \"HasCompany\": false,\n        \"CompanyName\": \"\",\n        \"CompanyIsCustomer\": null,\n        \"CompanyIsProspect\": null,\n        \"CompanyCode\": null,\n        \"CompanyAndPosition\": \" - مدیر واحد\",\n        \"Feedback\": 0.0,\n        \"VisibilityType\": \"Owner\",\n        \"OtherPhones\": {\n            \"KeyValues\": [\n                {\n                    \"Key\": \"همراه\",\n                    \"Value\": \"تلفن 0123\",\n                    \"Title\": \"همراه\"\n                },\n                {\n                    \"Key\": \"محل کار\",\n                    \"Value\": \"موبایل 09123\",\n                    \"Title\": \"محل کار\"\n                },\n                {\n                    \"Key\": \"منزل\",\n                    \"Value\": \"موبایل 09123\",\n                    \"Title\": \"منزل\"\n                },\n                {\n                    \"Key\": \"سایر\",\n                    \"Value\": \"موبایل 09123\",\n                    \"Title\": \"سایر\"\n                }\n            ]\n        },\n        \"OtherEmails\": {\n            \"KeyValues\": [\n                {\n                    \"Key\": \"کاری\",\n                    \"Value\": \"mamo@sd.comsd\",\n                    \"Title\": \"کاری\"\n                },\n                {\n                    \"Key\": \"شخصی\",\n                    \"Value\": \"masmo@sd.com\",\n                    \"Title\": \"شخصی\"\n                },\n                {\n                    \"Key\": \"سایر\",\n                    \"Value\": \"msdfamo@sd.com\",\n                    \"Title\": \"سایر\"\n                }\n            ]\n        },\n        \"Websites\": {\n            \"KeyValues\": [\n                {\n                    \"Key\": \"asdf\",\n                    \"Value\": \"asdfasdfasdf\",\n                    \"Title\": \"asdf\"\n                },\n                {\n                    \"Key\": \"asdf\",\n                    \"Value\": \"asdfasdfasdf\",\n                    \"Title\": \"asdf\"\n                }\n            ]\n        },\n        \"Addresses\": {\n            \"KeyValues\": [\n                {\n                    \"Key\": \"\",\n                    \"Value\": \"ASasdfasdfDF\",\n                    \"Title\": \"\"\n                },\n                {\n                    \"Key\": \"محل کار\",\n                    \"Value\": \"ASDF\",\n                    \"Title\": \"محل کار\"\n                },\n                {\n                    \"Key\": \"منزل\",\n                    \"Value\": \"ASDFASDF\",\n                    \"Title\": \"منزل\"\n                },\n                {\n                    \"Key\": \"سایر\",\n                    \"Value\": \"ASDFSDF\",\n                    \"Title\": \"سایر\"\n                }\n            ]\n        },\n        \"BankAccounts\": {\n            \"Values\": [\n                {\n                    \"Values\": [\n                        \"\",\n                        \"asdf\",\n                        \"asdf\",\n                        \"asdf\",\n                        \"\"\n                    ],\n                    \"Value1\": \"\",\n                    \"Value2\": \"asdf\",\n                    \"Value3\": \"asdf\",\n                    \"Value4\": \"asdf\",\n                    \"Value5\": \"\",\n                    \"Value6\": \"\",\n                    \"Value7\": \"\",\n                    \"Value8\": \"\",\n                    \"Value9\": \"\",\n                    \"Value10\": \"\",\n                    \"Value11\": \"\",\n                    \"Value12\": \"\",\n                    \"Value13\": \"\",\n                    \"Value14\": \"\",\n                    \"Value15\": \"\"\n                },\n                {\n                    \"Values\": [\n                        \"Card\",\n                        \"asdfasfd\",\n                        \"asdfasdf\",\n                        \"asdfasdf\",\n                        \"\"\n                    ],\n                    \"Value1\": \"Card\",\n                    \"Value2\": \"asdfasfd\",\n                    \"Value3\": \"asdfasdf\",\n                    \"Value4\": \"asdfasdf\",\n                    \"Value5\": \"\",\n                    \"Value6\": \"\",\n                    \"Value7\": \"\",\n                    \"Value8\": \"\",\n                    \"Value9\": \"\",\n                    \"Value10\": \"\",\n                    \"Value11\": \"\",\n                    \"Value12\": \"\",\n                    \"Value13\": \"\",\n                    \"Value14\": \"\",\n                    \"Value15\": \"\"\n                },\n                {\n                    \"Values\": [\n                        \"Account\",\n                        \"sadfasdf\",\n                        \"asdfasdf\",\n                        \"asdfasdf\",\n                        \"\"\n                    ],\n                    \"Value1\": \"Account\",\n                    \"Value2\": \"sadfasdf\",\n                    \"Value3\": \"asdfasdf\",\n                    \"Value4\": \"asdfasdf\",\n                    \"Value5\": \"\",\n                    \"Value6\": \"\",\n                    \"Value7\": \"\",\n                    \"Value8\": \"\",\n                    \"Value9\": \"\",\n                    \"Value10\": \"\",\n                    \"Value11\": \"\",\n                    \"Value12\": \"\",\n                    \"Value13\": \"\",\n                    \"Value14\": \"\",\n                    \"Value15\": \"\"\n                }\n            ]\n        },\n        \"Owner\": {\n            \"UserId\": \"f1599895-3d58-44a8-a830-e77b42d8e4c6\",\n            \"DisplayName\": \" محمد علی مزینی\",\n            \"PictureUrl\": \"/PortalData/Subsystems/Profile/UserPics/52c406aa-ae3d-4699-b253-6c5af7648549.jpg\",\n            \"Email\": \"mamozayyani@gmail.com\"\n        },\n        \"ContactStatus\": {},\n        \"Fields\": {\n            \"Field_996_0_7\": \"sdf\"\n        },\n        \"Segments\": [],\n        \"KeepInTouch\": null,\n        \"LastUpdateTime\": \"2026-07-28T11:12:03.2546375Z\",\n        \"OwnerId_Old\": \"00000000-0000-0000-0000-000000000000\"\n    }\n}",
+  "source": "https://developers.didar.me/Update-Company"
+}

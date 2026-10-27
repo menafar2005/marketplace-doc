@@ -79,10 +79,10 @@ const TOOLS = [
         hit = endpoints.find((e) => [e.id, e.title, e.path, e.summary].some((s) => s.toLowerCase().includes(q)));
       }
       if (!hit) return text("endpointی پیدا نشد. get_api_spec را بدون ورودی صدا بزن تا فهرست کامل را ببینی.", true);
-      const params = hit.params.map(([name, where, type, required, description]) => ({ name, in: where, type, required: !!required, description }));
+      const params = hit.params.map((p) => ({ name: p.name, in: p.in, type: p.type, required: !!p.required, description: p.description, ...(p.sections?.length ? { details: p.sections } : {}) }));
       return json({
         id: hit.id, title: hit.title, method: hit.method, path: hit.path, url: spec.baseUrl + hit.path,
-        summary: hit.summary, scope: hit.scope, runtimeContext: hit.context ?? null, didarApiEquivalent: hit.didar ?? null,
+        summary: hit.summary, didarDescription: hit.didarDoc ? { heading: hit.didarDoc.heading, intro: hit.didarDoc.intro, rules: hit.didarDoc.rules, source: hit.didarDoc.source } : null, scope: hit.scope, runtimeContext: hit.context ?? null, didarApiEquivalent: hit.didar ?? null,
         auth: "Authorization: Bearer <Runtime Token>", bodyNote: hit.bodyNote ?? null, params,
         exampleRequest: hit.request, exampleResponse: hit.response, docs: `${o}/${hit.page}#${hit.id}`,
       });

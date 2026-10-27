@@ -1,0 +1,158 @@
+{
+  "page": "Search-Activity",
+  "title": "Search Activities",
+  "heading": "جستجوی فعالیت",
+  "intro": "با این Endpoint می‌توانید فعالیت‌ها را براساس بازه زمانی، نوع فعالیت، مخاطب، مسئول، تگ، وضعیت انجام یا رکورد مرتبط پیدا کنید. این درخواست برای ساخت لیست فعالیت‌ها، دریافت برنامه کاری کاربران یا پیدا‌کردن فعالیت‌های مرتبط با یک معامله یا کارت مناسب است.",
+  "http": "POST {{baseURL}}/api/activity/search?apikey={{API_KEY}}",
+  "params": [
+    {
+      "name": "FromDate",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "ابتدای بازه زمانی با قالب تاریخ و زمان مورد انتظار Endpoint."
+    },
+    {
+      "name": "ToDate",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "انتهای بازه زمانی با قالب تاریخ و زمان مورد انتظار Endpoint."
+    },
+    {
+      "name": "SortType",
+      "type": "number",
+      "required": false,
+      "sections": [],
+      "description": "معیار یا روش مرتب‌سازی نتایج."
+    },
+    {
+      "name": "From",
+      "type": "number",
+      "required": false,
+      "sections": [],
+      "description": "اندیس شروع نتایج برای صفحه‌بندی است. مثلا `0` یعنی دریافت از اولین نتیجه و `20` یعنی ۲۰ نتیجه اول رد شوند."
+    },
+    {
+      "name": "Limit",
+      "type": "number",
+      "required": false,
+      "sections": [],
+      "description": "حداکثر تعداد رکوردی است که در همین پاسخ برگردانده می‌شود."
+    },
+    {
+      "name": "ActivityTypeIds[]",
+      "type": "array",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد باید `Id` یکی از نوع‌های فعالیت موجود در دیدار را بگیرد.\n\n* [Activity Type](https://developers.didar.me/Activity-Type.md) — `Id` نوع فعالیت موردنظر را بردارید"
+        }
+      ],
+      "description": "فهرست شناسه نوع‌های فعالیت است و نتایج را به همین نوع‌ها محدود می‌کند."
+    },
+    {
+      "name": "ContactIds[]",
+      "type": "array",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "هر مقدار باید `Id` یک شخص یا شرکت موجود در دیدار باشد.\n\n* [Create Person](https://developers.didar.me/Create-Person.md) — ساخت شخص جدید\n* [Get Person By Mobile](https://developers.didar.me/Get-Person-By-Mobile.md) — پیداکردن شخص با موبایل\n* [Search Person](https://developers.didar.me/Search-Person.md) — جست‌وجوی شخص\n* [Create Company](https://developers.didar.me/Create-Company.md) — ساخت شرکت جدید\n* [Search Company](https://developers.didar.me/Search-Company.md) — جست‌وجوی شرکت"
+        }
+      ],
+      "description": "فهرست شناسه اشخاص یا شرکت‌های مرتبط است."
+    },
+    {
+      "name": "TagIds[]",
+      "type": "array",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد باید `Id` تگ موجود در دیدار را بگیرد.\n\n* [Tags](https://developers.didar.me/Tags.md) — `Id` تگ موردنظر را بردارید"
+        }
+      ],
+      "description": "فهرست شناسه تگ‌ها است و نتایج را به رکوردهای دارای این تگ‌ها محدود می‌کند."
+    },
+    {
+      "name": "OwnerId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد نام کاربر را نمی‌پذیرد؛ باید `UserId` یک User موجود در دیدار را بفرستید.\n\n* [User List](https://developers.didar.me/User-List.md) — مقدار `UserId` کاربر موردنظر را بردارید"
+        }
+      ],
+      "description": "شناسه User مسئول رکورد است و نتایج یا مسئولیت رکورد براساس همین کاربر تعیین می‌شود."
+    },
+    {
+      "name": "CreatorId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد نام کاربر را نمی‌پذیرد؛ باید `UserId` یک User موجود در دیدار را بفرستید.\n\n* [User List](https://developers.didar.me/User-List.md) — مقدار `UserId` کاربر موردنظر را بردارید"
+        }
+      ],
+      "description": "شناسه Userی است که به‌عنوان ایجادکننده رکورد ثبت می‌شود."
+    },
+    {
+      "name": "IsDone",
+      "type": "boolean",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `true` — فقط رکوردهای انجام‌شده\n* `false` — فقط رکوردهای انجام‌نشده"
+        }
+      ],
+      "description": "فیلتر یا وضعیت انجام‌شدن رکورد؛ مقدار آن تعیین می‌کند رکورد انجام‌شده محسوب شود یا خیر."
+    },
+    {
+      "name": "IsDeleted",
+      "type": "boolean",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `true` — فقط رکوردهای حذف‌شده\n* `false` — فقط رکوردهای حذف‌نشده"
+        }
+      ],
+      "description": "مشخص می‌کند رکورد حذف شده است یا همچنان فعال است."
+    },
+    {
+      "name": "DealId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "مقدار این فیلد باید `Id` یک معامله موجود در دیدار باشد.\n\n* [Create Deal](https://developers.didar.me/Create-Deal.md) — اگر معامله هنوز ساخته نشده است\n* [Get Deal By Id](https://developers.didar.me/Get-Deal-By-Id.md) — اگر `Id` معامله را دارید\n* [Search Deal](https://developers.didar.me/Search-Deal.md) — برای جست‌وجوی معامله"
+        }
+      ],
+      "description": "شناسه معامله‌ای است که فاکتور، پیش‌فاکتور یا فیلتر باید به آن مرتبط باشد."
+    },
+    {
+      "name": "CaseId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "مقدار این فیلد باید `Id` یک کارت موجود در دیدار باشد.\n\n* [Create Case](https://developers.didar.me/Create-Case.md) — اگر کارت هنوز ساخته نشده است\n* [Search Case](https://developers.didar.me/Search-Case.md) — برای جست‌وجوی کارت\n\n\n\n\n\nThis documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform."
+        }
+      ],
+      "description": "شناسه کارت مرتبط است و نتایج یا رکورد را به همان کارت محدود یا متصل می‌کند."
+    }
+  ],
+  "rules": [],
+  "related": [],
+  "requestBody": "{\n  \"FromDate\": \"1800-01-01T00:00:00.000Z\",\n  \"ToDate\": \"9999-12-28T20:30:00.000Z\",\n  \"SortType\": 1,\n  \"From\": 0,\n  \"Limit\": 10,\n  \"ActivityTypeIds\": [\n    \"9c691370-f294-4e6b-aad0-b19b3696a0ad\"\n  ],\n  \"ContactIds\": [\n    \"56620317-b415-4673-a2a5-6d20a7d12b00\",\n    \"44cb2f3f-9a52-4f16-a6e3-e0d725349647\"\n  ],\n  \"TagIds\": [\n    \"ade4bd5b-b7eb-45a3-a068-b44a3759fe05\"\n  ],\n  \"OwnerId\": \"{{ test product user 1 }}\",\n  \"CreatorId\": \"096bee7a-d1bb-4e03-8948-cc8b2dcf9395\",\n  \"IsDone\": false,\n  \"IsDeleted\": true,\n  \"DealId\": \"b96eeffe-9baa-4fac-99d2-772415957ff0\",\n  \"CaseId\": \"348d182c-8311-4abf-aa92-a1f2248f1192\"\n}",
+  "curl": "curl --location --request POST '{{baseURL}}/api/activity/search?apikey={{API_KEY}}' \\\n--header 'Content-Type: application/json' \\\n--data '{\n  \"FromDate\": \"1800-01-01T00:00:00.000Z\",\n  \"ToDate\": \"9999-12-28T20:30:00.000Z\",\n  \"SortType\": 1,\n  \"From\": 0,\n  \"Limit\": 10,\n  \"ActivityTypeIds\": [\n    \"9c691370-f294-4e6b-aad0-b19b3696a0ad\"\n  ],\n  \"ContactIds\": [\n    \"56620317-b415-4673-a2a5-6d20a7d12b00\",\n    \"44cb2f3f-9a52-4f16-a6e3-e0d725349647\"\n  ],\n  \"TagIds\": [\n    \"ade4bd5b-b7eb-45a3-a068-b44a3759fe05\"\n  ],\n  \"OwnerId\": \"{{ test product user 1 }}\",\n  \"CreatorId\": \"096bee7a-d1bb-4e03-8948-cc8b2dcf9395\",\n  \"IsDone\": false,\n  \"IsDeleted\": true,\n  \"DealId\": \"b96eeffe-9baa-4fac-99d2-772415957ff0\",\n  \"CaseId\": \"348d182c-8311-4abf-aa92-a1f2248f1192\"\n}'",
+  "response": "{\n    \"Response\": {\n        \"List\": [\n            {\n                \"Id\": \"35a2ea9b-f4dc-4536-9864-3e9b2f663823\",\n                \"Title\": \"مشاوره رایگان تست یادداشت\",\n                \"Note\": \"این تست یادداشت است.\",\n                \"ResultNote\": \"<p>جهت تست </p>\",\n                \"ActivityTypeId\": \"9231f6d5-622a-48a8-81ba-7f0fbd55b4a8\",\n                \"IsPrivate\": false,\n                \"IsDone\": true,\n                \"IsPinned\": true,\n                \"IsDeleted\": false,\n                \"IsKeepInTouch\": false,\n                \"DueDateType\": \"NoTime\",\n                \"DueDate\": \"2023-05-14T00:00:00Z\",\n                \"FinishDate\": \"2023-05-14T20:30:00Z\",\n                \"OriginalDueDate\": \"2023-05-14T13:30:00Z\",\n                \"DoneDate\": \"2026-06-18T12:13:27Z\",\n                \"RegisterDate\": \"2023-05-14T14:22:04Z\",\n                \"LastUpdateTime\": \"2026-06-18T12:13:27Z\",\n                \"LastPokeDate\": \"2026-06-18T12:13:11Z\",\n                \"Duration\": 5,\n                \"DealId\": \"00000000-0000-0000-0000-000000000000\",\n                \"CaseId\": \"00000000-0000-0000-0000-000000000000\",\n                \"TicketId\": \"00000000-0000-0000-0000-000000000000\",\n                \"CreatorId\": \"8fd990f1-1e5b-4eda-9bc2-26274d5af75e\",\n                \"OwnerId\": \"8fd990f1-1e5b-4eda-9bc2-26274d5af75e\",\n                \"UpdaterId\": \"8fd990f1-1e5b-4eda-9bc2-26274d5af75e\",\n                \"ActivityGroupId\": \"35a2ea9b-f4dc-4536-9864-3e9b2f663823\",\n                \"RecurrenceType\": \"OneTime\",\n                \"RecurrenceData\": 1,\n                \"RecurrenceEndDate\": \"2023-05-14T00:00:00Z\",\n                \"FeedbackType\": \"None\",\n                \"NextOccurrence\": \"2023-05-14T00:00:00Z\",\n                \"CanPoke\": false,\n                \"IsAttended\": false,\n                \"Deal\": null,\n                \"Case\": null,\n                \"Contacts\": [\n                    {\n                        \"ContactId\": \"016837d3-54d4-4a25-aff4-e10e8ec7ca9f\",\n                        \"ActivityId\": \"35a2ea9b-f4dc-4536-9864-3e9b2f663823\",\n                        \"Status\": \"Accepted\",\n                        \"Message\": \"\",\n                        \"Contact\": {\n                            \"Id\": \"016837d3-54d4-4a25-aff4-e10e8ec7ca9f\",\n                            \"Title\": \"\",\n                            \"FirstName\": \"\",\n                            \"LastName\": \"تامی 5\",\n                            \"WorkPhone\": \"\",\n                            \"MobilePhone\": \"\",\n                            \"Type\": \"Person\",\n                            \"DisplayName\": \"تامی 5\"\n                        }\n                    }\n                ],\n                \"Creator\": {\n                    \"UserId\": \"8fd990f1-1e5b-4eda-9bc2-26274d5af75e\",\n                    \"DisplayName\": \"زهرا بسطامی\",\n                    \"PictureUrl\": \"/PortalData/Subsystems/Profile/UserPics/8bc0e0b5-9d2d-432a-abe1-7e55bcd2cae1.jpg\",\n                    \"Email\": \"zahra.bst1994@gmail.com\"\n                },\n                \"Owner\": {\n                    \"UserId\": \"8fd990f1-1e5b-4eda-9bc2-26274d5af75e\",\n                    \"DisplayName\": \"زهرا بسطامی\",\n                    \"PictureUrl\": \"/PortalData/Subsystems/Profile/UserPics/8bc0e0b5-9d2d-432a-abe1-7e55bcd2cae1.jpg\",\n                    \"Email\": \"zahra.bst1994@gmail.com\"\n                },\n                \"Users\": [],\n                \"Notifies\": [],\n                \"Comments\": [],\n                \"Attachments\": [],\n                \"Voices\": [],\n                \"Voips\": [],\n                \"Tags\": [],\n                \"CanEdit\": true,\n                \"CanDelete\": true,\n                \"CanDone\": false,\n                \"ActivityTicketStatus\": \"NotAnswered\",\n                \"IsTicket\": false,\n                \"OwnerId_Old\": \"8fd990f1-1e5b-4eda-9bc2-26274d5af75e\",\n                \"ActivityGroupType\": \"Default\"\n            },\n            {\n                \"Id\": \"a39e3dd3-5501-4515-9e9a-22514997007f\",\n                \"Title\": \"مشاوره رایگان\",\n                \"Note\": \"اول\",\n                \"ResultNote\": \"<p><span class=\\\"mention\\\" mentionkey=\\\"987b13a7-0147-4395-85b5-1e58a0384f8f\\\" data-mention=\\\"@ علی حیدری\\\" id=\\\"mention-987b13a7-0147-4395-85b5-1e58a0384f8f\\\"> علی حیدری </span> اااااااآ </p>\",\n                \"ActivityTypeId\": \"9231f6d5-622a-48a8-81ba-7f0fbd55b4a8\",\n                \"IsPrivate\": false,\n                \"IsDone\": true,\n                \"IsPinned\": true,\n                \"IsDeleted\": false,\n                \"IsKeepInTouch\": false,\n                \"DueDateType\": \"Default\",\n                \"DueDate\": \"2026-06-18T13:00:00Z\",\n                \"FinishDate\": \"2026-06-18T13:10:00Z\",\n                \"OriginalDueDate\": \"2026-06-18T12:05:53Z\",\n                \"DoneDate\": \"2026-06-18T12:08:30Z\",\n                \"RegisterDate\": \"2026-06-18T12:05:53Z\",\n                \"LastUpdateTime\": \"2026-06-18T12:09:17Z\",\n                \"LastPokeDate\": \"2026-06-18T12:07:10Z\",\n                \"Duration\": 10,\n                \"DealId\": \"00000000-0000-0000-0000-000000000000\",\n                \"CaseId\": \"00000000-0000-0000-0000-000000000000\",\n                \"TicketId\": \"00000000-0000-0000-0000-000000000000\",\n                \"CreatorId\": \"8fd990f1-1e5b-4eda-9bc2-26274d5af75e\",\n                \"OwnerId\": \"8fd990f1-1e5b-4eda-9bc2-26274d5af75e\",\n                \"UpdaterId\": \"8fd990f1-1e5b-4eda-9bc2-26274d5af75e\",\n                \"ActivityGroupId\": \"00000000-0000-0000-0000-000000000000\",\n                \"RecurrenceType\": \"OneTime\",\n                \"RecurrenceData\": 1,\n                \"RecurrenceEndDate\": \"2026-06-18T13:00:00Z\",\n                \"FeedbackType\": \"None\",\n                \"NextOccurrence\": \"2026-06-18T13:00:00Z\",\n                \"CanPoke\": false,\n                \"IsAttended\": false,\n                \"Deal\": null,\n                \"Case\": null,\n                \"Contacts\": [],\n                \"Creator\": {\n                    \"UserId\": \"8fd990f1-1e5b-4eda-9bc2-26274d5af75e\",\n                    \"DisplayName\": \"زهرا بسطامی\",\n                    \"PictureUrl\": \"/PortalData/Subsystems/Profile/UserPics/8bc0e0b5-9d2d-432a-abe1-7e55bcd2cae1.jpg\",\n                    \"Email\": \"zahra.bst1994@gmail.com\"\n                },\n                \"Owner\": {\n                    \"UserId\": \"8fd990f1-1e5b-4eda-9bc2-26274d5af75e\",\n                    \"DisplayName\": \"زهرا بسطامی\",\n                    \"PictureUrl\": \"/PortalData/Subsystems/Profile/UserPics/8bc0e0b5-9d2d-432a-abe1-7e55bcd2cae1.jpg\",\n                    \"Email\": \"zahra.bst1994@gmail.com\"\n                },\n                \"Users\": [],\n                \"Notifies\": [],\n                \"Comments\": [\n                    {\n                        \"Id\": \"d2d1a19d-f089-4438-8656-1afa70d9ce98\",\n                        \"ActivityId\": \"a39e3dd3-5501-4515-9e9a-22514997007f\",\n                        \"UserId\": \"8fd990f1-1e5b-4eda-9bc2-26274d5af75e\",\n                        \"Body\": \"<p><span class=\\\"mention\\\" mentionkey=\\\"86ddf0dc-38d5-4c5e-ae12-0673f87b0925\\\" mention=\\\"@ محمد مهدی وکیل آبادی\\\" id=\\\"mention-86ddf0dc-38d5-4c5e-ae12-0673f87b0925\\\"> محمد مهدی وکیل آبادی </span>تست </p>\",\n                        \"RegisterDate\": \"2026-06-18T12:08:01Z\",\n                        \"User\": {\n                            \"UserId\": \"8fd990f1-1e5b-4eda-9bc2-26274d5af75e\",\n                            \"DisplayName\": \"زهرا بسطامی\",\n                            \"PictureUrl\": \"/PortalData/Subsystems/Profile/UserPics/8bc0e0b5-9d2d-432a-abe1-7e55bcd2cae1.jpg\",\n                            \"Email\": \"zahra.bst1994@gmail.com\"\n                        },\n                        \"TicketingAttachments\": [],\n                        \"BizdomainId\": \"00000000-0000-0000-0000-000000000000\"\n                    }\n                ],\n                \"Attachments\": [\n                    {\n                        \"Id\": \"9172a2ee-7eef-468d-8409-0e7d0f3be179\",\n                        \"ActivityId\": \"a39e3dd3-5501-4515-9e9a-22514997007f\",\n                        \"Title\": \"Screenshot_20260614_105546_Chrome.jpg\",\n                        \"Type\": \"Image\",\n                        \"Name\": \"9172a2ee-7eef-468d-8409-0e7d0f3be179.jpg\",\n                        \"Length\": 256162\n                    },\n                    {\n                        \"Id\": \"811e74a9-1d85-4751-a429-38cff604935f\",\n                        \"ActivityId\": \"a39e3dd3-5501-4515-9e9a-22514997007f\",\n                        \"Title\": \"voice_record_1781784416243.webm\",\n                        \"Type\": \"Video\",\n                        \"Name\": \"811e74a9-1d85-4751-a429-38cff604935f.webm\",\n                        \"Length\": 0\n                    },\n                    {\n                        \"Id\": \"a5491005-9460-4e8e-8354-a8f6cb5abcd6\",\n                        \"ActivityId\": \"a39e3dd3-5501-4515-9e9a-22514997007f\",\n                        \"Title\": \"IMG_20260615_122410_902.jpg\",\n                        \"Type\": \"Image\",\n                        \"Name\": \"a5491005-9460-4e8e-8354-a8f6cb5abcd6.jpg\",\n                        \"Length\": 0\n                    }\n                ],\n                \"Voices\": [],\n                \"Voips\": [],\n                \"Tags\": [],\n                \"CanEdit\": true,\n                \"CanDelete\": true,\n                \"CanDone\": false,\n                \"ActivityTicketStatus\": \"NotAnswered\",\n                \"IsTicket\": false,\n                \"OwnerId_Old\": \"8fd990f1-1e5b-4eda-9bc2-26274d5af75e\",\n                \"ActivityGroupType\": \"Default\"\n            }\n        ],\n        \"Total\": 16066\n    }\n}",
+  "source": "https://developers.didar.me/Search-Activity"
+}

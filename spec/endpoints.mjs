@@ -1,489 +1,210 @@
 // منبع واحد مشخصات endpointهای پروکسی مارکت‌پلیس.
-// صفحات مرجع API (HTML / Markdown) و ابزار get_api_spec در MCP هر دو از همین فایل ساخته می‌شوند.
+// صفحه‌های مرجع API (HTML / Markdown) و ابزار get_api_spec در MCP هر دو از همین فایل ساخته می‌شوند.
 //
-// بدنه endpointهای پروکسی دقیقاً همان بدنه‌ی OpenAPI دیدار است؛ نام فیلدها، casing و نوع‌ها از
-// API reference رسمی دیدار (کانکتور Didar technical doc) گرفته شده‌اند. ستون "didar" نشان می‌دهد
-// هر endpoint معادل کدام endpoint دیدار است.
-//
-// param: [name, in, type, required, description]
+// بدنه‌ی endpointهای پروکسی دقیقاً بدنه‌ی OpenAPI دیدار است. توضیح کامل هر پراپرتی (شامل «وابستگی‌ها»،
+// «شرایط ارسال»، «مقادیر مجاز»)، قواعد و محدودیت‌ها و نمونه‌ی پاسخ، بدون خلاصه‌سازی از «Didar technical doc»
+// گرفته می‌شود: `npm run sync:didar` فایل‌های spec/didar/*.json را از منبع به‌روز می‌کند.
+import { readFileSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const snap = (page) => JSON.parse(readFileSync(join(here, "didar", `${page}.json`), "utf8"));
 
 const BASE = "https://marketplace.didar.me";
 const TOKEN_HEADER = "Authorization: Bearer RUNTIME_ACCESS_TOKEN";
-const ENVELOPE_TAIL = `"error": null, "meta": { "traceId": "TRACE_ID", "timestampUtc": "2026-01-01T00:00:00Z" }`;
+const META = { traceId: "TRACE_ID", timestampUtc: "2026-01-01T00:00:00Z" };
 
-const getCurl = (path) =>
-  `curl --location '${BASE}${path}' \\\n  --header '${TOKEN_HEADER}' \\\n  --header 'Accept: application/json'`;
-const sendCurl = (method, path, body) =>
-  `curl --location --request ${method} '${BASE}${path}' \\\n  --header '${TOKEN_HEADER}' \\\n  --header 'Content-Type: application/json' \\\n  --data '${body}'`;
-const envelope = (inner) => `{\n  "succeeded": true,\n  "data": { "Response": ${inner} },\n  ${ENVELOPE_TAIL}\n}`;
+// ---- نمونه‌ی درخواست به قالب Didar: curl --location، headerها بدون تورفتگی، --data-raw مرتب ----
+const getCurl = (path) => `curl --location '${BASE}${path}' \\\n--header '${TOKEN_HEADER}' \\\n--header 'Accept: application/json'`;
+const sendCurl = (method, path, body) => {
+  const pretty = JSON.stringify(typeof body === "string" ? JSON.parse(body) : body, null, 2);
+  const flag = method === "POST" ? "" : ` --request ${method}`;
+  return `curl --location${flag} '${BASE}${path}' \\\n--header '${TOKEN_HEADER}' \\\n--header 'Content-Type: application/json' \\\n--data-raw '${pretty}'`;
+};
 
-const idParam = (name, desc) => [name, "path", "string", 1, desc];
+// ---- نمونه‌ی پاسخ: envelope استاندارد مارکت‌پلیس، data.Response = پاسخ OpenAPI دیدار ----
+const envelope = (response) => JSON.stringify({ succeeded: true, data: { Response: response }, error: null, meta: META }, null, 2);
+const didarResponse = (page, fallback) => {
+  try {
+    const parsed = JSON.parse(snap(page).response);
+    return envelope(parsed.Response !== undefined ? parsed.Response : parsed);
+  } catch {
+    return envelope(JSON.parse(fallback));
+  }
+};
+
 const NO_BODY = "این endpoint body و query parameter ندارد.";
+const path = (name, description) => ({ name, in: "path", type: "string", required: true, description, sections: [] });
 
-// --- بدنه‌ی مشترک شخص و شرکت (Contact) ---
-const contactCommon = (kind) => [
-  ["Contact", "body", "object", 1, `اطلاعات ${kind} داخل این آبجکت ارسال می‌شود.`],
-  ["Contact.Id", "body", "string", 1, `شناسه ${kind}؛ باید با شناسه route برابر باشد.`],
-  ["Contact.Title", "body", "string", 0, kind === "شخص" ? "عنوانی که قبل از نام نمایش داده می‌شود، مثلاً «آقای» یا «خانم»." : "عنوانی که قبل از عنوان شرکت نمایش داده می‌شود، مثلاً «شرکت»."],
-  ["Contact.OwnerId", "body", "string", 1, "شناسه User مسئول پیگیری."],
-  ["Contact.BirthDate", "body", "string", 0, "تاریخ تولد برای پروفایل و یادآوری تولد."],
-  ["Contact.BirthDateMessageId", "body", "string", 0, "شناسه پیام یا الگوی مرتبط با یادآوری تولد."],
-  ["Contact.MobilePhone", "body", "string", 0, "شماره همراه اصلی برای جست‌وجو، تماس و شناسایی؛ باید منحصربه‌فرد باشد."],
-  ["Contact.WorkPhone", "body", "string", 0, "تلفن ثابت یا محل کار."],
-  ["Contact.WorkPhoneExtension", "body", "string", 0, "عنوان یا داخلی کنار شماره محل کار."],
-  ["Contact.Fax", "body", "string", 0, "شماره فکس."],
-  ["Contact.Email", "body", "string", 0, "ایمیل اصلی برای ارتباط و جست‌وجو."],
-  ["Contact.IsVIP", "body", "boolean", 0, "مشتری ویژه بودن (true / false)."],
-  ["Contact.BackgroundInfo", "body", "string", 0, "یادداشت زمینه‌ای برای اطلاعاتی که در فیلدهای ساختاریافته نمی‌گنجد."],
-  ["Contact.Position", "body", "string", 0, "عنوان شغلی یا سمت."],
-  ["Contact.CustomerCode", "body", "string", 0, "کد مشتری در فرایند مالی؛ برای تطبیق با رکوردهای خارجی هم قابل استفاده است."],
-  ["Contact.ZipCode", "body", "string", 0, "کد پستی نشانی اصلی."],
-  ["Contact.CityId", "body", "string", 0, "شناسه شهر؛ از فهرست مکان‌های دیدار."],
-  ["Contact.ProvinceId", "body", "string", 0, "شناسه استان؛ از فهرست مکان‌های دیدار."],
-  ["Contact.VisibilityType", "body", "string", 0, "سطح مشاهده: 0 / Owner، 1 / OwnerGroup، 2 / OwnerSubGroup، 3 / All."],
-  ["Contact.Fields", "body", "object", 0, "مقدار Custom Fieldها؛ هر کلید باید متعلق به فیلد اضافه مخاطب باشد."],
-  ["Contact.OtherPhones", "body", "object", 0, "شماره‌های تلفن فرعی با عنوان هر شماره."],
-  ["Contact.OtherPhones.KeyValues[]", "body", "array", 0, "هر عضو یک شماره فرعی (Key و Value) است."],
-  ["Contact.OtherPhones.KeyValues[].Key", "body", "string", 0, "کلید داخلی شماره فرعی."],
-  ["Contact.OtherPhones.KeyValues[].Value", "body", "string", 0, "شماره تلفن فرعی."],
-  ["Contact.OtherEmails", "body", "object", 0, "ایمیل‌های فرعی با عنوان کاربرد هر ایمیل."],
-  ["Contact.OtherEmails.KeyValues[]", "body", "array", 0, "هر عضو یک ایمیل فرعی (Key و Value) است."],
-  ["Contact.OtherEmails.KeyValues[].Key", "body", "string", 0, "کلید داخلی ایمیل فرعی."],
-  ["Contact.OtherEmails.KeyValues[].Value", "body", "string", 0, "نشانی ایمیل فرعی."],
-  ["Contact.Websites", "body", "object", 0, "نشانی‌های وب مرتبط با عنوان هر نشانی."],
-  ["Contact.Websites.KeyValues[]", "body", "array", 0, "هر عضو یک وب‌سایت (Key و Value) است."],
-  ["Contact.Websites.KeyValues[].Key", "body", "string", 0, "کلید داخلی وب‌سایت."],
-  ["Contact.Websites.KeyValues[].Value", "body", "string", 0, "نشانی وب‌سایت."],
-  ["Contact.BankAccounts", "body", "object", 0, "حساب‌های بانکی برای فرایندهای مالی."],
-  ["Contact.BankAccounts.Values[]", "body", "array", 0, "هر عضو اطلاعات یک حساب بانکی در ساختار داخلی دیدار است."],
-  ["Contact.BankAccounts.Values[].Value1", "body", "string", 0, "بخش اول اطلاعات حساب بانکی."],
-  ["Contact.BankAccounts.Values[].Value2", "body", "string", 0, "بخش دوم اطلاعات حساب بانکی."],
-  ["Contact.BankAccounts.Values[].Value3", "body", "string", 0, "بخش سوم اطلاعات حساب بانکی."],
-  ["Contact.BankAccounts.Values[].Value4", "body", "string", 0, "بخش چهارم اطلاعات حساب بانکی."],
-  ["Contact.Addresses", "body", "object", 0, "نشانی‌های پستی با عنوان هر نشانی."],
-  ["Contact.Addresses.KeyValues[]", "body", "array", 0, "هر عضو یک نشانی (Key و Value) است."],
-  ["Contact.Addresses.KeyValues[].Key", "body", "string", 0, "کلید داخلی نشانی."],
-  ["Contact.Addresses.KeyValues[].Value", "body", "string", 0, "متن کامل نشانی."],
-  ["SegmentIds[]", "body", "array", 0, "شناسه گروه‌هایی (Segment) که مخاطب باید عضو آن‌ها شود."],
-];
+/** «POST {{baseURL}}/api/deal/save_v2?apikey=…» → «POST /api/deal/save_v2» */
+const didarOp = (doc) => doc.http.replace("{{baseURL}}", "").replace(/\?apikey=.*$/, "");
 
-const personParams = (() => {
-  const c = contactCommon("شخص");
-  const at = (n) => c.findIndex((p) => p[0] === n);
-  c.splice(at("Contact.Id") + 1, 0,
-    ["Contact.Type", "body", "string", 0, "برای شخص مقدار Person."],
-    ["Contact.FirstName", "body", "string", 0, "نام شخص."],
-    ["Contact.LastName", "body", "string", 1, "نام خانوادگی شخص."]);
-  c.splice(at("Contact.OwnerId") + 1, 0,
-    ["Contact.CompanyName", "body", "string", 0, "نام شرکت مرتبط؛ برای ساخت هم‌زمان شرکت همراه شخص."],
-    ["Contact.CompanyId", "body", "string", 0, "شناسه شرکتی که شخص به آن مرتبط است."]);
-  c.splice(at("Contact.CustomerCode") + 1, 0,
-    ["Contact.NationalCode", "body", "string", 0, "کد ملی شخص."]);
-  return [idParam("personId", "شناسه شخص."), ...c];
-})();
+function build(def) {
+  const doc = def.didarPage ? snap(def.didarPage) : null;
+  const skip = new Set(def.skipBody || []);
+  const params = [
+    ...(def.pathParams || []),
+    ...(doc ? doc.params.filter((p) => !skip.has(p.name)).map((p) => ({ ...p, in: "body" })) : []),
+  ];
+  const ep = {
+    id: def.id, title: def.title, method: def.method, path: def.path,
+    summary: def.summary, scope: def.scope, context: def.context,
+    params, bodyNote: params.some((p) => p.in === "body") ? null : def.bodyNote || NO_BODY,
+    request: def.body ? sendCurl(def.method, def.path.replace(/\{(\w+)\}/g, def.example || "ID"), def.body) : getCurl(def.path.replace(/\{(\w+)\}/g, def.example || "ID")),
+    response: didarResponse(def.didarPage, def.response),
+  };
+  if (doc) {
+    ep.didarPage = doc.page;
+    ep.didar = `${doc.title} — ${didarOp(doc)}`;
+    ep.didarDoc = {
+      source: doc.source, heading: doc.heading, intro: doc.intro, rules: doc.rules, related: doc.related,
+      operation: didarOp(doc),
+    };
+  }
+  return ep;
+}
 
-const companyParams = (() => {
-  const c = contactCommon("شرکت");
-  const at = (n) => c.findIndex((p) => p[0] === n);
-  c.splice(at("Contact.Id") + 1, 0,
-    ["Contact.Type", "body", "string", 1, "برای شرکت مقدار company (در نمونه‌های مارکت‌پلیس: Company)."],
-    ["Contact.FirstName", "body", "string", 1, "نام شرکت، مثلاً «دیدار»."]);
-  c.splice(at("Contact.CustomerCode") + 1, 0,
-    ["Contact.EconomicIssue", "body", "string", 0, "کد اقتصادی برای فاکتور رسمی."],
-    ["Contact.RegistrationNumber", "body", "string", 0, "شماره ثبت شرکت یا شخص حقوقی."],
-    ["Contact.NationalID", "body", "string", 0, "شناسه ملی شرکت."]);
-  return [idParam("companyId", "شناسه شرکت."), ...c];
-})();
+// شناسه‌ی route: برای GET توضیح از پراپرتی `Id` دیدار گرفته می‌شود
+const idFromDidar = (page, name, extra) => {
+  const id = snap(page).params.find((p) => p.name === "Id");
+  return { ...path(name, id.description), sections: id.sections, extra };
+};
 
-const activityCommon = (withId) => [
-  ["Activity", "body", "object", 1, "اطلاعات فعالیت داخل این آبجکت ارسال می‌شود."],
-  ...(withId ? [["Activity.Id", "body", "string", 1, "شناسه فعالیت؛ باید با شناسه route برابر باشد."]] : []),
-  ["Activity.ActivityTypeId", "body", "string", 1, "نوع فعالیت (مثلاً تماس، جلسه)؛ از GET /api/v1/proxy/activity-types."],
-  ["Activity.Title", "body", "string", 1, "عنوان کوتاه فعالیت."],
-  ["Activity.OwnerId", "body", "string", 0, "شناسه User مسئول فعالیت."],
-  ["Activity.Note", "body", "string", 0, "توضیحات پیش از انجام فعالیت."],
-  ["Activity.IsDone", "body", "boolean", 0, "true انجام‌شده، false باز."],
-  ["Activity.ResultNote", "body", "string", 0, "نتیجه نهایی فعالیت."],
-  ["Activity.IsDeleted", "body", "boolean", 0, "فعالیت حذف‌شده است یا خیر."],
-  ["Activity.IsPinned", "body", "boolean", 0, "سنجاق‌شدن برای دسترسی سریع."],
-  ["Activity.DueDate", "body", "string", 0, "تاریخ و زمان برنامه‌ریزی‌شده."],
-  ["Activity.Duration", "body", "number", 0, "مدت فعالیت به دقیقه."],
-  ["Activity.DoneDate", "body", "string", 0, "تاریخ و زمان انجام واقعی."],
-  ["Activity.DealId", "body", "string", 0, "معامله‌ی مرتبط."],
-  ["Activity.CaseId", "body", "string", 0, "پرونده‌ی مرتبط."],
-  ["Activity.ContactIds[]", "body", "array", 0, "شناسه اشخاص یا شرکت‌های مرتبط."],
-  ["Activity.CreatorId", "body", "string", 0, "شناسه User ایجادکننده."],
-  ["Activity.RecurrenceType", "body", "string", 0, "الگوی تکرار: DontCare، OneTime، Hourly، Daily، Weekly، Monthly، Yearly."],
-  ["Activity.RecurrenceData", "body", "number", 0, "فاصله تکرار همراه RecurrenceType؛ مثلاً Daily و 10 یعنی هر ۱۰ روز."],
-  ["Activity.RecurrenceEndDate", "body", "string", 0, "آخرین تاریخ تکرار."],
-  ["Activity.Tags[]", "body", "array", 0, "تگ‌های فعالیت."],
-  ["Activity.Tags[].TagId", "body", "string", 0, "شناسه تگ."],
-];
-
-const noteCommon = (withId) => [
-  ["Activity", "body", "object", 1, "یادداشت با مدل Activity ارسال می‌شود."],
-  ...(withId ? [["Activity.Id", "body", "string", 1, "شناسه یادداشت؛ باید با شناسه route برابر باشد."]] : []),
-  ["Activity.IsDone", "body", "boolean", 1, "برای یادداشت همیشه true."],
-  ["Activity.ActivityTypeId", "body", "string", 1, "نوع ثابت یادداشت: 00000000-0000-0000-0000-000000000000."],
-  ["Activity.OwnerId", "body", "string", 0, "شناسه User مسئول."],
-  ["Activity.ResultNote", "body", "string", 0, "متن اصلی یادداشت."],
-  ["Activity.IsPinned", "body", "boolean", 0, "سنجاق‌شدن یادداشت."],
-  ["Activity.IsDeleted", "body", "boolean", 0, "یادداشت حذف‌شده است یا خیر."],
-  ["Activity.DealId", "body", "string", 0, "معامله‌ی مرتبط."],
-  ["Activity.CaseId", "body", "string", 0, "پرونده‌ی مرتبط."],
-  ["Activity.ContactIds[]", "body", "array", 0, "شناسه اشخاص یا شرکت‌های مرتبط."],
-  ["Activity.Tags[]", "body", "array", 0, "تگ‌های یادداشت."],
-];
+const basic = (def) => build({ scope: { read: "basicinfo" }, ...def });
 
 export const groups = [
   {
-    id: "basic",
-    page: "api-basic",
-    title: "اطلاعات پایه",
-    entity: "اطلاعات پایه دیدار",
+    id: "basic", page: "api-basic", title: "اطلاعات پایه", entity: "اطلاعات پایه دیدار",
     intro:
       "این endpointها اطلاعات مرجع BizDomain، کاربران، pipelineها، stageها، labelها، انواع فعالیت و دلایل شکست را از طریق پروکسی امن مارکت‌پلیس ارائه می‌کنند. همه‌ی آن‌ها به Runtime Bearer Token و scope «basicinfo» نیاز دارند و بدون body و query parameter هستند.",
     endpoints: [
-      {
-        id: "biz-domain-info", title: "اطلاعات BizDomain", method: "GET", path: "/api/v1/proxy/biz-domain/info",
+      basic({ id: "biz-domain-info", title: "اطلاعات BizDomain", method: "GET", path: "/api/v1/proxy/biz-domain/info",
         summary: "اطلاعات BizDomain نصب‌شده را برمی‌گرداند.",
-        scope: { read: "basicinfo" }, params: [], bodyNote: NO_BODY,
-        request: getCurl("/api/v1/proxy/biz-domain/info"),
-        response: envelope(`{ "Id": "BIZ_DOMAIN_ID", "Title": "Sample Business", "Name": "Sample Business", "IsActive": true }`),
-      },
-      {
-        id: "activity-types", title: "انواع فعالیت", method: "GET", path: "/api/v1/proxy/activity-types",
-        summary: "انواع فعالیت قابل‌استفاده در فعالیت‌ها را برمی‌گرداند. شناسه هر مورد برای Activity.ActivityTypeId استفاده می‌شود.",
-        scope: { read: "basicinfo" }, params: [], bodyNote: NO_BODY,
-        request: getCurl("/api/v1/proxy/activity-types"),
-        response: envelope(`[\n    { "Id": "516b387f-0300-4956-81fa-8cf16f078747", "Title": "Meeting", "IsDisabled": false, "ShowInAddTask": true, "IsRecurrable": false, "IsConnection": true, "Icon": "meeting", "Duration": 120, "Index": 1 },\n    { "Id": "de0fbb34-ba9c-4af9-b0da-57a92cfb4397", "Title": "Incoming call", "IsDisabled": false, "ShowInAddTask": false, "IsRecurrable": false, "IsConnection": true, "Icon": "incommingcall", "Duration": 5, "Index": 2 }\n  ]`),
-      },
-      {
-        id: "lost-reasons", title: "دلایل شکست معامله", method: "GET", path: "/api/v1/proxy/lost-reasons",
-        summary: "دلایل شکست یا از دست رفتن معامله را برمی‌گرداند.",
-        scope: { read: "basicinfo" }, params: [], bodyNote: NO_BODY,
-        request: getCurl("/api/v1/proxy/lost-reasons"),
-        response: envelope(`[ { "Id": "LOSS_REASON_ID", "Title": "Price", "IsActive": true } ]`),
-      },
-      {
-        id: "pipelines-deals", title: "Pipelineهای معامله", method: "GET", path: "/api/v1/proxy/pipelines/deals",
-        summary: "pipelineهای معامله را با stageهایشان برمی‌گرداند. خروجی هر pipeline شامل Id، Title و Stages[] است.",
-        scope: { read: "basicinfo" }, params: [], bodyNote: NO_BODY,
-        request: getCurl("/api/v1/proxy/pipelines/deals"),
-        response: envelope(`[ { "Id": "PIPELINE_ID", "Title": "Sales pipeline", "Stages": [ { "Id": "STAGE_ID", "Title": "New", "Index": 1, "IsDeleted": false } ] } ]`),
-      },
-      {
-        id: "pipelines-cases", title: "Pipelineهای پرونده", method: "GET", path: "/api/v1/proxy/pipelines/cases",
-        summary: "همان خروجی pipelineها، برای پرونده‌ها.",
-        scope: { read: "basicinfo" }, params: [], bodyNote: NO_BODY,
-        request: getCurl("/api/v1/proxy/pipelines/cases"),
-        response: envelope(`[ { "Id": "PIPELINE_ID", "Title": "Support pipeline", "Stages": [ { "Id": "STAGE_ID", "Title": "New", "Index": 1, "IsDeleted": false } ] } ]`),
-      },
-      {
-        id: "pipeline-stages-deals", title: "Stageهای معامله", method: "GET", path: "/api/v1/proxy/pipeline-stages/deals",
+        response: `{ "Id": "BIZ_DOMAIN_ID", "Title": "Sample Business", "Name": "Sample Business", "IsActive": true }` }),
+      basic({ id: "activity-types", title: "انواع فعالیت", method: "GET", path: "/api/v1/proxy/activity-types", didarPage: "Activity-Type",
+        summary: "انواع فعالیت قابل‌استفاده در فعالیت‌ها را برمی‌گرداند. شناسه‌ی هر مورد برای Activity.ActivityTypeId استفاده می‌شود.", response: "[]" }),
+      basic({ id: "lost-reasons", title: "دلایل شکست معامله", method: "GET", path: "/api/v1/proxy/lost-reasons", didarPage: "Lost-Reasons",
+        summary: "دلایل شکست یا از دست رفتن معامله را برمی‌گرداند.", response: "[]" }),
+      basic({ id: "pipelines-deals", title: "Pipelineهای معامله", method: "GET", path: "/api/v1/proxy/pipelines/deals", didarPage: "List-Deal-Pipelines",
+        summary: "pipelineهای معامله را با stageهایشان برمی‌گرداند. خروجی هر pipeline شامل Id، Title و Stages[] است.", response: "[]" }),
+      basic({ id: "pipelines-cases", title: "Pipelineهای پرونده", method: "GET", path: "/api/v1/proxy/pipelines/cases", didarPage: "List-Case-Pipelines",
+        summary: "همان خروجی pipelineها، برای پرونده‌ها.", response: "[]" }),
+      basic({ id: "pipeline-stages-deals", title: "Stageهای معامله", method: "GET", path: "/api/v1/proxy/pipeline-stages/deals",
         summary: "Stages[] همه‌ی pipelineهای معامله را flatten می‌کند و PipelineId و PipelineTitle را به هر مورد اضافه می‌کند.",
-        scope: { read: "basicinfo" }, params: [], bodyNote: NO_BODY,
-        request: getCurl("/api/v1/proxy/pipeline-stages/deals"),
-        response: envelope(`[ { "Id": "STAGE_ID", "Title": "New", "Index": 1, "IsDeleted": false, "PipelineId": "PIPELINE_ID", "PipelineTitle": "Sales pipeline" } ]`),
-      },
-      {
-        id: "pipeline-stages-cases", title: "Stageهای پرونده", method: "GET", path: "/api/v1/proxy/pipeline-stages/cases",
+        response: `[ { "Id": "STAGE_ID", "Title": "New", "Index": 1, "IsDeleted": false, "PipelineId": "PIPELINE_ID", "PipelineTitle": "Sales pipeline" } ]` }),
+      basic({ id: "pipeline-stages-cases", title: "Stageهای پرونده", method: "GET", path: "/api/v1/proxy/pipeline-stages/cases",
         summary: "همان خروجی flatten شده‌ی stageها، برای پرونده‌ها.",
-        scope: { read: "basicinfo" }, params: [], bodyNote: NO_BODY,
-        request: getCurl("/api/v1/proxy/pipeline-stages/cases"),
-        response: envelope(`[ { "Id": "STAGE_ID", "Title": "New", "Index": 1, "IsDeleted": false, "PipelineId": "PIPELINE_ID", "PipelineTitle": "Support pipeline" } ]`),
-      },
-      {
-        id: "labels-deals", title: "Labelهای معامله", method: "GET", path: "/api/v1/proxy/labels/deals",
-        summary: "فهرست labelهای مرتبط با معامله را برمی‌گرداند.",
-        scope: { read: "basicinfo" }, params: [], bodyNote: NO_BODY,
-        request: getCurl("/api/v1/proxy/labels/deals"),
-        response: envelope(`[ { "Id": "LABEL_ID", "Title": "Important", "Color": "#00B994", "IsDeleted": false } ]`),
-      },
-      {
-        id: "labels-cases", title: "Labelهای پرونده", method: "GET", path: "/api/v1/proxy/labels/cases",
-        summary: "فهرست labelهای مرتبط با پرونده را برمی‌گرداند.",
-        scope: { read: "basicinfo" }, params: [], bodyNote: NO_BODY,
-        request: getCurl("/api/v1/proxy/labels/cases"),
-        response: envelope(`[ { "Id": "LABEL_ID", "Title": "Important", "Color": "#00B994", "IsDeleted": false } ]`),
-      },
-      {
-        id: "users", title: "کاربران", method: "GET", path: "/api/v1/proxy/users",
-        summary: "کاربران BizDomain را برای تخصیص مسئول و نمایش نام‌ها برمی‌گرداند.",
-        scope: { read: "basicinfo" }, params: [], bodyNote: NO_BODY,
-        request: getCurl("/api/v1/proxy/users"),
-        response: envelope(`[ { "Id": "USER_ID", "FirstName": "Alex", "LastName": "Morgan", "FullName": "Alex Morgan", "Email": "alex@example.com", "IsActive": true } ]`),
-      },
+        response: `[ { "Id": "STAGE_ID", "Title": "New", "Index": 1, "IsDeleted": false, "PipelineId": "PIPELINE_ID", "PipelineTitle": "Support pipeline" } ]` }),
+      basic({ id: "labels-deals", title: "Labelهای معامله", method: "GET", path: "/api/v1/proxy/labels/deals", didarPage: "Deal-Labels",
+        summary: "فهرست labelهای مرتبط با معامله را برمی‌گرداند.", response: "[]" }),
+      basic({ id: "labels-cases", title: "Labelهای پرونده", method: "GET", path: "/api/v1/proxy/labels/cases", didarPage: "Case-Labels",
+        summary: "فهرست labelهای مرتبط با پرونده را برمی‌گرداند.", response: "[]" }),
+      basic({ id: "users", title: "کاربران", method: "GET", path: "/api/v1/proxy/users", didarPage: "User-List",
+        summary: "کاربران BizDomain را برای تخصیص مسئول و نمایش نام‌ها برمی‌گرداند.", response: "[]" }),
     ],
   },
   {
-    id: "deals",
-    page: "api-deals",
-    title: "معامله",
-    entity: "معامله (Deal)",
-    intro:
-      "خواندن و ویرایش معامله. هر دو endpoint فقط زمانی مجازند که Runtime Context از نوع deal باشد و شناسه‌ی route در entityIds وجود داشته باشد.",
+    id: "deals", page: "api-deals", title: "معامله", entity: "معامله (Deal)",
+    intro: "خواندن و ویرایش معامله. هر دو endpoint فقط زمانی مجازند که Runtime Context از نوع deal باشد و شناسه‌ی route در entityIds وجود داشته باشد.",
     endpoints: [
-      {
-        id: "deal-get", title: "دریافت معامله", method: "GET", path: "/api/v1/deals/{dealId}",
-        didar: "Get Deal By Id — POST /api/deal/getdealdetail",
+      build({ id: "deal-get", title: "دریافت معامله", method: "GET", path: "/api/v1/deals/{dealId}", example: "704e1533-cb4b-42d7-895d-ef71ff32ba5b",
+        didarPage: "Get-Deal-By-Id", skipBody: ["Id"],
         summary: "اطلاعات معامله را در data.Response برمی‌گرداند.",
-        scope: { read: "deals یا deals.fullaccess" },
-        context: "context باید از نوع deal باشد و dealId در entityIds وجود داشته باشد.",
-        params: [idParam("dealId", "شناسه معامله؛ باید در entityIds موجود باشد.")], bodyNote: "این endpoint body ندارد. شناسه از route خوانده می‌شود (معادل بدنه‌ی { \"Id\": \"…\" } در API دیدار).",
-        request: getCurl("/api/v1/deals/704e1533-cb4b-42d7-895d-ef71ff32ba5b"),
-        response: envelope(`{ "Id": "704e1533-cb4b-42d7-895d-ef71ff32ba5b", "Title": "Enterprise renewal", "Person": { "Id": "PERSON_ID", "DisplayName": "Alex Morgan" }, "Company": { "Id": "COMPANY_ID", "Title": "Example Ltd" }, "Price": 120000, "Status": "Open", "PipelineId": "PIPELINE_ID", "PipelineStageId": "STAGE_ID", "LabelIds": [ "LABEL_ID" ] }`),
-      },
-      {
-        id: "deal-update", title: "ویرایش معامله", method: "PUT", path: "/api/v1/deals/{dealId}",
-        didar: "Update Deal — POST /api/deal/save_v2",
+        scope: { read: "deals یا deals.fullaccess" }, context: "context باید از نوع deal باشد و dealId در entityIds وجود داشته باشد.",
+        pathParams: [idFromDidar("Get-Deal-By-Id", "dealId")],
+        bodyNote: "این endpoint body ندارد. شناسه از route خوانده می‌شود (معادل فیلد Id در بدنه‌ی API دیدار).", response: "{}" }),
+      build({ id: "deal-update", title: "ویرایش معامله", method: "PUT", path: "/api/v1/deals/{dealId}", example: "704e1533-cb4b-42d7-895d-ef71ff32ba5b",
+        didarPage: "Update-Deal",
         summary: "فیلدهای معامله را ویرایش می‌کند و نسخه‌ی به‌روزشده را در data.Response برمی‌گرداند. Deal.Id باید با route برابر باشد.",
-        scope: { write: "deals.fullaccess" },
-        context: "context باید از نوع deal باشد و dealId در entityIds وجود داشته باشد.",
-        params: [
-          idParam("dealId", "شناسه معامله؛ باید با Deal.Id برابر باشد."),
-          ["Deal", "body", "object", 1, "اطلاعات معامله داخل این آبجکت ارسال می‌شود."],
-          ["Deal.Id", "body", "string", 1, "شناسه معامله‌ای که ویرایش می‌شود."],
-          ["Deal.Title", "body", "string", 1, "عنوان معامله در کارت و فهرست معاملات."],
-          ["Deal.Description", "body", "string", 0, "توضیحات تکمیلی معامله."],
-          ["Deal.PersonId", "body", "string", 1, "شناسه شخص اصلی طرف معامله (نه نام یا موبایل)."],
-          ["Deal.CompanyId", "body", "string", 0, "شناسه شرکت مرتبط (نه نام شرکت)."],
-          ["Deal.PipelineId", "body", "string", 1, "شناسه pipeline معامله؛ از GET /api/v1/proxy/pipelines/deals."],
-          ["Deal.PipelineStageId", "body", "string", 1, "شناسه stage فعلی معامله؛ باید متعلق به PipelineId باشد."],
-          ["Deal.OwnerId", "body", "string", 0, "شناسه User مسئول معامله؛ از GET /api/v1/proxy/users."],
-          ["Deal.Status", "body", "string", 0, "Pending (باز، پیش‌فرض)، Won یا Lost."],
-          ["Deal.Price", "body", "string", 0, "مبلغ معامله."],
-          ["Deal.LabelIds[]", "body", "array", 0, "شناسه labelهای معامله؛ از GET /api/v1/proxy/labels/deals."],
-          ["Deal.SourceId", "body", "string", 0, "شناسه نحوه‌ی آشنایی (منبع جذب)."],
-          ["Deal.SourceOther", "body", "string", 0, "عنوان منبع جذب وقتی در فهرست منابع نیست."],
-          ["Deal.ReferrerId", "body", "string", 0, "شناسه معرف معامله."],
-          ["Deal.ExpectedCloseDate", "body", "null", 0, "تاریخ مورد انتظار برای نهایی‌شدن معامله."],
-          ["Deal.LostReasonId", "body", "string", 0, "شناسه دلیل شکست؛ از GET /api/v1/proxy/lost-reasons."],
-          ["Deal.LostReasonNote", "body", "string", 0, "توضیح تکمیلی دلیل شکست."],
-          ["Deal.LostReasonOther", "body", "string", 0, "دلیل شکست وقتی در فهرست دلایل نیست."],
-          ["Deal.VisibilityType", "body", "string", 0, "سطح مشاهده معامله."],
-          ["Deal.CurrencyId", "body", "string", 0, "شناسه ارز مبالغ معامله."],
-          ["Deal.Fields[]", "body", "object", 0, "مقدار Custom Fieldها؛ کلید هر پراپرتی، کلید فنی فیلد است."],
-          ["Deal.CreatorId", "body", "string", 0, "شناسه User ایجادکننده."],
-          ["Deal.Code", "body", "string", 0, "کد اختصاصی رکورد برای شناسایی و جست‌وجو."],
-          ["Deal.OtherContactIds", "body", "string", 0, "شناسه سایر اشخاص یا شرکت‌های مرتبط."],
-          ["Deal.IsPaid", "body", "boolean", 0, "مبلغ معامله پرداخت شده است یا خیر."],
-          ["Deal.UserLosing", "body", "string", 0, "اطلاعات کاربری که معامله را ناموفق کرده است."],
-          ["Deal.ChangeToWonTime", "body", "string", 0, "زمان انتقال به وضعیت موفق."],
-          ["Deal.ChangeToLossTime", "body", "string", 0, "زمان انتقال به وضعیت ناموفق."],
-          ["DealItems[]", "body", "array", 0, "ردیف‌های محصول یا خدمت معامله؛ هر عضو یک ردیف مستقل است."],
-          ["DealItems[].ProductId", "body", "string", 1, "شناسه محصول ردیف."],
-          ["DealItems[].Quantity", "body", "string", 1, "تعداد محصول یا خدمت."],
-          ["DealItems[].UnitPrice", "body", "string", 0, "قیمت هر واحد پیش از تخفیف و مالیات."],
-          ["DealItems[].Price", "body", "string", 0, "مبلغ پایه ردیف."],
-          ["DealItems[].Discount", "body", "string", 0, "مبلغ تخفیف ردیف."],
-          ["DealItems[].DiscountPercent", "body", "string", 0, "درصد تخفیف ردیف."],
-          ["DealItems[].TaxPercent", "body", "string", 0, "درصد مالیات ردیف."],
-          ["DealItems[].Description", "body", "string", 0, "توضیحات اختصاصی ردیف."],
-          ["DealItems[].VariantId", "body", "string", 0, "شناسه زیرمحصول انتخاب‌شده."],
-        ],
-        request: sendCurl("PUT", "/api/v1/deals/704e1533-cb4b-42d7-895d-ef71ff32ba5b",
-          `{ "Deal": { "Id": "704e1533-cb4b-42d7-895d-ef71ff32ba5b", "Title": "Enterprise renewal", "PersonId": "PERSON_ID", "PipelineId": "PIPELINE_ID", "PipelineStageId": "STAGE_ID", "Price": "120000", "LabelIds": [ "LABEL_ID" ] }, "DealItems": [] }`),
-        response: envelope(`{ "Id": "704e1533-cb4b-42d7-895d-ef71ff32ba5b", "Title": "Enterprise renewal", "PipelineId": "PIPELINE_ID", "PipelineStageId": "STAGE_ID", "LabelIds": [ "LABEL_ID" ] }`),
-      },
+        scope: { write: "deals.fullaccess" }, context: "context باید از نوع deal باشد و dealId در entityIds وجود داشته باشد.",
+        pathParams: [path("dealId", "شناسه‌ی معامله؛ باید با Deal.Id برابر باشد.")],
+        body: { Deal: { Id: "704e1533-cb4b-42d7-895d-ef71ff32ba5b", Title: "Enterprise renewal", PersonId: "PERSON_ID", PipelineId: "PIPELINE_ID", PipelineStageId: "STAGE_ID", Price: "120000", LabelIds: ["LABEL_ID"] }, DealItems: [] },
+        response: "{}" }),
     ],
   },
   {
-    id: "cases",
-    page: "api-cases",
-    title: "پرونده",
-    entity: "پرونده (Case)",
-    intro:
-      "خواندن و ویرایش پرونده. context باید از نوع case باشد و شناسه‌ی پرونده در entityIds وجود داشته باشد.",
+    id: "cases", page: "api-cases", title: "پرونده", entity: "پرونده (Case)",
+    intro: "خواندن و ویرایش پرونده. context باید از نوع case باشد و شناسه‌ی پرونده در entityIds وجود داشته باشد.",
     endpoints: [
-      {
-        id: "case-get", title: "دریافت پرونده", method: "GET", path: "/api/v1/cases/{caseId}",
+      build({ id: "case-get", title: "دریافت پرونده", method: "GET", path: "/api/v1/cases/{caseId}", example: "11111111-2222-3333-4444-555555555555",
         summary: "اطلاعات پرونده را در data.Response برمی‌گرداند.",
-        scope: { read: "cases یا cases.fullaccess" },
-        context: "context باید از نوع case باشد و caseId در entityIds وجود داشته باشد.",
-        params: [idParam("caseId", "شناسه پرونده؛ باید در entityIds موجود باشد.")], bodyNote: "این endpoint body ندارد. شناسه از route خوانده می‌شود (معادل بدنه‌ی { \"Id\": \"…\" } در API دیدار).",
-        request: getCurl("/api/v1/cases/11111111-2222-3333-4444-555555555555"),
-        response: envelope(`{ "Id": "11111111-2222-3333-4444-555555555555", "Title": "Implementation case", "Status": "Open", "Person": { "Id": "PERSON_ID", "DisplayName": "Alex Morgan" }, "Company": { "Id": "COMPANY_ID", "Title": "Example Ltd" } }`),
-      },
-      {
-        id: "case-update", title: "ویرایش پرونده", method: "PUT", path: "/api/v1/cases/{caseId}",
-        didar: "Update Case — POST /api/Case/Save_v2",
+        scope: { read: "cases یا cases.fullaccess" }, context: "context باید از نوع case باشد و caseId در entityIds وجود داشته باشد.",
+        pathParams: [path("caseId", "شناسه‌ی پرونده؛ باید در entityIds موجود باشد.")],
+        bodyNote: "این endpoint body ندارد. شناسه از route خوانده می‌شود.",
+        response: `{ "Id": "11111111-2222-3333-4444-555555555555", "Title": "Implementation case", "Status": "Open", "Person": { "Id": "PERSON_ID", "DisplayName": "Alex Morgan" }, "Company": { "Id": "COMPANY_ID", "Title": "Example Ltd" } }` }),
+      build({ id: "case-update", title: "ویرایش پرونده", method: "PUT", path: "/api/v1/cases/{caseId}", example: "11111111-2222-3333-4444-555555555555",
+        didarPage: "Update-Case",
         summary: "فیلدهای پرونده را ویرایش می‌کند. Case.Id باید با route برابر باشد و پاسخ، نسخه‌ی به‌روزشده را در data.Response برمی‌گرداند.",
-        scope: { write: "cases.fullaccess" },
-        context: "context باید از نوع case باشد و caseId در entityIds وجود داشته باشد.",
-        params: [
-          idParam("caseId", "شناسه پرونده؛ باید با Case.Id برابر باشد."),
-          ["Case", "body", "object", 1, "اطلاعات پرونده (کارت) داخل این آبجکت ارسال می‌شود."],
-          ["Case.Id", "body", "string", 1, "شناسه پرونده‌ای که ویرایش می‌شود."],
-          ["Case.Title", "body", "string", 1, "عنوان پرونده در نمای pipeline و فهرست."],
-          ["Case.PipelineStageId", "body", "string", 1, "شناسه stage فعلی؛ از GET /api/v1/proxy/pipelines/cases."],
-          ["Case.CaseCategoryId", "body", "string", 1, "نوع پرونده: 00000000-0000-0000-0000-000000000000 فعالیت‌محور، cd06853c-35df-4d9b-b124-9556474d84a1 کانبان، 37375848-a403-4186-8460-d45754f49e4c تیکت."],
-          ["Case.OwnerId", "body", "string", 0, "شناسه User مسئول."],
-          ["Case.Description", "body", "string", 0, "توضیحات تکمیلی."],
-          ["Case.CompanyId", "body", "string", 0, "شرکت مرتبط."],
-          ["Case.PersonId", "body", "string", 0, "شخص اصلی مرتبط."],
-          ["Case.DealId", "body", "string", 0, "معامله‌ای که پرونده از آن ایجاد شده یا به آن مرتبط است."],
-          ["Case.IsDeleted", "body", "boolean", 0, "پرونده حذف‌شده است یا فعال."],
-          ["Case.Status", "body", "string", 0, "InProgress (در حال انجام) یا Done (تمام‌شده)."],
-          ["Case.DueDate", "body", "string", 0, "تاریخ سررسید."],
-          ["Case.Priority", "body", "number", 0, "اولویت: -2 (پیش‌فرض، کمترین)، -1، 0، 1 (بالا)."],
-          ["Case.UserIds[]", "body", "array", 0, "شناسه Userهای دیگر مرتبط با پرونده."],
-          ["Case.OtherContactIds", "body", "string", 0, "سایر مخاطبان مرتبط."],
-          ["Case.ResultNote", "body", "string", 0, "نتیجه یا جمع‌بندی پس از تکمیل."],
-          ["Case.VisibilityType", "body", "string", 0, "سطح مشاهده: 0 / Owner، 1 / OwnerGroup، 2 / OwnerSubGroup، 3 / All."],
-          ["Case.Fields[]", "body", "object", 0, "مقدار Custom Fieldهای پرونده."],
-          ["Case.CanDelete", "body", "boolean", 0, "کاربر فعلی اجازه حذف دارد یا خیر."],
-          ["Case.CanEdit", "body", "boolean", 0, "کاربر فعلی اجازه ویرایش دارد یا خیر."],
-          ["Case.IsCaseCategoryActive", "body", "boolean", 0, "نوع فعلی پرونده فعال است یا خیر."],
-          ["Case.InProgressTime", "body", "string", 0, "زمان ورود به وضعیت در حال انجام."],
-          ["Case.NextActivityDate", "body", "string", 0, "تاریخ نزدیک‌ترین فعالیت باز."],
-          ["Case.LastActivityUpdateTime", "body", "string", 0, "زمان آخرین تغییر فعالیت‌های مرتبط."],
-          ["Case.DoneTime", "body", "string", 0, "زمان تکمیل پرونده."],
-          ["Case.PipelineChangeTime", "body", "string", 0, "زمان آخرین انتقال بین pipelineها یا stageها."],
-          ["Case.LabelIds", "body", "array", 0, "شناسه labelهای پرونده؛ از GET /api/v1/proxy/labels/cases."],
-        ],
-        request: sendCurl("PUT", "/api/v1/cases/11111111-2222-3333-4444-555555555555",
-          `{ "Case": { "Id": "11111111-2222-3333-4444-555555555555", "Title": "Updated implementation case", "PipelineStageId": "STAGE_ID", "CaseCategoryId": "00000000-0000-0000-0000-000000000000" } }`),
-        response: envelope(`{ "Id": "11111111-2222-3333-4444-555555555555", "Title": "Updated implementation case" }`),
-      },
+        scope: { write: "cases.fullaccess" }, context: "context باید از نوع case باشد و caseId در entityIds وجود داشته باشد.",
+        pathParams: [path("caseId", "شناسه‌ی پرونده؛ باید با Case.Id برابر باشد.")],
+        body: { Case: { Id: "11111111-2222-3333-4444-555555555555", Title: "Updated implementation case", PipelineStageId: "STAGE_ID", CaseCategoryId: "00000000-0000-0000-0000-000000000000" } },
+        response: "{}" }),
     ],
   },
   {
-    id: "contacts",
-    page: "api-contacts",
-    title: "شخص و شرکت",
-    entity: "شخص و شرکت (Contact)",
-    intro:
-      "شخص و شرکت هر دو با مدل Contact ذخیره می‌شوند. برای GET بدنه وجود ندارد. برای PUT، Contact.Id باید با route برابر باشد و Type برای شخص Person و برای شرکت Company باشد.",
+    id: "contacts", page: "api-contacts", title: "شخص و شرکت", entity: "شخص و شرکت (Contact)",
+    intro: "شخص و شرکت هر دو با مدل Contact ذخیره می‌شوند. برای GET بدنه وجود ندارد. برای PUT، Contact.Id باید با route برابر باشد و Type برای شخص Person و برای شرکت Company باشد.",
     endpoints: [
-      {
-        id: "person-get", title: "دریافت شخص", method: "GET", path: "/api/v1/contacts/persons/{personId}",
+      build({ id: "person-get", title: "دریافت شخص", method: "GET", path: "/api/v1/contacts/persons/{personId}", example: "PERSON_ID",
+        didarPage: "Get-Person-By-Id", skipBody: ["Id"],
         summary: "اطلاعات شخص را در data.Response برمی‌گرداند.",
-        scope: { read: "contacts یا contacts.fullaccess" },
-        context: "context باید از نوع person باشد و شناسه‌ی شخص در entityIds وجود داشته باشد.",
-        params: [idParam("personId", "شناسه شخص؛ باید در entityIds موجود باشد.")], bodyNote: NO_BODY,
-        request: getCurl("/api/v1/contacts/persons/PERSON_ID"),
-        response: envelope(`{ "Id": "PERSON_ID", "Type": "Person", "DisplayName": "Alex Morgan", "Mobile": "+10000000000", "Email": "alex@example.com" }`),
-      },
-      {
-        id: "person-update", title: "ویرایش شخص", method: "PUT", path: "/api/v1/contacts/persons/{personId}",
-        didar: "Update Person — POST /api/contact/save",
+        scope: { read: "contacts یا contacts.fullaccess" }, context: "context باید از نوع person باشد و شناسه‌ی شخص در entityIds وجود داشته باشد.",
+        pathParams: [idFromDidar("Get-Person-By-Id", "personId")], bodyNote: NO_BODY, response: "{}" }),
+      build({ id: "person-update", title: "ویرایش شخص", method: "PUT", path: "/api/v1/contacts/persons/{personId}", example: "PERSON_ID",
+        didarPage: "Update-Person",
         summary: "اطلاعات شخص را ویرایش می‌کند. Contact.Id باید با route برابر و Type برابر Person باشد؛ پاسخ در data.Response برگردانده می‌شود.",
-        scope: { write: "contacts.fullaccess" },
-        context: "context باید از نوع person باشد و شناسه‌ی شخص در entityIds وجود داشته باشد.",
-        params: personParams,
-        request: sendCurl("PUT", "/api/v1/contacts/persons/PERSON_ID",
-          `{ "Contact": { "Id": "PERSON_ID", "Type": "Person", "LastName": "Morgan", "OwnerId": "USER_ID" } }`),
-        response: envelope(`{ "Id": "PERSON_ID", "Type": "Person", "DisplayName": "Alex Morgan" }`),
-      },
-      {
-        id: "company-get", title: "دریافت شرکت", method: "GET", path: "/api/v1/contacts/companies/{companyId}",
+        scope: { write: "contacts.fullaccess" }, context: "context باید از نوع person باشد و شناسه‌ی شخص در entityIds وجود داشته باشد.",
+        pathParams: [path("personId", "شناسه‌ی شخص؛ باید با Contact.Id برابر باشد.")],
+        body: { Contact: { Id: "PERSON_ID", Type: "Person", FirstName: "Alex", LastName: "Morgan", OwnerId: "USER_ID", MobilePhone: "09120000000", Email: "alex@example.com" } },
+        response: "{}" }),
+      build({ id: "company-get", title: "دریافت شرکت", method: "GET", path: "/api/v1/contacts/companies/{companyId}", example: "COMPANY_ID",
+        didarPage: "Get-Company-By-Id", skipBody: ["Id"],
         summary: "اطلاعات شرکت را در data.Response برمی‌گرداند.",
-        scope: { read: "contacts یا contacts.fullaccess" },
-        context: "context باید از نوع company باشد و شناسه‌ی شرکت در entityIds وجود داشته باشد.",
-        params: [idParam("companyId", "شناسه شرکت؛ باید در entityIds موجود باشد.")], bodyNote: NO_BODY,
-        request: getCurl("/api/v1/contacts/companies/COMPANY_ID"),
-        response: envelope(`{ "Id": "COMPANY_ID", "Type": "Company", "DisplayName": "Example Ltd", "Email": "info@example.com" }`),
-      },
-      {
-        id: "company-update", title: "ویرایش شرکت", method: "PUT", path: "/api/v1/contacts/companies/{companyId}",
-        didar: "Update Company — POST /api/contact/save",
+        scope: { read: "contacts یا contacts.fullaccess" }, context: "context باید از نوع company باشد و شناسه‌ی شرکت در entityIds وجود داشته باشد.",
+        pathParams: [idFromDidar("Get-Company-By-Id", "companyId")], bodyNote: NO_BODY, response: "{}" }),
+      build({ id: "company-update", title: "ویرایش شرکت", method: "PUT", path: "/api/v1/contacts/companies/{companyId}", example: "COMPANY_ID",
+        didarPage: "Update-Company",
         summary: "اطلاعات شرکت را ویرایش می‌کند. همان ساختار شخص با مسیر /companies/{companyId} و Type: Company.",
-        scope: { write: "contacts.fullaccess" },
-        context: "context باید از نوع company باشد و شناسه‌ی شرکت در entityIds وجود داشته باشد.",
-        params: companyParams,
-        request: sendCurl("PUT", "/api/v1/contacts/companies/COMPANY_ID",
-          `{ "Contact": { "Id": "COMPANY_ID", "Type": "Company", "FirstName": "Example Ltd", "OwnerId": "USER_ID" } }`),
-        response: envelope(`{ "Id": "COMPANY_ID", "Type": "Company", "DisplayName": "Example Ltd" }`),
-      },
+        scope: { write: "contacts.fullaccess" }, context: "context باید از نوع company باشد و شناسه‌ی شرکت در entityIds وجود داشته باشد.",
+        pathParams: [path("companyId", "شناسه‌ی شرکت؛ باید با Contact.Id برابر باشد.")],
+        body: { Contact: { Id: "COMPANY_ID", Type: "Company", FirstName: "Example Ltd", OwnerId: "USER_ID", WorkPhone: "02100000000", Email: "info@example.com" } },
+        response: "{}" }),
     ],
   },
   {
-    id: "activities",
-    page: "api-activities",
-    title: "فعالیت و یادداشت",
-    entity: "فعالیت و یادداشت (Activity / Note)",
-    intro:
-      "فعالیت و یادداشت هر دو با مدل Activity کار می‌کنند. یادداشت یک Activity با ActivityTypeId برابر GUID خالی و IsDone برابر true است.",
+    id: "activities", page: "api-activities", title: "فعالیت و یادداشت", entity: "فعالیت و یادداشت (Activity / Note)",
+    intro: "فعالیت و یادداشت هر دو با مدل Activity کار می‌کنند. یادداشت یک Activity با ActivityTypeId برابر GUID خالی و IsDone برابر true است.",
     endpoints: [
-      {
-        id: "activity-search", title: "جستجوی فعالیت", method: "POST", path: "/api/v1/activities/search",
-        didar: "Search Activity — POST /api/activity/search",
+      build({ id: "activity-search", title: "جستجوی فعالیت", method: "POST", path: "/api/v1/activities/search", didarPage: "Search-Activity",
         summary: "فعالیت‌ها را جستجو می‌کند. حداقل یکی از DealId، CaseId یا ContactIds[] الزامی است و همه‌ی associationها باید در context مجاز باشند.",
-        scope: { read: "activities یا activities.fullaccess" },
-        context: "بدنه‌ی درخواست با توجه به Runtime Context بررسی می‌شود.",
-        params: [
-          ["DealId", "body", "string", 0, "معامله‌ی مرتبط."],
-          ["CaseId", "body", "string", 0, "پرونده‌ی مرتبط."],
-          ["ContactIds[]", "body", "array", 0, "شناسه اشخاص یا شرکت‌های مرتبط."],
-          ["FromDate", "body", "string", 0, "ابتدای بازه‌ی زمانی."],
-          ["ToDate", "body", "string", 0, "انتهای بازه‌ی زمانی."],
-          ["SortType", "body", "number", 0, "معیار مرتب‌سازی نتایج."],
-          ["From", "body", "number", 0, "اندیس شروع برای صفحه‌بندی؛ 0 یعنی از اولین نتیجه."],
-          ["Limit", "body", "number", 0, "حداکثر تعداد رکورد در پاسخ."],
-          ["ActivityTypeIds[]", "body", "array", 0, "محدود کردن نتایج به این نوع‌های فعالیت."],
-          ["TagIds[]", "body", "array", 0, "محدود کردن نتایج به این تگ‌ها."],
-          ["OwnerId", "body", "string", 0, "شناسه User مسئول."],
-          ["CreatorId", "body", "string", 0, "شناسه User ایجادکننده."],
-          ["IsDone", "body", "boolean", 0, "true فقط انجام‌شده‌ها، false فقط انجام‌نشده‌ها."],
-          ["IsDeleted", "body", "boolean", 0, "true فقط حذف‌شده‌ها، false فقط حذف‌نشده‌ها."],
-        ],
-        request: sendCurl("POST", "/api/v1/activities/search", `{ "DealId": "DEAL_ID", "From": 0, "Limit": 20, "IsDone": false }`),
-        response: envelope(`{ "List": [ { "Id": "ACTIVITY_ID", "Title": "Follow-up call", "ActivityTypeId": "ACTIVITY_TYPE_ID", "DealId": "DEAL_ID", "IsDone": false, "DueDate": "2026-01-15T10:00:00Z" } ], "Total": 1 }`),
-      },
-      {
-        id: "activity-get", title: "دریافت فعالیت", method: "GET", path: "/api/v1/activities/{activityId}",
+        scope: { read: "activities یا activities.fullaccess" }, context: "بدنه‌ی درخواست با توجه به Runtime Context بررسی می‌شود.",
+        body: { DealId: "DEAL_ID", From: 0, Limit: 20, IsDone: false }, response: "{}" }),
+      build({ id: "activity-get", title: "دریافت فعالیت", method: "GET", path: "/api/v1/activities/{activityId}", example: "ACTIVITY_ID",
+        didarPage: "Get-Activity-By-Id", skipBody: ["Id"],
         summary: "اطلاعات یک فعالیت را برمی‌گرداند؛ شناسه از route خوانده می‌شود.",
-        scope: { read: "activities یا activities.fullaccess" },
-        context: "context باید از نوع activity باشد و activityId در entityIds وجود داشته باشد.",
-        params: [idParam("activityId", "شناسه فعالیت؛ باید در entityIds موجود باشد.")], bodyNote: NO_BODY,
-        request: getCurl("/api/v1/activities/ACTIVITY_ID"),
-        response: envelope(`{ "Id": "ACTIVITY_ID", "Title": "Follow-up call", "ActivityTypeId": "ACTIVITY_TYPE_ID", "DealId": "DEAL_ID", "IsDone": false, "Note": "Call customer" }`),
-      },
-      {
-        id: "activity-create", title: "ساخت فعالیت", method: "POST", path: "/api/v1/activities",
-        didar: "Create Activity — POST /api/activity/save",
+        scope: { read: "activities یا activities.fullaccess" }, context: "context باید از نوع activity باشد و activityId در entityIds وجود داشته باشد.",
+        pathParams: [idFromDidar("Get-Activity-By-Id", "activityId")], bodyNote: NO_BODY, response: "{}" }),
+      build({ id: "activity-create", title: "ساخت فعالیت", method: "POST", path: "/api/v1/activities", didarPage: "Create-Activity",
         summary: "فعالیت جدید می‌سازد. Activity.Id را ارسال نکنید. حداقل یک association مجاز (DealId، CaseId یا ContactIds[]) لازم است.",
-        scope: { write: "activities.fullaccess" },
-        context: "associationها باید در Runtime Context مجاز باشند.",
-        params: activityCommon(false),
-        request: sendCurl("POST", "/api/v1/activities",
-          `{ "Activity": { "ActivityTypeId": "ACTIVITY_TYPE_ID", "Title": "Follow-up call", "DealId": "DEAL_ID", "OwnerId": "USER_ID", "IsDone": false, "ContactIds": [ "PERSON_ID" ] } }`),
-        response: envelope(`{ "Id": "ACTIVITY_ID", "ActivityTypeId": "ACTIVITY_TYPE_ID", "Title": "Follow-up call", "DealId": "DEAL_ID", "ContactIds": [ "PERSON_ID" ], "IsDone": false }`),
-      },
-      {
-        id: "activity-update", title: "ویرایش فعالیت", method: "PUT", path: "/api/v1/activities/{activityId}",
-        didar: "Update Activity — POST /api/activity/save",
+        scope: { write: "activities.fullaccess" }, context: "associationها باید در Runtime Context مجاز باشند.",
+        body: { Activity: { ActivityTypeId: "ACTIVITY_TYPE_ID", Title: "Follow-up call", DealId: "DEAL_ID", OwnerId: "USER_ID", IsDone: false, ContactIds: ["PERSON_ID"] } }, response: "{}" }),
+      build({ id: "activity-update", title: "ویرایش فعالیت", method: "PUT", path: "/api/v1/activities/{activityId}", example: "ACTIVITY_ID",
+        didarPage: "Update-Activity",
         summary: "فعالیت موجود را ویرایش می‌کند. Activity.Id الزامی و برابر route است.",
-        scope: { write: "activities.fullaccess" },
-        context: "associationها باید در Runtime Context مجاز باشند.",
-        params: [idParam("activityId", "شناسه فعالیت؛ باید با Activity.Id برابر باشد."), ...activityCommon(true)],
-        request: sendCurl("PUT", "/api/v1/activities/ACTIVITY_ID",
-          `{ "Activity": { "Id": "ACTIVITY_ID", "ActivityTypeId": "ACTIVITY_TYPE_ID", "Title": "Updated follow-up call", "DealId": "DEAL_ID" } }`),
-        response: envelope(`{ "Id": "ACTIVITY_ID", "ActivityTypeId": "ACTIVITY_TYPE_ID", "Title": "Updated follow-up call", "DealId": "DEAL_ID" }`),
-      },
-      {
-        id: "note-create", title: "ساخت یادداشت", method: "POST", path: "/api/v1/notes",
-        didar: "Create Note — POST /api/activity/save",
+        scope: { write: "activities.fullaccess" }, context: "associationها باید در Runtime Context مجاز باشند.",
+        pathParams: [path("activityId", "شناسه‌ی فعالیت؛ باید با Activity.Id برابر باشد.")],
+        body: { Activity: { Id: "ACTIVITY_ID", ActivityTypeId: "ACTIVITY_TYPE_ID", Title: "Updated follow-up call", DealId: "DEAL_ID" } }, response: "{}" }),
+      build({ id: "note-create", title: "ساخت یادداشت", method: "POST", path: "/api/v1/notes", didarPage: "Create-Note",
         summary: "یادداشت با مدل Activity ارسال می‌شود. ActivityTypeId باید GUID خالی و IsDone الزامی (true) است. متن یادداشت در ResultNote قرار می‌گیرد.",
-        scope: { write: "activities.fullaccess" },
-        context: "associationها باید در Runtime Context مجاز باشند.",
-        params: noteCommon(false),
-        request: sendCurl("POST", "/api/v1/notes",
-          `{ "Activity": { "ActivityTypeId": "00000000-0000-0000-0000-000000000000", "IsDone": true, "DealId": "DEAL_ID", "ResultNote": "Customer requested a follow-up." } }`),
-        response: envelope(`{ "Id": "NOTE_ID", "ActivityTypeId": "00000000-0000-0000-0000-000000000000", "DealId": "DEAL_ID", "ResultNote": "Customer requested a follow-up.", "IsDone": true }`),
-      },
-      {
-        id: "note-update", title: "ویرایش یادداشت", method: "PUT", path: "/api/v1/notes/{noteId}",
-        didar: "Update Note — POST /api/activity/save",
+        scope: { write: "activities.fullaccess" }, context: "associationها باید در Runtime Context مجاز باشند.",
+        body: { Activity: { ActivityTypeId: "00000000-0000-0000-0000-000000000000", IsDone: true, DealId: "DEAL_ID", ResultNote: "Customer requested a follow-up." } }, response: "{}" }),
+      build({ id: "note-update", title: "ویرایش یادداشت", method: "PUT", path: "/api/v1/notes/{noteId}", example: "NOTE_ID",
+        didarPage: "Update-Note",
         summary: "یادداشت موجود را ویرایش می‌کند؛ Activity.Id برابر route است.",
-        scope: { write: "activities.fullaccess" },
-        context: "associationها باید در Runtime Context مجاز باشند.",
-        params: [idParam("noteId", "شناسه یادداشت؛ باید با Activity.Id برابر باشد."), ...noteCommon(true)],
-        request: sendCurl("PUT", "/api/v1/notes/NOTE_ID",
-          `{ "Activity": { "Id": "NOTE_ID", "ActivityTypeId": "00000000-0000-0000-0000-000000000000", "IsDone": true, "DealId": "DEAL_ID", "ResultNote": "Updated note." } }`),
-        response: envelope(`{ "Id": "NOTE_ID", "ActivityTypeId": "00000000-0000-0000-0000-000000000000", "DealId": "DEAL_ID", "ResultNote": "Updated note.", "IsDone": true }`),
-      },
+        scope: { write: "activities.fullaccess" }, context: "associationها باید در Runtime Context مجاز باشند.",
+        pathParams: [path("noteId", "شناسه‌ی یادداشت؛ باید با Activity.Id برابر باشد.")],
+        body: { Activity: { Id: "NOTE_ID", ActivityTypeId: "00000000-0000-0000-0000-000000000000", IsDone: true, DealId: "DEAL_ID", ResultNote: "Updated note." } }, response: "{}" }),
     ],
   },
 ];

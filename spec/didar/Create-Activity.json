@@ -1,0 +1,246 @@
+{
+  "page": "Create-Activity",
+  "title": "Create Activity",
+  "heading": "پارامترهای Query",
+  "intro": "| پارامتر | نوع | وضعیت | توضیح |\n| - | - | - | - |\n| `apikey` | `string` | الزامی | کلید API دیدار. |",
+  "http": "POST {{baseURL}}/api/activity/save?apikey={{API_KEY}}",
+  "params": [
+    {
+      "name": "Activity",
+      "type": "object",
+      "required": true,
+      "sections": [],
+      "description": "اطلاعات فعالیت جدید داخل این آبجکت ارسال می‌شود؛ عنوان، نوع، زمان، مسئول و رکوردهای مرتبط مشخص می‌کنند چه کاری برای چه زمانی و توسط چه کسی انجام شود."
+    },
+    {
+      "name": "Activity.ActivityTypeId",
+      "type": "string",
+      "required": true,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد باید `Id` یکی از نوع‌های فعالیت موجود در دیدار را بگیرد.\n\n* [Activity Type](https://developers.didar.me/Activity-Type.md) — `Id` نوع فعالیت موردنظر را بردارید"
+        }
+      ],
+      "description": "مشخص می‌کند این فعالیت از چه نوعی است؛ مثلا تماس، جلسه یا پیگیری."
+    },
+    {
+      "name": "Activity.Title",
+      "type": "string",
+      "required": true,
+      "sections": [],
+      "description": "عنوان کوتاه فعالیت که به کاربر نمایش داده می‌شود."
+    },
+    {
+      "name": "Activity.OwnerId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد نام کاربر را نمی‌پذیرد؛ باید `UserId` یک User موجود در دیدار را بفرستید.\n\n* [User List](https://developers.didar.me/User-List.md) — مقدار `UserId` کاربر موردنظر را بردارید"
+        }
+      ],
+      "description": "شناسه User مسئول انجام و پیگیری فعالیت است. فعالیت در لیست فعالیت های همین کاربر نمایش داده می‌شود."
+    },
+    {
+      "name": "Activity.Note",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "توضیحات لازم پیش از انجام فعالیت است؛ مثلا موضوع تماس یا نکاتی که مسئول باید هنگام پیگیری بداند."
+    },
+    {
+      "name": "Activity.IsDone",
+      "type": "boolean",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `true` — فعالیت انجام‌شده است\n* `false` — فعالیت هنوز باز است"
+        }
+      ],
+      "description": "مشخص می‌کند فعالیت انجام شده است یا هنوز باز است؛ `true` برای انجام‌شده و `false` برای انجام‌نشده."
+    },
+    {
+      "name": "Activity.ResultNote",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "شرایط ارسال",
+          "md": "برای Activity معمولا زمانی ارسال می‌شود که فعالیت انجام شده و می‌خواهید نتیجه آن را ثبت کنید."
+        }
+      ],
+      "description": "متنی است که نتیجه نهایی فعالیت یا محتوای یادداشت در آن ذخیره می‌شود؛ مثلا «مشتری درخواست پیش‌فاکتور داد»."
+    },
+    {
+      "name": "Activity.IsDeleted",
+      "type": "boolean",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `true` — فعالیت یا یادداشت حذف‌شده در نظر گرفته می‌شود\n* `false` — رکورد حذف‌شده نیست"
+        }
+      ],
+      "description": "مشخص می‌کند فعالیت در وضعیت حذف‌شده قرار دارد یا فعال است."
+    },
+    {
+      "name": "Activity.IsPinned",
+      "type": "boolean",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `true` — رکورد سنجاق می‌شود\n* `false` — رکورد سنجاق نمی‌شود"
+        }
+      ],
+      "description": "مشخص می‌کند فعالیت برای دسترسی سریع در رکورد مرتبط (کارت یا فعالیت) سنجاق شود."
+    },
+    {
+      "name": "Activity.DueDate",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "تاریخ و زمان برنامه‌ریزی‌شده برای انجام فعالیت است."
+    },
+    {
+      "name": "Activity.Duration",
+      "type": "number",
+      "required": false,
+      "sections": [],
+      "description": "مدت زمان فعالیت برحسب دقیقه است و بازه زمانی آن را در تقویم مشخص می‌کند."
+    },
+    {
+      "name": "Activity.DoneDate",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "شرایط ارسال",
+          "md": "زمانی ارسالش کنید که فعالیت انجام شده و `Activity.IsDone` برابر `true` است."
+        }
+      ],
+      "description": "تاریخ و زمانی است که فعالیت واقعا انجام شده است."
+    },
+    {
+      "name": "Activity.DealId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "مقدار این فیلد باید `Id` یک معامله موجود در دیدار باشد.\n\n* [Create Deal](https://developers.didar.me/Create-Deal.md) — اگر معامله هنوز ساخته نشده است\n* [Search Deal](https://developers.didar.me/Search-Deal.md) — برای جست‌وجوی معامله"
+        }
+      ],
+      "description": "شناسه معامله‌ای است که فعالیت باید به آن وصل شود. بعد از اتصال، فعالیت در سابقه همان معامله دیده می‌شود."
+    },
+    {
+      "name": "Activity.CaseId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "مقدار این فیلد باید `Id` یک کارت موجود در دیدار باشد.\n\n* [Create Case](https://developers.didar.me/Create-Case.md) — اگر کارت هنوز ساخته نشده است\n* [Search Case](https://developers.didar.me/Search-Case.md) — برای جست‌وجوی کارت"
+        }
+      ],
+      "description": "شناسه کارتی است که فعالیت یا یادداشت باید به آن وصل شود. بعد از اتصال، رکورد در سابقه همان کارت دیده می‌شود."
+    },
+    {
+      "name": "Activity.ContactIds[]",
+      "type": "array",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "هر مقدار باید `Id` یک شخص یا شرکت موجود در دیدار باشد.\n\n* [Create Person](https://developers.didar.me/Create-Person.md) — ساخت شخص جدید\n* [Get Person By Mobile](https://developers.didar.me/Get-Person-By-Mobile.md) — پیداکردن شخص با موبایل\n* [Search Person](https://developers.didar.me/Search-Person.md) — جست‌وجوی شخص\n* [Create Company](https://developers.didar.me/Create-Company.md) — ساخت شرکت جدید\n* [Search Company](https://developers.didar.me/Search-Company.md) — جست‌وجوی شرکت"
+        }
+      ],
+      "description": "فهرست `Id` اشخاص یا شرکت‌هایی است که این فعالیت یا یادداشت به آن‌ها مربوط می‌شود. رکورد در سابقه مخاطبان انتخاب‌شده هم دیده خواهد شد."
+    },
+    {
+      "name": "Activity.CreatorId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد نام کاربر را نمی‌پذیرد؛ باید `UserId` یک User موجود در دیدار را بفرستید.\n\n* [User List](https://developers.didar.me/User-List.md) — مقدار `UserId` کاربر موردنظر را بردارید"
+        },
+        {
+          "title": "شرایط ارسال",
+          "md": "اگر این فیلد ارسال نشود، ایجادکننده فعالیت مالک بیزدامنه در نظر گرفته می‌شود."
+        }
+      ],
+      "description": "شناسه Userی است که به‌عنوان ایجادکننده فعالیت ثبت می‌شود."
+    },
+    {
+      "name": "Activity.RecurrenceType",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `DontCare` — فعالیت بدون الگوی تکرار\n* `OneTime` — فعالیت فقط یک‌بار انجام می‌شود\n* `Hourly` — تکرار ساعتی\n* `Daily` — تکرار روزانه\n* `Weekly` — تکرار هفتگی\n* `Monthly` — تکرار ماهانه\n* `Yearly` — تکرار سالانه"
+        }
+      ],
+      "description": "الگوی تکرار فعالیت را مشخص می‌کند؛ مثلا یک‌باره، روزانه یا هفتگی."
+    },
+    {
+      "name": "Activity.RecurrenceData",
+      "type": "number",
+      "required": false,
+      "sections": [
+        {
+          "title": "شرایط ارسال",
+          "md": "وقتی `RecurrenceType` یک الگوی تکرارشونده مثل `Daily` یا `Weekly` است، این مقدار فاصله تکرار را مشخص می‌کند."
+        }
+      ],
+      "description": "فاصله تکرار را همراه `RecurrenceType` مشخص می‌کند؛ مثلا `RecurrenceType=Daily` و مقدار `10` یعنی تکرار هر ۱۰ روز."
+    },
+    {
+      "name": "Activity.Tags[]",
+      "type": "array",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد باید `Id` تگ موجود در دیدار را بگیرد.\n\n* [Tags](https://developers.didar.me/Tags.md) — `Id` تگ موردنظر را بردارید"
+        }
+      ],
+      "description": "فهرست تگ‌هایی است که برای دسته‌بندی و پیداکردن سریع‌تر فعالیت یا یادداشت به آن وصل می‌شوند."
+    },
+    {
+      "name": "Activity.Tags[].TagId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد باید `Id` تگ موجود در دیدار را بگیرد.\n\n* [Tags](https://developers.didar.me/Tags.md) — `Id` تگ موردنظر را بردارید"
+        }
+      ],
+      "description": "شناسه تگی است که باید به فعالیت یا یادداشت وصل شود."
+    },
+    {
+      "name": "Activity.RecurrenceEndDate",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "شرایط ارسال",
+          "md": "فقط برای فعالیت تکرارشونده ارسالش کنید؛ برای فعالیت یک‌باره نیازی به آن نیست."
+        }
+      ],
+      "description": "آخرین تاریخی است که تکرار فعالیت تا آن ادامه دارد."
+    }
+  ],
+  "rules": [],
+  "related": [],
+  "requestBody": "{\n  \"Activity\": {\n    \"ActivityTypeId\": \"634b654c-b65a-4702-921e-6c3bc241aec1\",\n    \"Title\": \"32131321\",\n    \"OwnerId\": \"f1599895-3d58-44a8-a830-e77b42d8e4c6\",\n    \"Note\": \"توضیحات فاکتور و پیش فاکتور در این جا است \",\n    \"IsDone\": false,\n    \"ResultNote\": \"متن یاداشت را وارد کنید\",\n    \"IsDeleted\": false,\n    \"IsPinned\": true,\n    \"DueDate\": \"2024-05-14T07:30:00.000Z\",\n    \"Duration\": 0,\n    \"DoneDate\": \"2025-05-14T07:30:00.000Z\",\n    \"DealId\": \"b96eeffe-9baa-4fac-99d2-772415957ff0\",\n    \"CaseId\": \"348d182c-8311-4abf-aa92-a1f2248f1192\",\n    \"ContactIds\": [\n      \"56620317-b415-4673-a2a5-6d20a7d12b00\",\n      \"44cb2f3f-9a52-4f16-a6e3-e0d725349647\"\n    ],\n    \"CreatorId\": \"\",\n    \"RecurrenceType\": \"OneTime\",\n    \"RecurrenceData\": 1,\n    \"RecurrenceEndDate\": \"2023-03-14T07:30:00.000Z\",\n    \"Tags\": [\n            {\n                \"TagId\": \"f76826cd-4917-4866-a235-2ab66d17faea\"\n            },\n            {\n                \"TagId\": \"3e0efd9c-fc6f-404b-872e-36af87182db0\"\n            }\n        ],\n  }\n}",
+  "curl": "curl --location '{{baseURL}}/api/activity/save?apikey={{API_KEY}}' \\\n--header 'Content-Type: application/json' \\\n--data '{\n  \"Activity\": {\n    \"ActivityTypeId\": \"634b654c-b65a-4702-921e-6c3bc241aec1\",\n    \"Title\": \"32131321\",\n    \"OwnerId\": \"f1599895-3d58-44a8-a830-e77b42d8e4c6\",\n    \"Note\": \"توضیحات فاکتور و پیش فاکتور در این جا است \",\n    \"IsDone\": false,\n    \"ResultNote\": \"متن یاداشت را وارد کنید\",\n    \"IsDeleted\": false,\n    \"IsPinned\": true,\n    \"DueDate\": \"2024-05-14T07:30:00.000Z\",\n    \"Duration\": 0,\n    \"DoneDate\": \"2025-05-14T07:30:00.000Z\",\n    \"DealId\": \"b96eeffe-9baa-4fac-99d2-772415957ff0\",\n    \"CaseId\": \"348d182c-8311-4abf-aa92-a1f2248f1192\",\n    \"ContactIds\": [\n      \"56620317-b415-4673-a2a5-6d20a7d12b00\",\n      \"44cb2f3f-9a52-4f16-a6e3-e0d725349647\"\n    ],\n    \"CreatorId\": \"\",\n    \"RecurrenceType\": \"OneTime\",\n    \"RecurrenceData\": 1,\n    \"RecurrenceEndDate\": \"2023-03-14T07:30:00.000Z\",\n    \"Tags\": [\n            {\n                \"TagId\": \"f76826cd-4917-4866-a235-2ab66d17faea\"\n            },\n            {\n                \"TagId\": \"3e0efd9c-fc6f-404b-872e-36af87182db0\"\n            }\n        ],\n  }\n}'",
+  "response": "{\n  \"Response\": {\n    \"Id\": \"8c7b6390-6ae4-455b-a1d9-0a9ebd072854\",\n    \"Title\": \"گوگل1\",\n    \"Note\": \"\",\n    \"ResultNote\": \"متن یاداشت را وارد کنید\",\n    \"ActivityTypeId\": \"b9876107-44ea-4dbf-bbfb-2ee9fbcc597c\",\n    \"IsPrivate\": false,\n    \"IsDone\": false,\n    \"IsPinned\": false,\n    \"IsDeleted\": false,\n    \"IsKeepInTouch\": false,\n    \"DueDateType\": \"NoTime\",\n    \"DueDate\": \"2023-03-14T07:30:00Z\",\n    \"FinishDate\": \"2023-03-15T00:00:00Z\",\n    \"OriginalDueDate\": \"2023-03-14T07:57:35.6222528Z\",\n    \"DoneDate\": \"2023-03-14T07:30:00Z\",\n    \"RegisterDate\": \"2023-03-14T07:57:35.6222528Z\",\n    \"LastUpdateTime\": \"2023-03-14T07:57:35.6222528Z\",\n    \"LastPokeDate\": \"2023-03-14T07:57:35.6222528Z\",\n    \"Duration\": 0,\n    \"DealId\": \"d6afde96-36f7-4d85-a5f4-00006e62adde\",\n    \"CaseId\": \"00000000-0000-0000-0000-000000000000\",\n    \"TicketId\": \"00000000-0000-0000-0000-000000000000\",\n    \"CreatorId\": \"f677929c-0f9a-4570-8234-c5b6ac20b892\",\n    \"OwnerId\": \"f677929c-0f9a-4570-8234-c5b6ac20b892\",\n    \"UpdaterId\": \"f677929c-0f9a-4570-8234-c5b6ac20b892\",\n    \"ActivityGroupId\": \"00000000-0000-0000-0000-000000000000\",\n    \"RecurrenceType\": \"OneTime\",\n    \"RecurrenceData\": 1,\n    \"RecurrenceEndDate\": \"2023-03-14T07:30:00Z\",\n    \"FeedbackType\": \"Neutral\",\n    \"NextOccurrence\": \"0001-01-01T00:00:00Z\",\n    \"CanPoke\": false,\n    \"IsAttended\": false,\n    \"Deal\": null,\n    \"Case\": null,\n    \"Contacts\": [\n      {\n        \"ContactId\": \"bdfaf004-2ad3-47cb-89b9-0002fe5e5678\",\n        \"ActivityId\": \"5abb6a62-6f41-4f5a-ac01-7123dce4a5de\",\n        \"Status\": \"Accepted\",\n        \"Message\": null,\n        \"Contact\": null\n      }\n    ],\n    \"Creator\": {\n      \"UserId\": \"f677929c-0f9a-4570-8234-c5b6ac20b892\",\n      \"DisplayName\": \"نگین عابدیان\",\n      \"PictureUrl\": \"/PortalData/Subsystems/Profile/UserPics/e326b384-94d1-41fa-a5cb-8845181be7d8.jpg\",\n      \"Email\": \"abediannegin@gmail.com\"\n    },\n    \"Owner\": {\n      \"UserId\": \"f677929c-0f9a-4570-8234-c5b6ac20b892\",\n      \"DisplayName\": \"نگین عابدیان\",\n      \"PictureUrl\": \"/PortalData/Subsystems/Profile/UserPics/e326b384-94d1-41fa-a5cb-8845181be7d8.jpg\",\n      \"Email\": \"abediannegin@gmail.com\"\n    },\n    \"Users\": [],\n    \"Notifies\": [],\n    \"Comments\": [],\n    \"Attachments\": [],\n    \"Tags\": [\n            {\n                \"ActivityId\": \"00000000-0000-0000-0000-000000000000\",\n                \"TagId\": \"f76826cd-4917-4866-a235-2ab66d17faea\"\n            },\n            {\n                \"ActivityId\": \"00000000-0000-0000-0000-000000000000\",\n                \"TagId\": \"3e0efd9c-fc6f-404b-872e-36af87182db0\"\n            }\n\t\t],\n    \"CanEdit\": true,\n    \"CanDelete\": true,\n    \"CanDone\": true,\n    \"ActivityTicketStatus\": \"NotAnswered\",\n    \"IsTicket\": false\n  }\n}",
+  "source": "https://developers.didar.me/Create-Activity"
+}

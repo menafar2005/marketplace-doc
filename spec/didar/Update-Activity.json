@@ -1,0 +1,260 @@
+{
+  "page": "Update-Activity",
+  "title": "Update Activity",
+  "heading": "پارامترهای Query",
+  "intro": "| پارامتر | نوع | وضعیت | توضیح |\n| - | - | - | - |\n| `apikey` | `string` | الزامی | کلید API دیدار. |",
+  "http": "POST {{baseURL}}/api/activity/save?apikey={{API_KEY}}",
+  "params": [
+    {
+      "name": "Activity",
+      "type": "object",
+      "required": true,
+      "sections": [],
+      "description": "اطلاعات فعالیت داخل این آبجکت ارسال می‌شود؛ عنوان، نوع، زمان، مسئول و رکوردهای مرتبط مشخص می‌کنند چه کاری برای چه زمانی و توسط چه کسی انجام شود."
+    },
+    {
+      "name": "Activity.Id",
+      "type": "string",
+      "required": true,
+      "sections": [],
+      "description": "شناسه فعالیتی است که میخواهید آن را ویرایش کنید."
+    },
+    {
+      "name": "Activity.ActivityTypeId",
+      "type": "string",
+      "required": true,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد باید `Id` یکی از نوع‌های فعالیت موجود در دیدار را بگیرد.\n\n* [Activity Type](https://developers.didar.me/Activity-Type.md) — `Id` نوع فعالیت موردنظر را بردارید"
+        }
+      ],
+      "description": "مشخص می‌کند این فعالیت از چه نوعی است؛ مثلا تماس، جلسه یا پیگیری."
+    },
+    {
+      "name": "Activity.Title",
+      "type": "string",
+      "required": true,
+      "sections": [],
+      "description": "عنوان کوتاه فعالیت که به کاربر نمایش داده می‌شود."
+    },
+    {
+      "name": "Activity.OwnerId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد نام کاربر را نمی‌پذیرد؛ باید `UserId` یک User موجود در دیدار را بفرستید.\n\n* [User List](https://developers.didar.me/User-List.md) — مقدار `UserId` کاربر موردنظر را بردارید"
+        }
+      ],
+      "description": "شناسه User مسئول انجام و پیگیری فعالیت است. فعالیت در لیست فعالیت های همین کاربر نمایش داده می‌شود."
+    },
+    {
+      "name": "Activity.Note",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "توضیحات لازم پیش از انجام فعالیت است؛ مثلا موضوع تماس یا نکاتی که مسئول باید هنگام پیگیری بداند."
+    },
+    {
+      "name": "Activity.IsDone",
+      "type": "boolean",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `true` — فعالیت انجام‌شده است\n* `false` — فعالیت هنوز باز است"
+        }
+      ],
+      "description": "مشخص می‌کند فعالیت انجام شده است یا هنوز باز است؛ `true` برای انجام‌شده و `false` برای انجام‌نشده."
+    },
+    {
+      "name": "Activity.ResultNote",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "شرایط ارسال",
+          "md": "برای Activity معمولا زمانی ارسال می‌شود که فعالیت انجام شده و می‌خواهید نتیجه آن را ثبت کنید."
+        }
+      ],
+      "description": "متنی است که نتیجه نهایی فعالیت یا محتوای یادداشت در آن ذخیره می‌شود؛ مثلا «مشتری درخواست پیش‌فاکتور داد»."
+    },
+    {
+      "name": "Activity.IsDeleted",
+      "type": "boolean",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `true` — فعالیت یا یادداشت حذف‌شده در نظر گرفته می‌شود\n* `false` — رکورد حذف‌شده نیست"
+        }
+      ],
+      "description": "مشخص می‌کند فعالیت در وضعیت حذف‌شده قرار دارد یا فعال است."
+    },
+    {
+      "name": "Activity.IsPinned",
+      "type": "boolean",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `true` — رکورد سنجاق می‌شود\n* `false` — رکورد سنجاق نمی‌شود"
+        }
+      ],
+      "description": "مشخص می‌کند فعالیت برای دسترسی سریع در رکورد مرتبط (کارت یا فعالیت) سنجاق شود."
+    },
+    {
+      "name": "Activity.DueDate",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "تاریخ و زمان برنامه‌ریزی‌شده برای انجام فعالیت است."
+    },
+    {
+      "name": "Activity.Duration",
+      "type": "number",
+      "required": false,
+      "sections": [],
+      "description": "مدت زمان فعالیت برحسب دقیقه است و بازه زمانی آن را در تقویم مشخص می‌کند."
+    },
+    {
+      "name": "Activity.DoneDate",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "شرایط ارسال",
+          "md": "زمانی ارسالش کنید که فعالیت انجام شده و `Activity.IsDone` برابر `true` است."
+        }
+      ],
+      "description": "تاریخ و زمانی است که فعالیت واقعا انجام شده است."
+    },
+    {
+      "name": "Activity.DealId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "مقدار این فیلد باید `Id` یک معامله موجود در دیدار باشد.\n\n* [Create Deal](https://developers.didar.me/Create-Deal.md) — اگر معامله هنوز ساخته نشده است\n* [Search Deal](https://developers.didar.me/Search-Deal.md) — برای جست‌وجوی معامله"
+        }
+      ],
+      "description": "شناسه معامله‌ای است که فعالیت باید به آن وصل شود. بعد از اتصال، فعالیت در سابقه همان معامله دیده می‌شود."
+    },
+    {
+      "name": "Activity.CaseId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "مقدار این فیلد باید `Id` یک کارت موجود در دیدار باشد.\n\n* [Create Case](https://developers.didar.me/Create-Case.md) — اگر کارت هنوز ساخته نشده است\n* [Search Case](https://developers.didar.me/Search-Case.md) — برای جست‌وجوی کارت"
+        }
+      ],
+      "description": "شناسه کارتی است که فعالیت یا یادداشت باید به آن وصل شود. بعد از اتصال، رکورد در سابقه همان کارت دیده می‌شود."
+    },
+    {
+      "name": "Activity.ContactIds[]",
+      "type": "array",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "هر مقدار باید `Id` یک شخص یا شرکت موجود در دیدار باشد.\n\n* [Create Person](https://developers.didar.me/Create-Person.md) — ساخت شخص جدید\n* [Get Person By Mobile](https://developers.didar.me/Get-Person-By-Mobile.md) — پیداکردن شخص با موبایل\n* [Search Person](https://developers.didar.me/Search-Person.md) — جست‌وجوی شخص\n* [Create Company](https://developers.didar.me/Create-Company.md) — ساخت شرکت جدید\n* [Search Company](https://developers.didar.me/Search-Company.md) — جست‌وجوی شرکت"
+        }
+      ],
+      "description": "فهرست `Id` اشخاص یا شرکت‌هایی است که این فعالیت یا یادداشت به آن‌ها مربوط می‌شود. رکورد در سابقه مخاطبان انتخاب‌شده هم دیده خواهد شد."
+    },
+    {
+      "name": "Activity.CreatorId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد نام کاربر را نمی‌پذیرد؛ باید `UserId` یک User موجود در دیدار را بفرستید.\n\n* [User List](https://developers.didar.me/User-List.md) — مقدار `UserId` کاربر موردنظر را بردارید"
+        },
+        {
+          "title": "شرایط ارسال",
+          "md": "اگر این فیلد ارسال نشود، ایجادکننده فعالیت مالک بیزدامنه در نظر گرفته می‌شود."
+        }
+      ],
+      "description": "شناسه Userی است که به‌عنوان ایجادکننده فعالیت ثبت می‌شود."
+    },
+    {
+      "name": "Activity.RecurrenceType",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `DontCare` — فعالیت بدون الگوی تکرار\n* `OneTime` — فعالیت فقط یک‌بار انجام می‌شود\n* `Hourly` — تکرار ساعتی\n* `Daily` — تکرار روزانه\n* `Weekly` — تکرار هفتگی\n* `Monthly` — تکرار ماهانه\n* `Yearly` — تکرار سالانه"
+        }
+      ],
+      "description": "الگوی تکرار فعالیت را مشخص می‌کند؛ مثلا یک‌باره، روزانه یا هفتگی."
+    },
+    {
+      "name": "Activity.RecurrenceData",
+      "type": "number",
+      "required": false,
+      "sections": [
+        {
+          "title": "شرایط ارسال",
+          "md": "وقتی `RecurrenceType` یک الگوی تکرارشونده مثل `Daily` یا `Weekly` است، این مقدار فاصله تکرار را مشخص می‌کند."
+        }
+      ],
+      "description": "فاصله تکرار را همراه `RecurrenceType` مشخص می‌کند؛ مثلا `RecurrenceType=Daily` و مقدار `10` یعنی تکرار هر ۱۰ روز."
+    },
+    {
+      "name": "Activity.Tags[]",
+      "type": "array",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد باید `Id` تگ موجود در دیدار را بگیرد.\n\n* [Tags](https://developers.didar.me/Tags.md) — `Id` تگ موردنظر را بردارید"
+        }
+      ],
+      "description": "فهرست تگ‌هایی است که برای دسته‌بندی و پیداکردن سریع‌تر فعالیت یا یادداشت به آن وصل می‌شوند."
+    },
+    {
+      "name": "Activity.Tags[].TagId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد باید `Id` تگ موجود در دیدار را بگیرد.\n\n* [Tags](https://developers.didar.me/Tags.md) — `Id` تگ موردنظر را بردارید"
+        }
+      ],
+      "description": "شناسه تگی است که باید به فعالیت یا یادداشت وصل شود."
+    },
+    {
+      "name": "Activity.RecurrenceEndDate",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "شرایط ارسال",
+          "md": "فقط برای فعالیت تکرارشونده ارسالش کنید؛ برای فعالیت یک‌باره نیازی به آن نیست.\n\n\n\n\n\\"
+        }
+      ],
+      "description": "آخرین تاریخی است که تکرار فعالیت تا آن ادامه دارد."
+    },
+    {
+      "name": "قواعد و محدودیت‌ها",
+      "type": "",
+      "required": false,
+      "sections": [],
+      "description": "----------------------\n\n* آپدیت به این صورت است که فقط فیلد Id اجباری است و مابقی فیلد ها اگر ارسال نشوند به مقدار اولیه و پیشفرض خود برمیگردند. (هر فیلدی که قصد دارید ویرایش نشود باید مقدار آن فیلد را دقیقا طبق مقداری که در حالت قبل از ویرایش بوده پر بکنید)\n\n\nThis documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform."
+    }
+  ],
+  "rules": [],
+  "related": [],
+  "requestBody": "{\n  \"Activity\": {\n    \"Id\": \"9fe89a5e-21a5-4ce3-a531-fee2d70326b4\",\n    \"ActivityTypeId\": \"9c691370-f294-4e6b-aad0-b19b3696a0ad\",\n    \"Title\": \"323232\",\n    \"OwnerId\": \"4db21997-a5f7-4e52-83dc-403c3b29c3ef\",\n    \"Note\": \"توضیحات فاکتور و پیش فاکتور در این جا است \",\n    \"IsDone\": true,\n    \"ResultNote\": \"متن یاداشت را وارد کنید\",\n    \"IsDeleted\": false,\n    \"IsPinned\": true,\n    \"DueDate\": \"2024-05-14T07:30:00.000Z\",\n    \"Duration\": 0,\n    \"DoneDate\": \"2025-05-14T07:30:00.000Z\",\n    \"DealId\": null,\n    \"CaseId\": \"00000000-0000-0000-0000-000000000000\",\n    \"ContactIds\": [\n      \"56620317-b415-4673-a2a5-6d20a7d12b00\",\n      \"44cb2f3f-9a52-4f16-a6e3-e0d725349647\"\n    ],\n    \"CreatorId\": \"c167f254-cf59-47df-b166-8398fc3864bf\",\n    \"RecurrenceType\": \"OneTime\",\n    \"RecurrenceData\": 1,\n    \"RecurrenceEndDate\": \"2023-03-14T07:30:00.000Z\"\n  }\n}",
+  "curl": "curl --location 'https://app.didar.me/api/activity/save?apikey=5xk2y6ua5vswf5d6a6ig1vk3vw8ee3ur' \\\n--header 'Content-Type: application/json' \\\n--header 'Cookie: LocoAuthCookie=9bead3da-a0d6-4670-8336-bd2d0b9a6615' \\\n--data '{\n  \"Activity\": {\n    \"Id\": \"9fe89a5e-21a5-4ce3-a531-fee2d70326b4\",\n    \"ActivityTypeId\": \"9c691370-f294-4e6b-aad0-b19b3696a0ad\",\n    \"Title\": \"323232\",\n    \"OwnerId\": \"4db21997-a5f7-4e52-83dc-403c3b29c3ef\",\n    \"Note\": \"توضیحات فاکتور و پیش فاکتور در این جا است \",\n    \"IsDone\": true,\n    \"ResultNote\": \"متن یاداشت را وارد کنید\",\n    \"IsDeleted\": false,\n    \"IsPinned\": true,\n    \"DueDate\": \"2024-05-14T07:30:00.000Z\",\n    \"Duration\": 0,\n    \"DoneDate\": \"2025-05-14T07:30:00.000Z\",\n    \"DealId\": null,\n    \"CaseId\": \"00000000-0000-0000-0000-000000000000\",\n    \"ContactIds\": [\n      \"56620317-b415-4673-a2a5-6d20a7d12b00\",\n      \"44cb2f3f-9a52-4f16-a6e3-e0d725349647\"\n    ],\n    \"CreatorId\": \"c167f254-cf59-47df-b166-8398fc3864bf\",\n    \"RecurrenceType\": \"OneTime\",\n    \"RecurrenceData\": 1,\n    \"RecurrenceEndDate\": \"2023-03-14T07:30:00.000Z\"\n  }\n}'",
+  "response": "{\n    \"Response\": {\n        \"Id\": \"9fe89a5e-21a5-4ce3-a531-fee2d70326b4\",\n        \"Title\": \"323232\",\n        \"Note\": \"توضیحات فاکتور و پیش فاکتور در این جا است \",\n        \"ResultNote\": \"متن یاداشت را وارد کنید\",\n        \"ActivityTypeId\": \"9c691370-f294-4e6b-aad0-b19b3696a0ad\",\n        \"IsPrivate\": false,\n        \"IsDone\": true,\n        \"IsPinned\": true,\n        \"IsDeleted\": false,\n        \"IsKeepInTouch\": false,\n        \"DueDateType\": \"Default\",\n        \"DueDate\": \"2024-05-14T07:30:00Z\",\n        \"FinishDate\": \"2024-05-14T07:30:00Z\",\n        \"OriginalDueDate\": \"2026-07-27T13:25:09.9593749Z\",\n        \"DoneDate\": \"2025-05-14T07:30:00Z\",\n        \"RegisterDate\": \"2026-07-27T13:25:09.9593749Z\",\n        \"LastUpdateTime\": \"2026-07-27T13:25:09.9593749Z\",\n        \"LastPokeDate\": \"2026-07-27T13:25:09.9593749Z\",\n        \"Duration\": 0,\n        \"DealId\": \"00000000-0000-0000-0000-000000000000\",\n        \"CaseId\": \"00000000-0000-0000-0000-000000000000\",\n        \"TicketId\": \"00000000-0000-0000-0000-000000000000\",\n        \"CreatorId\": \"c167f254-cf59-47df-b166-8398fc3864bf\",\n        \"OwnerId\": \"4db21997-a5f7-4e52-83dc-403c3b29c3ef\",\n        \"UpdaterId\": \"00000000-0000-0000-0000-000000000000\",\n        \"ActivityGroupId\": \"9fe89a5e-21a5-4ce3-a531-fee2d70326b4\",\n        \"RecurrenceType\": \"OneTime\",\n        \"RecurrenceData\": 1,\n        \"RecurrenceEndDate\": \"2023-03-14T07:30:00Z\",\n        \"FeedbackType\": \"Neutral\",\n        \"NextOccurrence\": \"0001-01-01T00:00:00Z\",\n        \"CanPoke\": false,\n        \"IsAttended\": false,\n        \"Deal\": null,\n        \"Case\": null,\n        \"Contacts\": [\n            {\n                \"ContactId\": \"56620317-b415-4673-a2a5-6d20a7d12b00\",\n                \"ActivityId\": \"9fe89a5e-21a5-4ce3-a531-fee2d70326b4\",\n                \"Status\": \"Accepted\",\n                \"Message\": \"\",\n                \"Contact\": {\n                    \"Id\": \"56620317-b415-4673-a2a5-6d20a7d12b00\",\n                    \"Title\": \"\",\n                    \"FirstName\": \"12\",\n                    \"LastName\": \"\",\n                    \"WorkPhone\": \"\",\n                    \"MobilePhone\": \"\",\n                    \"Type\": \"Company\",\n                    \"DisplayName\": \"12 [حذف شده] \"\n                }\n            },\n            {\n                \"ContactId\": \"44cb2f3f-9a52-4f16-a6e3-e0d725349647\",\n                \"ActivityId\": \"9fe89a5e-21a5-4ce3-a531-fee2d70326b4\",\n                \"Status\": \"Accepted\",\n                \"Message\": \"\",\n                \"Contact\": {\n                    \"Id\": \"44cb2f3f-9a52-4f16-a6e3-e0d725349647\",\n                    \"Title\": \"\",\n                    \"FirstName\": \"\",\n                    \"LastName\": \"آشنا\",\n                    \"WorkPhone\": \"\",\n                    \"MobilePhone\": \"\",\n                    \"Type\": \"Person\",\n                    \"DisplayName\": \"آشنا\"\n                }\n            }\n        ],\n        \"Creator\": {\n            \"UserId\": \"c167f254-cf59-47df-b166-8398fc3864bf\",\n            \"DisplayName\": \"ایمان بهبودی\",\n            \"PictureUrl\": \"/PortalData/Subsystems/Profile/UserPics/b1c6c56c-44a1-4d81-8a5f-a07d5620d007.jpg\",\n            \"Email\": \"behboudi@yahoo.com\"\n        },\n        \"Owner\": {\n            \"UserId\": \"4db21997-a5f7-4e52-83dc-403c3b29c3ef\",\n            \"DisplayName\": \" ناصر ابراهیمی\",\n            \"PictureUrl\": \"/PortalData/Subsystems/Profile/UserPics/nopicture.png\",\n            \"Email\": \"iransd.com@gmail.com\"\n        },\n        \"Users\": [],\n        \"Notifies\": [],\n        \"Comments\": [],\n        \"Attachments\": [],\n        \"Voices\": [],\n        \"Voips\": [],\n        \"Tags\": [],\n        \"CanEdit\": true,\n        \"CanDelete\": true,\n        \"CanDone\": false,\n        \"ActivityTicketStatus\": \"NotAnswered\",\n        \"IsTicket\": false,\n        \"OwnerId_Old\": \"f1599895-3d58-44a8-a830-e77b42d8e4c6\",\n        \"ActivityGroupType\": \"Default\"\n    }\n}",
+  "source": "https://developers.didar.me/Update-Activity"
+}

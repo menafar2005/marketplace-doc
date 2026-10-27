@@ -32,6 +32,14 @@ export const clientJs = `
       if ($all(".cb-tab", tab.closest(".cb")).length > 1) store.set("codeTab", label);
       return;
     }
+    var epb = e.target.closest && e.target.closest(".ep-copy");
+    if (epb && navigator.clipboard) {
+      navigator.clipboard.writeText(epb.getAttribute("data-copy")).then(function () {
+        epb.classList.add("copied");
+        setTimeout(function () { epb.classList.remove("copied"); }, 1500);
+      }, function () {});
+      return;
+    }
     var btn = e.target.closest && e.target.closest(".cb-copy");
     if (btn) {
       var pre = $(".cb-panel:not([hidden])", btn.closest(".cb"));

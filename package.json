@@ -6,6 +6,7 @@
   "description": "Didar Marketplace developer docs + MCP server, deployed as a Cloudflare Worker.",
   "scripts": {
     "build": "node scripts/build.mjs",
+    "sync:didar": "node scripts/sync-didar.mjs",
     "dev": "npm run build && wrangler dev",
     "test": "node --test scripts/docs.test.mjs",
     "deploy": "wrangler deploy"

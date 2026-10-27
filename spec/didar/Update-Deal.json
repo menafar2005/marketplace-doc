@@ -1,0 +1,407 @@
+{
+  "page": "Update-Deal",
+  "title": "Update Deal",
+  "heading": "ویرایش معامله",
+  "intro": "با این Endpoint می‌توانید اطلاعات یا وضعیت یک معامله موجود را تغییر دهید. برای مثال می‌توانید معامله را به مرحله دیگری ببرید، مسئول یا مبلغ آن را تغییر دهید، آن را برنده یا شکست‌خورده کنید یا محصولات مرتبطش را به‌روزرسانی کنید.",
+  "http": "POST {{baseURL}}/api/deal/save_v2?apikey={{API_KEY}}",
+  "params": [
+    {
+      "name": "Deal",
+      "type": "object",
+      "required": true,
+      "sections": [],
+      "description": "اطلاعات معامله داخل این آبجکت ارسال می‌شود."
+    },
+    {
+      "name": "Deal.Id",
+      "type": "string",
+      "required": true,
+      "sections": [],
+      "description": "در این فیلد باید شناسه معامله ای راقرار دهید که می خواهید ویرایش کنید"
+    },
+    {
+      "name": "Deal.Title",
+      "type": "string",
+      "required": true,
+      "sections": [],
+      "description": "عنوان معامله که در کارت معامله، فهرست معاملات نمایش داده می‌شود."
+    },
+    {
+      "name": "Deal.Description",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "توضیحات تکمیلی معامله برای ثبت زمینه فروش، نیاز مشتری یا نکات پیگیری."
+    },
+    {
+      "name": "Deal.PersonId",
+      "type": "string",
+      "required": true,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد نام یا موبایل شخص را نمی‌پذیرد؛ باید `Id` شخص موجود در دیدار را بفرستید.\n\n* [Create Person](https://developers.didar.me/Create-Person.md) — اگر شخص هنوز در دیدار ساخته نشده است\n* [Get Person By Id](https://developers.didar.me/Get-Person-By-Id.md) — اگر `Id` شخص را دارید\n* [Get Person By Mobile](https://developers.didar.me/Get-Person-By-Mobile.md) — اگر شماره موبایل شخص را دارید\n* [Search Person](https://developers.didar.me/Search-Person.md) — برای جست‌وجوی شخص"
+        }
+      ],
+      "description": "شناسه شخص اصلی طرف معامله است. این فیلد مشخص می‌کند فروش یا مذاکره با کدام شخص در جریان است."
+    },
+    {
+      "name": "Deal.CompanyId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد نام شرکت را نمی‌پذیرد؛ باید `Id` شرکت موجود در دیدار را بفرستید.\n\n* [Create Company](https://developers.didar.me/Create-Company.md) — اگر شرکت هنوز ساخته نشده است\n* [Get Company By Id](https://developers.didar.me/Get-Company-By-Id.md) — اگر `Id` شرکت را دارید\n* [Search Company](https://developers.didar.me/Search-Company.md) — برای جست‌وجوی شرکت"
+        }
+      ],
+      "description": "شناسه شرکتی است که معامله به آن مربوط می‌شود؛ مثلا شرکتی که شخص اصلی معامله در آن کار می‌کند یا خرید برای آن انجام می‌شود."
+    },
+    {
+      "name": "Deal.PipelineId",
+      "type": "string",
+      "required": true,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "شناسه کاریز و مرحله باید متعلق به ساختار کاریزهای معامله در همین اکانت باشد.\n\n* [List Deal Pipelines](https://developers.didar.me/List-Deal-Pipelines.md) — `Response[].Id` شناسه کاریز و `Response[].Stages[].Id` شناسه مرحله است"
+        }
+      ],
+      "description": "شناسه کاریزی است که معامله باید داخل آن قرار بگیرد؛ مثلا کاریز فروش سازمانی یا فروش آنلاین."
+    },
+    {
+      "name": "Deal.PipelineStageId",
+      "type": "string",
+      "required": true,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "شناسه کاریز و مرحله باید متعلق به ساختار کاریزهای معامله در همین اکانت باشد.\n\n* [List Deal Pipelines](https://developers.didar.me/List-Deal-Pipelines.md) — `Response[].Id` شناسه کاریز و `Response[].Stages[].Id` شناسه مرحله است"
+        }
+      ],
+      "description": "شناسه مرحله‌ای از کاریز معامله است و جای فعلی معامله را در فرایند فروش مشخص می‌کند؛ مثلا «ارسال پیشنهاد»."
+    },
+    {
+      "name": "Deal.OwnerId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد نام کاربر را نمی‌پذیرد؛ باید `UserId` یک User موجود در دیدار را بفرستید.\n\n* [User List](https://developers.didar.me/User-List.md) — مقدار `UserId` کاربر موردنظر را بردارید"
+        }
+      ],
+      "description": "شناسه User مسئول پیگیری و پیش‌برد معامله است."
+    },
+    {
+      "name": "Deal.Status",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `Pending` — معامله باز و در جریان است؛ مقدار پیش‌فرض\n* `Won` — معامله موفق شده است\n* `Lost` — معامله شکست خورده است"
+        }
+      ],
+      "description": "وضعیت چرخه عمر معامله، مانند باز، موفق یا ناموفق."
+    },
+    {
+      "name": "Deal.Price",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "مبلغ معامله؛ ارزش مالی فعلی معامله را برای گزارش‌ها و پیش‌بینی فروش تعیین می‌کند."
+    },
+    {
+      "name": "Deal.LabelIds[]",
+      "type": "array",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "هر مقدار باید `Id` یکی از برچسب‌های معامله باشد.\n\n* [Deal Labels](https://developers.didar.me/Deal-Labels.md) — `Id` برچسب معامله را بردارید"
+        }
+      ],
+      "description": "فهرست شناسه برچسب‌هایی است که باید به معامله وصل شوند؛ مثلا «مهم» یا «نیاز به پیگیری مدیر»."
+    },
+    {
+      "name": "Deal.SourceId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد باید `Id` یکی از منابع تعریف‌شده در دیدار را بگیرد.\n\n* [Sources](https://developers.didar.me/Sources.md) — `Id` منبع موردنظر را بردارید"
+        }
+      ],
+      "description": "شناسه نحوه آشنایی معامله است و نشان می‌دهد این فرصت فروش از چه کانالی وارد شده و این معامله از چه طریقی ایجاد شده؛ مثلا سایت، تبلیغات یا معرفی دوستان."
+    },
+    {
+      "name": "Deal.SourceOther",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "شرایط ارسال",
+          "md": "زمانی استفاده کنید که منبع موردنظر در فهرست Sources وجود ندارد."
+        }
+      ],
+      "description": "اگر منبع جذب موردنظر در فهرست منابع تعریف‌شده وجود ندارد، عنوان منبع را در این فیلد بفرستید."
+    },
+    {
+      "name": "Deal.ReferrerId",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "شناسه معرف معامله؛ برای ثبت فرد یا رکوردی که این فرصت فروش را معرفی کرده است."
+    },
+    {
+      "name": "Deal.ExpectedCloseDate",
+      "type": "null",
+      "required": false,
+      "sections": [],
+      "description": "تاریخ مورد انتظار برای نهایی‌شدن معامله؛ در برنامه‌ریزی و پیش‌بینی فروش استفاده می‌شود."
+    },
+    {
+      "name": "Deal.LostReasonId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد باید `Id` یکی از دلایل شکست تعریف‌شده در دیدار را بگیرد.\n\n* [Lost Reasons](https://developers.didar.me/Lost-Reasons.md) — `Id` دلیل شکست موردنظر را بردارید"
+        },
+        {
+          "title": "شرایط ارسال",
+          "md": "فقط زمانی ارسالش کنید که `Deal.Status` برابر `Lost` است و دلیل شکست از قبل در دیدار تعریف شده است."
+        }
+      ],
+      "description": "شناسه یکی از دلایل شکست تعریف‌شده در دیدار است و مشخص می‌کند معامله چرا ناموفق شده است."
+    },
+    {
+      "name": "Deal.LostReasonNote",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "شرایط ارسال",
+          "md": "این فیلد زمانی معنا دارد که معامله شکست خورده باشد و بخواهید جزئیات بیشتری کنار دلیل شکست ثبت کنید."
+        }
+      ],
+      "description": "توضیح تکمیلی درباره دلیل شکست معامله است؛ مثلا جزئیاتی که از انتخاب `LostReasonId` به‌تنهایی مشخص نمی‌شود."
+    },
+    {
+      "name": "Deal.LostReasonOther",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "شرایط ارسال",
+          "md": "فقط زمانی استفاده کنید که معامله شکست خورده و دلیل مناسب در فهرست دلایل شکست پیدا نمی‌شود."
+        }
+      ],
+      "description": "اگر دلیل شکست موردنظر در فهرست دلایل تعریف‌شده وجود ندارد، متن دلیل جدید را در این فیلد بفرستید."
+    },
+    {
+      "name": "Deal.VisibilityType",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "سطح مشاهده معامله؛ مشخص می‌کند چه کاربران یا گروه‌هایی بر اساس قواعد دسترسی امکان دیدن آن را دارند."
+    },
+    {
+      "name": "Deal.CurrencyId",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "شناسه ارز مبالغ معامله."
+    },
+    {
+      "name": "Deal.Fields[]",
+      "type": "object",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "فقط از کلید Custom Fieldهایی استفاده کنید که برای معامله تعریف شده‌اند.\n\n* [Get Custom Fields](https://developers.didar.me/Get-Custom-Fields.md) — کلید فنی فیلد متناسب با Entity را بردارید"
+        }
+      ],
+      "description": "مقدار Custom Fieldهای معامله است. کلید هر پراپرتی، کلید فنی فیلد و مقدار آن، دیتایی است که باید در همان فیلد ذخیره شود."
+    },
+    {
+      "name": "Deal.CreatorId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد نام کاربر را نمی‌پذیرد؛ باید `UserId` یک User موجود در دیدار را بفرستید.\n\n* [User List](https://developers.didar.me/User-List.md) — مقدار `UserId` کاربر موردنظر را بردارید"
+        }
+      ],
+      "description": "شناسه Userی است که به‌عنوان ایجادکننده معامله ثبت می‌شود."
+    },
+    {
+      "name": "Deal.Code",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "کد اختصاصی رکورد برای شناسایی و جست‌وجوی آن."
+    },
+    {
+      "name": "Deal.OtherContactIds",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "هر مقدار باید `Id` یک شخص یا شرکت موجود در دیدار باشد.\n\n* [Create Person](https://developers.didar.me/Create-Person.md) — ساخت شخص جدید\n* [Get Person By Mobile](https://developers.didar.me/Get-Person-By-Mobile.md) — پیداکردن شخص با موبایل\n* [Search Person](https://developers.didar.me/Search-Person.md) — جست‌وجوی شخص\n* [Create Company](https://developers.didar.me/Create-Company.md) — ساخت شرکت جدید\n* [Search Company](https://developers.didar.me/Search-Company.md) — جست‌وجوی شرکت"
+        }
+      ],
+      "description": "شناسه سایر اشخاص یا شرکت‌های مرتبط با معامله است؛ یعنی مخاطبانی غیر از شخص و شرکت اصلی که باید در معامله دیده شوند."
+    },
+    {
+      "name": "Deal.IsPaid",
+      "type": "boolean",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `true` — معامله پرداخت‌شده علامت می‌خورد\n* `false` — معامله پرداخت‌نشده است"
+        }
+      ],
+      "description": "مشخص می‌کند مبلغ معامله پرداخت شده است یا خیر."
+    },
+    {
+      "name": "Deal.UserLosing",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "اطلاعات کاربری که معامله را به وضعیت ناموفق منتقل کرده است."
+    },
+    {
+      "name": "Deal.ChangeToWonTime",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "شرایط ارسال",
+          "md": "فقط برای معامله‌ای معنا دارد که وضعیت آن به `Won` تغییر کرده است."
+        }
+      ],
+      "description": "تاریخ و زمان انتقال معامله به وضعیت موفق."
+    },
+    {
+      "name": "Deal.ChangeToLossTime",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "شرایط ارسال",
+          "md": "فقط برای معامله‌ای معنا دارد که وضعیت آن به `Lost` تغییر کرده است."
+        }
+      ],
+      "description": "تاریخ و زمان انتقال معامله به وضعیت ناموفق."
+    },
+    {
+      "name": "DealItems[]",
+      "type": "array",
+      "required": false,
+      "sections": [],
+      "description": "فهرست محصولات یا خدمات داخل معامله است. هر عضو یک ردیف مستقل با محصول، تعداد، قیمت، تخفیف و مالیات می‌سازد."
+    },
+    {
+      "name": "DealItems[].ProductId",
+      "type": "string",
+      "required": true,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "شناسه و اطلاعات محصول یا زیرمحصول را از Endpointهای محصول بردارید.\n\n* [Create Product](https://developers.didar.me/Create-product.md) — اگر محصول هنوز ساخته نشده است\n* [Search Products](https://developers.didar.me/Search-Products.md) — برای جست‌وجوی محصول\n* [Get Product By Codes](https://developers.didar.me/get-products-by-code.md) — اگر کد محصول را دارید"
+        }
+      ],
+      "description": "شناسه محصولی است که این ردیف معامله براساس آن ساخته می‌شود."
+    },
+    {
+      "name": "DealItems[].Quantity",
+      "type": "string",
+      "required": true,
+      "sections": [],
+      "description": "تعداد محصول یا خدمت در این ردیف؛ مبلغ ردیف بر اساس این تعداد محاسبه می‌شود."
+    },
+    {
+      "name": "DealItems[].UnitPrice",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "قیمت هر واحد محصول یا خدمت در این ردیف پیش از تخفیف و مالیات."
+    },
+    {
+      "name": "DealItems[].Price",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "مبلغ پایه این ردیف محصول یا خدمت."
+    },
+    {
+      "name": "DealItems[].Discount",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "مبلغ تخفیف اعمال‌شده روی این ردیف."
+    },
+    {
+      "name": "DealItems[].DiscountPercent",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "درصد تخفیف این ردیف که در محاسبه مبلغ نهایی استفاده می‌شود."
+    },
+    {
+      "name": "DealItems[].TaxPercent",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "درصد مالیات این ردیف که به مبلغ پس از تخفیف افزوده می‌شود."
+    },
+    {
+      "name": "DealItems[].Description",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "توضیحات اختصاصی این ردیف محصول یا خدمت در معامله."
+    },
+    {
+      "name": "DealItems[].VariantId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "شناسه و اطلاعات محصول یا زیرمحصول را از Endpointهای محصول بردارید.\n\n* [Create Product](https://developers.didar.me/Create-product.md) — اگر محصول هنوز ساخته نشده است\n* [Search Products](https://developers.didar.me/Search-Products.md) — برای جست‌وجوی محصول\n* [Get Product By Codes](https://developers.didar.me/get-products-by-code.md) — اگر کد محصول را دارید"
+        },
+        {
+          "title": "شرایط ارسال",
+          "md": "اگر محصول زیرمحصول ندارد، این فیلد را ارسال نکنید یا `null` بفرستید. اگر محصول متغیر است و این فیلد ارسال نشود، زیرمحصول پیش‌فرض انتخاب می‌شود."
+        }
+      ],
+      "description": "شناسه زیرمحصول انتخاب‌شده برای این ردیف است؛ مثلا نسخه یک‌ساله یک محصول اشتراکی."
+    }
+  ],
+  "rules": [],
+  "related": [
+    "[Create Product](https://developers.didar.me/Create-product.md)",
+    "[Search Products](https://developers.didar.me/Search-Products.md)",
+    "[Get Custom Fields](https://developers.didar.me/Get-Custom-Fields.md)",
+    "[User List](https://developers.didar.me/User-List.md)",
+    "[Create Person](https://developers.didar.me/Create-Person.md)",
+    "[Get Person By Mobile](https://developers.didar.me/Get-Person-By-Mobile.md)",
+    "[Search Person](https://developers.didar.me/Search-Person.md)",
+    "[Create Company](https://developers.didar.me/Create-Company.md)",
+    "[Search Company](https://developers.didar.me/Search-Company.md)",
+    "[List Deal Pipelines](https://developers.didar.me/List-Deal-Pipelines.md)"
+  ],
+  "requestBody": "{\n  \"Deal\": {\n    \"Title\": \"سفارش 123\",\n    \"Description\": \"سفارش سفارش سفارش سفارش\",\n    \"PersonId\": \"eed0fdf9-026a-42a0-b9a0-b02b456434ba\",\n    \"CompanyId\": \"eed0fdf9-026a-42a0-b9a0-b02b456434ba\",\n    \"PipelineId\": \"9ae651bd-bbd4-4771-99e6-65231db1e1f2\",\n    \"PipelineStageId\": \"63658e7a-0bb2-4822-84ac-2e701e22e967\",\n    \"OwnerId\": \"f1599895-3d58-44a8-a830-e77b42d8e4c6\",\n    \"Status\": \"Lost\",\n    \"Price\": \"101.23\",\n    \"LabelIds\": [\n      \"093c518e-9984-4660-ae3e-416099ef32cc\",\n      \"5553f31b-e5dc-4301-bf2c-7de5a7b7fd0f\"\n    ],\n    \"SourceId\": \"86a316a5-7c0d-47c6-8867-87dd6b5b86dd\",\n    \"SourceOther\": \"asdfasdf\",\n    \"ReferrerId\": \"f4ffcdb7-eaac-4834-af80-cdff2d674bca\",\n    \"ExpectedCloseDate\": null,\n    \"LostReasonId\": \"b8075405-1b0f-4e67-a604-f0aeec08b244\",\n    \"LostReasonNote\": \"SDF\",\n    \"LostReasonOther\": \"SDF\",\n    \"VisibilityType\": \"Owner\",\n    \"CurrencyId\": \"null\",\n    \"Fields\": {\n      \"Field_8783_0_34\": \"1234\",\n      \"Field_8783_12_35\": 12\n    },\n    \"CreatorId\": \"a2048abd-8f8a-4354-9486-7177e3fa6770\",\n    \"Code\": \"123\",\n    \"OtherContactIds\": \"f4ffcdb7-eaac-4834-af80-cdff2d674bca,3f9240de-6aa0-4801-a30a-f233333299e5\",\n    \"IsPaid\": false,\n    \"UserLosing\": \"a2048abd-8f8a-4354-9486-7177e3fa6770\",\n    \"ChangeToWonTime\": \"2025-10-05T06:58:39Z\",\n    \"ChangeToLossTime\": \"2025-10-05T06:58:39Z\",\n    \"ContactId\": \"f91821d7-690b-4b7f-8cf2-1db0cd72b11f\",\n    \"IsDeleted\": false,\n    \"LabelId\": \"00000000-0000-0000-0000-000000000000\",\n    \"EstimatedPrice\": 500000,\n    \"SegmentIds\": [],\n    \"UserId\": \"f677929c-0f9a-4570-8234-c5b6ac20b892\"\n  },\n  \"DealItems\": [\n    {\n      \"ProductId\": \"831f67fa-1311-4aef-8eb3-8c534a7958a5\",\n      \"Quantity\": \"1\",\n      \"UnitPrice\": \"10105016\",\n      \"Price\": \"123123\",\n      \"Discount\": \"10105016\",\n      \"DiscountPercent\": \"12\",\n      \"TaxPercent\": \"3\",\n      \"Description\": \"10105016\",\n      \"VariantId\": \"1f8475e3-f556-430a-81d9-274a4b012adf\"\n    }\n  ]\n}",
+  "curl": "curl --location --request POST '{{baseURL}}/api/deal/save_v2?apikey={{API_KEY}}' \\\n--header 'Content-Type: application/json' \\\n--data '{\n  \"Deal\": {\n    \"Title\": \"سفارش 123\",\n    \"Description\": \"سفارش سفارش سفارش سفارش\",\n    \"PersonId\": \"eed0fdf9-026a-42a0-b9a0-b02b456434ba\",\n    \"CompanyId\": \"eed0fdf9-026a-42a0-b9a0-b02b456434ba\",\n    \"PipelineId\": \"9ae651bd-bbd4-4771-99e6-65231db1e1f2\",\n    \"PipelineStageId\": \"63658e7a-0bb2-4822-84ac-2e701e22e967\",\n    \"OwnerId\": \"f1599895-3d58-44a8-a830-e77b42d8e4c6\",\n    \"Status\": \"Lost\",\n    \"Price\": \"101.23\",\n    \"LabelIds\": [\n      \"093c518e-9984-4660-ae3e-416099ef32cc\",\n      \"5553f31b-e5dc-4301-bf2c-7de5a7b7fd0f\"\n    ],\n    \"SourceId\": \"86a316a5-7c0d-47c6-8867-87dd6b5b86dd\",\n    \"SourceOther\": \"asdfasdf\",\n    \"ReferrerId\": \"f4ffcdb7-eaac-4834-af80-cdff2d674bca\",\n    \"ExpectedCloseDate\": null,\n    \"LostReasonId\": \"b8075405-1b0f-4e67-a604-f0aeec08b244\",\n    \"LostReasonNote\": \"SDF\",\n    \"LostReasonOther\": \"SDF\",\n    \"VisibilityType\": \"Owner\",\n    \"CurrencyId\": \"null\",\n    \"Fields\": {\n      \"Field_8783_0_34\": \"1234\",\n      \"Field_8783_12_35\": 12\n    },\n    \"CreatorId\": \"a2048abd-8f8a-4354-9486-7177e3fa6770\",\n    \"Code\": \"123\",\n    \"OtherContactIds\": \"f4ffcdb7-eaac-4834-af80-cdff2d674bca,3f9240de-6aa0-4801-a30a-f233333299e5\",\n    \"IsPaid\": false,\n    \"UserLosing\": \"a2048abd-8f8a-4354-9486-7177e3fa6770\",\n    \"ChangeToWonTime\": \"2025-10-05T06:58:39Z\",\n    \"ChangeToLossTime\": \"2025-10-05T06:58:39Z\",\n    \"ContactId\": \"f91821d7-690b-4b7f-8cf2-1db0cd72b11f\",\n    \"IsDeleted\": false,\n    \"LabelId\": \"00000000-0000-0000-0000-000000000000\",\n    \"EstimatedPrice\": 500000,\n    \"SegmentIds\": [],\n    \"UserId\": \"f677929c-0f9a-4570-8234-c5b6ac20b892\"\n  },\n  \"DealItems\": [\n    {\n      \"ProductId\": \"831f67fa-1311-4aef-8eb3-8c534a7958a5\",\n      \"Quantity\": \"1\",\n      \"UnitPrice\": \"10105016\",\n      \"Price\": \"123123\",\n      \"Discount\": \"10105016\",\n      \"DiscountPercent\": \"12\",\n      \"TaxPercent\": \"3\",\n      \"Description\": \"10105016\",\n      \"VariantId\": \"1f8475e3-f556-430a-81d9-274a4b012adf\"\n    }\n  ]\n}'",
+  "response": "{\n    \"Response\": {\n        \"Id\": \"8d5a12ba-f092-4a0f-86c5-48c6808188f4\",\n        \"Code\": 0,\n        \"BizDomainId\": \"f846d756-64fa-4a0b-86c6-e8f571decbed\",\n        \"Title\": \"سفارش 123\",\n        \"Description\": null,\n        \"OwnerId\": \"8c0b89b1-515c-42de-957d-294f0e80dbeb\",\n        \"CreatorId\": \"00000000-0000-0000-0000-000000000000\",\n        \"ContactId\": \"eed0fdf9-026a-42a0-b9a0-b02b456434ba\",\n        \"PersonId\": \"eed0fdf9-026a-42a0-b9a0-b02b456434ba\",\n        \"CompanyId\": \"00000000-0000-0000-0000-000000000000\",\n        \"OtherContactIds\": null,\n        \"IsDeleted\": false,\n        \"IsPaid\": false,\n        \"Status\": \"Pending\",\n        \"Probability\": 0,\n        \"Price\": \"0\",\n        \"FinalAdjustmentPrice\": \"0\",\n        \"CurrencyId\": 96107,\n        \"LostReasonId\": \"00000000-0000-0000-0000-000000000000\",\n        \"LostReasonNote\": null,\n        \"LostReasonOther\": null,\n        \"RegisterTime\": \"2026-07-28T12:19:26.8644559Z\",\n        \"ChangeToWonTime\": \"2026-07-28T12:19:26.8644559Z\",\n        \"ChangeToLossTime\": \"2026-07-28T12:19:26.8644559Z\",\n        \"LastTrackingTime\": \"1930-01-01T00:00:00Z\",\n        \"NextTrackingTime\": \"1930-01-01T00:00:00Z\",\n        \"HasTracking\": false,\n        \"ExpectedCloseDate\": null,\n        \"CanEdit\": true,\n        \"CanDelete\": true,\n        \"CanSetLost\": true,\n        \"CanChangeToPending\": false,\n        \"CanSetVisibility\": true,\n        \"CanChangeProbability\": false,\n        \"CanSetWon\": true,\n        \"CanViewPrice\": true,\n        \"HasAccess\": true,\n        \"IsIdle\": null,\n        \"IsRotten\": null,\n        \"IsRottenInStage\": null,\n        \"EstimatedPrice\": \"0\",\n        \"Pin\": 0,\n        \"LabelId\": \"00000000-0000-0000-0000-000000000000\",\n        \"VisibilityType\": \"OwnerGroup\",\n        \"ReferrerId\": \"00000000-0000-0000-0000-000000000000\",\n        \"SourceId\": \"00000000-0000-0000-0000-000000000000\",\n        \"SourceOther\": null,\n        \"PipelineStageId\": \"63658e7a-0bb2-4822-84ac-2e701e22e967\",\n        \"PipelineId\": \"00000000-0000-0000-0000-000000000000\",\n        \"NextActivityDate\": null,\n        \"LastActivityUpdateTime\": null,\n        \"Owner\": {\n            \"UserId\": \"8c0b89b1-515c-42de-957d-294f0e80dbeb\",\n            \"DisplayName\": \"میلاد مظاهری\",\n            \"PictureUrl\": \"/PortalData/Subsystems/Profile/UserPics/a727ae10-e9ae-4541-b66a-00781811e5f5.jpg\",\n            \"Email\": \"milad@gmail.com\"\n        },\n        \"Creator\": {\n            \"UserId\": \"00000000-0000-0000-0000-000000000000\",\n            \"DisplayName\": \"کاربر میهمان \",\n            \"PictureUrl\": \"/PortalData/Subsystems/Profile/UserPics/nopicture.png\",\n            \"Email\": \"\"\n        },\n        \"UserLosing\": {\n            \"UserId\": \"00000000-0000-0000-0000-000000000000\",\n            \"DisplayName\": \"کاربر میهمان \",\n            \"PictureUrl\": \"/PortalData/Subsystems/Profile/UserPics/nopicture.png\",\n            \"Email\": \"\"\n        },\n        \"Contact\": null,\n        \"Person\": {\n            \"Id\": \"eed0fdf9-026a-42a0-b9a0-b02b456434ba\",\n            \"Code\": 218,\n            \"Title\": \"جناب آقای\",\n            \"DisplayName\": \"12 آشنasasا\",\n            \"Type\": \"Person\",\n            \"CompanyName\": \"\",\n            \"CompanyId\": \"fd914338-7f30-4b11-aa4e-021b7a37d59b\",\n            \"HasCompany\": true,\n            \"CompanyIsCustomer\": false,\n            \"CompanyIsProspect\": true,\n            \"Position\": \"مدیر واحد\",\n            \"Feedback\": 60.0,\n            \"Owner\": {\n                \"UserId\": \"f1599895-3d58-44a8-a830-e77b42d8e4c6\",\n                \"DisplayName\": \" محمد علی مزینی\",\n                \"PictureUrl\": \"/PortalData/Subsystems/Profile/UserPics/52c406aa-ae3d-4699-b253-6c5af7648549.jpg\",\n                \"Email\": \"mamozayyani@gmail.com\"\n            },\n            \"OwnerId\": \"f1599895-3d58-44a8-a830-e77b42d8e4c6\",\n            \"OwnerId_Old\": \"f1599895-3d58-44a8-a830-e77b42d8e4c6\",\n            \"LastUpdateTime\": \"2026-06-15T05:56:48Z\"\n        },\n        \"Company\": null,\n        \"Referrer\": null,\n        \"OtherContacts\": [],\n        \"Fields\": {},\n        \"Source\": null,\n        \"KeepInTouchBizdomainId\": \"00000000-0000-0000-0000-000000000000\",\n        \"Feedback\": 0.0,\n        \"LastUpdateTime\": \"0001-01-01T00:00:00Z\",\n        \"PaymentShortLink\": null,\n        \"CanDeletePayment\": true,\n        \"CanEditPayment\": true,\n        \"OwnerId_Old\": \"00000000-0000-0000-0000-000000000000\",\n        \"Adjustment\": null,\n        \"Items\": [\n            {\n                \"Id\": \"084c56f1-31b8-42fd-a9aa-7c7858b793ce\",\n                \"Price\": 0.0,\n                \"Unit\": \"\",\n                \"UnitPrice\": 0.0,\n                \"TaxPrice\": 0.0,\n                \"Title\": \"تست-\",\n                \"TitleForInvoice\": null,\n                \"Description\": \"\",\n                \"Discount\": 0.0,\n                \"DiscountPercent\": 0.0,\n                \"DiscountType\": \"Amount\",\n                \"EditorId\": \"00000000-0000-0000-0000-000000000000\",\n                \"CreatedDate\": \"2026-07-28T12:19:26.8722135Z\",\n                \"CreatorId\": \"00000000-0000-0000-0000-000000000000\",\n                \"ModifiedDate\": \"2026-07-28T12:19:26.8933081Z\",\n                \"DealId\": \"8d5a12ba-f092-4a0f-86c5-48c6808188f4\",\n                \"PriceAfterDiscount\": 0.0,\n                \"ProductCode\": \"1003\",\n                \"ProductId\": \"200fbf46-6d84-4d4e-bd54-e72f54f100ba\",\n                \"Quantity\": 1.0,\n                \"SaleTypeId\": null,\n                \"TaxPercent\": 10,\n                \"VariantCode\": null,\n                \"VariantId\": null,\n                \"VariantTitle\": null,\n                \"itemStockSummary\": [],\n                \"ExistInSepidyar\": false\n            }\n        ],\n        \"LabelIds\": []\n    }\n}",
+  "source": "https://developers.didar.me/Update-Deal"
+}

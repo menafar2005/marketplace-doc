@@ -1,0 +1,22 @@
+{
+  "page": "Get-Activity-By-Id",
+  "title": "Get Activity By Id",
+  "heading": "دریافت فعالیت توسط شناسه فعالیت",
+  "intro": "با ارسال ID یک فعالیت، این Endpoint اطلاعات همان فعالیت را برمی‌گرداند. زمانی از آن استفاده کنید که فعالیت موردنظر را از قبل پیدا کرده‌اید و حالا به جزئیات کامل آن نیاز دارید.",
+  "http": "POST {{baseURL}}/api/Activity/GetActivityAndNoteById?apikey={{API_KEY}}",
+  "params": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": true,
+      "sections": [],
+      "description": "شناسه یکتای فعالیتی است که می‌خواهید اطلاعاتش را دریافت کنید.\n\n\n\n\n\nThis documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform."
+    }
+  ],
+  "rules": [],
+  "related": [],
+  "requestBody": "{\n  \"Id\": \"6d20265f-e555-45cb-bfe4-8090d7db65e2\"\n}",
+  "curl": "curl --location --request POST '{{baseURL}}/api/Activity/GetActivityAndNoteById?apikey={{API_KEY}}' \\\n--header 'Content-Type: application/json' \\\n--data '{\n  \"Id\": \"6d20265f-e555-45cb-bfe4-8090d7db65e2\"\n}'",
+  "response": "{\n    \"Response\": {\n        \"Id\": \"042c9de7-fe4a-49e7-8821-ab4ca456ba6e\",\n        \"Title\": \"\",\n        \"Note\": \"\",\n        \"ResultNote\": \"\",\n        \"ActivityTypeId\": \"50fdfab2-273e-49b2-82ea-edc23ea990fb\",\n        \"IsPrivate\": false,\n        \"IsDone\": false,\n        \"IsPinned\": false,\n        \"DueDateType\": \"Default\",\n        \"DueDate\": \"2026-07-27T13:22:51Z\",\n        \"FinishDate\": \"2026-07-27T13:22:51Z\",\n        \"OriginalDueDate\": \"2026-07-27T13:22:51Z\",\n        \"DoneDate\": \"2026-07-27T13:22:51Z\",\n        \"RegisterDate\": \"2026-07-27T13:22:27Z\",\n        \"LastUpdateTime\": \"2026-07-27T14:06:11Z\",\n        \"LastPokeDate\": \"2026-07-27T13:22:51Z\",\n        \"Duration\": 0,\n        \"DealId\": \"00000000-0000-0000-0000-000000000000\",\n        \"CaseId\": \"00000000-0000-0000-0000-000000000000\",\n        \"CreatorId\": \"8c0b89b1-515c-42de-957d-294f0e80dbeb\",\n        \"OwnerId\": \"5f9afce8-5f1b-477b-aec5-03eafc8e2c28\",\n        \"UpdaterId\": \"00000000-0000-0000-0000-000000000000\",\n        \"ActivityGroupId\": \"042c9de7-fe4a-49e7-8821-ab4ca456ba6e\",\n        \"RecurrenceType\": \"OneTime\",\n        \"RecurrenceData\": 0,\n        \"RecurrenceEndDate\": \"2026-07-27T13:22:51Z\",\n        \"FeedbackType\": \"Neutral\",\n        \"NextOccurrence\": \"2026-07-27T13:22:51Z\",\n        \"Deal\": null,\n        \"Case\": null,\n        \"Contacts\": [],\n        \"Creator\": {\n            \"UserId\": \"8c0b89b1-515c-42de-957d-294f0e80dbeb\",\n            \"DisplayName\": \"میلاد مظاهری\",\n            \"PictureUrl\": \"/PortalData/Subsystems/Profile/UserPics/a727ae10-e9ae-4541-b66a-00781811e5f5.jpg\",\n            \"Email\": \"milad@gmail.com\"\n        },\n        \"Owner\": {\n            \"UserId\": \"5f9afce8-5f1b-477b-aec5-03eafc8e2c28\",\n            \"DisplayName\": \"تست زهرا\",\n            \"PictureUrl\": \"/PortalData/Subsystems/Profile/UserPics/nopicture.png\",\n            \"Email\": \"zahra.bbb@gmail.com\"\n        },\n        \"Tags\": [],\n        \"OwnerId_Old\": \"5f9afce8-5f1b-477b-aec5-03eafc8e2c28\",\n        \"ActivityGroupType\": \"Default\"\n    }\n}",
+  "source": "https://developers.didar.me/Get-Activity-By-Id"
+}
