@@ -62,7 +62,7 @@ function header(active) {
 function footer() {
   return (
     `<footer class="site-footer"><div class="site-footer-in">` +
-    `<span>© دیدار · Didar Developers</span>` +
+    `<span>© دیدار · Didar Developers · مستندات توسعه‌دهنده</span>` +
     `<span>این صفحه را به ابزار AI بده: <a href="/llms.txt" dir="ltr">llms.txt</a> · <a href="/mcp" dir="ltr">MCP</a> · نسخه <code>${esc(meta.shortCommit)}</code></span>` +
     `</div></footer>`
   );
