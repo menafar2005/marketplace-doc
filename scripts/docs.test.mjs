@@ -46,10 +46,10 @@ test("every endpoint has unique id, path and sample request/response JSON", () =
       ids.add(e.id);
       assert.ok(e.path.startsWith("/api/v1/"), e.path);
       assert.doesNotThrow(() => JSON.parse(e.response), e.id);
-      const m = /--data '([\s\S]*)'$/.exec(e.request);
+      const m = /--data-raw '([\s\S]*)'$/.exec(e.request);
       if (m) assert.doesNotThrow(() => JSON.parse(m[1]), e.id);
       for (const name of (e.path.match(/\{(\w+)\}/g) || []).map((x) => x.slice(1, -1))) {
-        assert.ok(e.params.some((p) => p[0] === name && p[1] === "path"), `${e.id} path param ${name}`);
+        assert.ok(e.params.some((p) => p.name === name && p.in === "path"), `${e.id} path param ${name}`);
       }
     }
   }
@@ -97,4 +97,57 @@ test("scaffold_plugin returns parseable files", async () => {
   assert.equal(out.name, "meet-plugin");
   for (const f of out.files) if (f.path.endsWith(".js")) assert.doesNotThrow(() => new Function(f.content.replace(/^import .*$/gm, "").replace(/^export /gm, "")), f.path);
   JSON.parse(out.files.find((f) => f.path === "package.json").content);
+});
+
+test("multi-language samples are generated for every endpoint", async () => {
+  const { samplesFor } = await import("./lib/samples.mjs");
+  for (const g of spec.groups) {
+    for (const e of g.endpoints) {
+      const s = samplesFor(e);
+      assert.deepEqual(s.map((x) => x.label), ["cURL", "Python", "JavaScript", "TypeScript", "Go", "PHP", "Ruby", "Java", "C#"], e.id);
+      const js = s.find((x) => x.label === "JavaScript").code;
+      assert.doesNotThrow(() => new Function(`return (async () => {${js}})`), e.id);
+      assert.ok(s.every((x) => x.code.includes("RUNTIME_ACCESS_TOKEN")), e.id);
+    }
+  }
+});
+
+test("curl samples are formatted like the Didar docs (multi-line, --data-raw)", () => {
+  for (const g of spec.groups) {
+    for (const e of g.endpoints) {
+      assert.ok(e.request.startsWith("curl --location"), e.id);
+      assert.ok(!/--data-raw '\{.*\}'$/.test(e.request) || e.request.includes("\n  "), `${e.id} body should be pretty printed`);
+    }
+  }
+});
+
+test("parameter descriptions come verbatim from the Didar docs (no shortening)", async () => {
+  const { readFileSync } = await import("node:fs");
+  const dealSnap = JSON.parse(readFileSync(join(root, "spec/didar/Update-Deal.json"), "utf8"));
+  const ep = spec.groups.flatMap((g) => g.endpoints).find((e) => e.id === "deal-update");
+  const bodyParams = ep.params.filter((p) => p.in === "body");
+  assert.equal(bodyParams.length, dealSnap.params.length);
+  for (const p of dealSnap.params) {
+    const mine = bodyParams.find((x) => x.name === p.name);
+    assert.equal(mine.description, p.description, p.name);
+    assert.deepEqual(mine.sections, p.sections, p.name);
+  }
+  const html = await (await get("/api-deals")).text();
+  assert.match(html, /وابستگی‌ها/);
+  assert.match(html, /<details class="children"/);
+  assert.match(html, /class="ep-copy"/);
+});
+
+test("code tabs render on API pages and the MCP page with ChatGPT and Codex", async () => {
+  const api = await (await get("/api-deals")).text();
+  assert.match(api, /class="cb-tab"[^>]*data-label="Python"/);
+  const mcp = await (await get("/build-with-mcp")).text();
+  for (const l of ["Claude Code", "Claude", "ChatGPT", "Codex", "Cursor", "VS Code"]) assert.match(mcp, new RegExp(`data-label="${l}"`), l);
+  assert.match(mcp, /https:\/\/docs\.test\/mcp/);
+});
+
+test("header has no GitHub or llms.txt links", async () => {
+  const home = await (await get("/")).text();
+  const header = /<header class="topbar">[\s\S]*?<\/header>/.exec(home)[0];
+  assert.doesNotMatch(header, /github|llms\.txt/i);
 });

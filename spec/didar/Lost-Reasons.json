@@ -1,0 +1,14 @@
+{
+  "page": "Lost-Reasons",
+  "title": "Get Lost Reasons",
+  "heading": "پارامترهای Query",
+  "intro": "| پارامتر | نوع | وضعیت | توضیح |\n| - | - | - | - |\n| `apikey` | `string` | الزامی | کلید API دیدار. |",
+  "http": "POST {{baseURL}}/api/Deal/GetLostReasons?apikey={{API_KEY}}",
+  "params": [],
+  "rules": [],
+  "related": [],
+  "requestBody": null,
+  "curl": "curl --location --request POST '{{baseURL}}/api/Deal/GetLostReasons?apikey={{API_KEY}}'",
+  "response": "{\n    \"Response\": [\n        {\n            \"Id\": \"1a73035a-f424-4c7b-b2a2-8ebe154a68a6\",\n            \"Title\": \"عدم نیاز مشتری\",\n            \"BizDomainId\": \"b8233b92-7a57-42a3-8f3e-59fdbbb6c833\",\n            \"IsDisabled\": false,\n            \"Color\": \"\",\n            \"RegisterTime\": \"2026-07-29T08:27:32.407Z\"\n        }\n    ]\n}",
+  "source": "https://developers.didar.me/Lost-Reasons"
+}

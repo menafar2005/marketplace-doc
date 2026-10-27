@@ -1,0 +1,141 @@
+{
+  "page": "Create-Note",
+  "title": "Create Note",
+  "heading": "پارامترهای Query",
+  "intro": "| پارامتر | نوع | وضعیت | توضیح |\n| - | - | - | - |\n| `apikey` | `string` | الزامی | کلید API دیدار. |",
+  "http": "POST {{baseURL}}/api/activity/save?apikey={{API_KEY}}",
+  "params": [
+    {
+      "name": "Activity",
+      "type": "object",
+      "required": true,
+      "sections": [],
+      "description": "اطلاعات Note جدید داخل این آبجکت ارسال می‌شود. متن یادداشت در `ResultNote` قرار می‌گیرد و می‌توانید آن را به مخاطب، معامله یا کارت وصل کنید."
+    },
+    {
+      "name": "Activity.IsDone",
+      "type": "boolean",
+      "required": true,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `true` — برای ایجاد Note باید همین مقدار ارسال شود"
+        }
+      ],
+      "description": "برای ایجاد یادداشت باید مقدار این فیلد برابر با `true` باشد"
+    },
+    {
+      "name": "Activity.ActivityTypeId",
+      "type": "string",
+      "required": true,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `00000000-0000-0000-0000-000000000000` — نوع ثابت Note"
+        }
+      ],
+      "description": "این فیلد نوع رکورد را برای ایجاد Note مشخص می‌کند و در این Endpoint باید مقدار ثابت نوع یادداشت را بگیرد."
+    },
+    {
+      "name": "Activity.OwnerId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد نام کاربر را نمی‌پذیرد؛ باید `UserId` یک User موجود در دیدار را بفرستید.\n\n* [User List](https://developers.didar.me/User-List.md) — مقدار `UserId` کاربر موردنظر را بردارید"
+        },
+        {
+          "title": "شرایط ارسال",
+          "md": "اگر این فیلد ارسال نشود، مسئول یادداشت مالک بیزدامنه در نظر گرفته می‌شود."
+        }
+      ],
+      "description": "شناسه User مسئول انجام و پیگیری فعالیت است. فعالیت در فهرست و تقویم همین کاربر نمایش داده می‌شود."
+    },
+    {
+      "name": "Activity.ResultNote",
+      "type": "string",
+      "required": false,
+      "sections": [],
+      "description": "متن اصلی یادداشت است؛ هر چیزی که می‌خواهید در متن یادداشت دیده شود اینجا بفرستید."
+    },
+    {
+      "name": "Activity.IsPinned",
+      "type": "boolean",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `true` — رکورد سنجاق می‌شود\n* `false` — رکورد سنجاق نمی‌شود"
+        }
+      ],
+      "description": "مشخص می‌کند یادداشت برای دسترسی سریع در رکورد مرتبط سنجاق شود."
+    },
+    {
+      "name": "Activity.IsDeleted",
+      "type": "boolean",
+      "required": false,
+      "sections": [
+        {
+          "title": "مقادیر مجاز",
+          "md": "* `true` — فعالیت یا یادداشت حذف‌شده در نظر گرفته می‌شود\n* `false` — رکورد حذف‌شده نیست"
+        }
+      ],
+      "description": "مشخص می‌کند یادداشت در وضعیت حذف‌شده قرار دارد یا فعال است."
+    },
+    {
+      "name": "Activity.DealId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "مقدار این فیلد باید `Id` یک معامله موجود در دیدار باشد.\n\n* [Create Deal](https://developers.didar.me/Create-Deal.md) — اگر معامله هنوز ساخته نشده است\n* [Get Deal By Id](https://developers.didar.me/Get-Deal-By-Id.md) — اگر `Id` معامله را دارید\n* [Search Deal](https://developers.didar.me/Search-Deal.md) — برای جست‌وجوی معامله"
+        }
+      ],
+      "description": "شناسه معامله‌ای است که یادداشت باید به آن وصل شود. بعد از اتصال، رکورد در سابقه همان معامله دیده می‌شود."
+    },
+    {
+      "name": "Activity.ContactIds[]",
+      "type": "array",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "هر مقدار باید `Id` یک شخص یا شرکت موجود در دیدار باشد.\n\n* [Create Person](https://developers.didar.me/Create-Person.md) — ساخت شخص جدید\n* [Get Person By Mobile](https://developers.didar.me/Get-Person-By-Mobile.md) — پیداکردن شخص با موبایل\n* [Search Person](https://developers.didar.me/Search-Person.md) — جست‌وجوی شخص\n* [Create Company](https://developers.didar.me/Create-Company.md) — ساخت شرکت جدید\n* [Search Company](https://developers.didar.me/Search-Company.md) — جست‌وجوی شرکت"
+        }
+      ],
+      "description": "فهرست `Id` اشخاص یا شرکت‌هایی است که این یادداشت به آن‌ها مربوط می‌شود. رکورد در سابقه مخاطبان انتخاب‌شده هم دیده خواهد شد."
+    },
+    {
+      "name": "Activity.CaseId",
+      "type": "string",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "مقدار این فیلد باید `Id` یک کارت موجود در دیدار باشد.\n\n* [Create Case](https://developers.didar.me/Create-Case.md) — اگر کارت هنوز ساخته نشده است\n* [Search Case](https://developers.didar.me/Search-Case.md) — برای جست‌وجوی کارت"
+        }
+      ],
+      "description": "شناسه کارتی است که فعالیت یا یادداشت باید به آن وصل شود. بعد از اتصال، رکورد در سابقه همان کارت دیده می‌شود."
+    },
+    {
+      "name": "Activity.Tags[]",
+      "type": "array",
+      "required": false,
+      "sections": [
+        {
+          "title": "وابستگی‌ها",
+          "md": "این فیلد باید `Id` تگ موجود در دیدار را بگیرد.\n\n* [Tags](https://developers.didar.me/Tags.md) — `Id` تگ موردنظر را بردارید\n\n\n\n\n\nThis documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform."
+        }
+      ],
+      "description": "فهرست تگ‌هایی است که برای دسته‌بندی و پیداکردن سریع‌تر فعالیت یا یادداشت به آن وصل می‌شوند."
+    }
+  ],
+  "rules": [],
+  "related": [],
+  "requestBody": "{\n  \"Activity\": {\n    \"ActivityTypeId\": \"00000000-0000-0000-0000-000000000000\",\n    \"OwnerId\": \"8c0b89b1-515c-42de-957d-294f0e80dbeb\",\n    \"ResultNote\": \"test note text\",\n    \"IsDone\": true,\n    \"IsPinned\": false,\n    \"IsDeleted\": false,\n    \"DealId\": \"{{ test product deal 1 }}\",\n    \"ContactIds\": [\n      \"BDFAF004-2AD3-47CB-89B9-0002FE5E5678\",\n      \"3d92eedd-3a16-4ef0-ad2a-632a477f8e3b\"\n    ],\n    \"CaseId\": \"{{ test product case 1 }}\",\n    \"Tags\": [\n      {\n        \"TagId\": \"553655d9-8591-4bdd-b4d4-f3aca19ac5bb\"\n      },\n      {\n        \"TagId\": \"161ca98d-b715-4ffe-b9ee-722ce33655f6\"\n      },\n      {\n        \"TagId\": \"75aef7d3-6c14-45b5-be46-229081d1bf4c\"\n      }\n    ]\n  }\n}",
+  "curl": "curl --location 'https://app.didar.me/api/activity/save?apikey={{API_KEY}}' \\\n--header 'Content-Type: application/json' \\\n--data '{\n  \"Activity\": {\n    \"ActivityTypeId\": \"00000000-0000-0000-0000-000000000000\",\n    \"OwnerId\": \"8c0b89b1-515c-42de-957d-294f0e80dbeb\",\n    \"ResultNote\": \"test note text\",\n    \"IsDone\": true,\n    \"IsPinned\": false,\n    \"IsDeleted\": false,\n   \n    \"ContactIds\": [\n      \"BDFAF004-2AD3-47CB-89B9-0002FE5E5678\",\n      \"3d92eedd-3a16-4ef0-ad2a-632a477f8e3b\"\n    ],\n   \n    \"Tags\": [\n      {\n        \"TagId\": \"553655d9-8591-4bdd-b4d4-f3aca19ac5bb\"\n      },\n      {\n        \"TagId\": \"161ca98d-b715-4ffe-b9ee-722ce33655f6\"\n      },\n      {\n        \"TagId\": \"75aef7d3-6c14-45b5-be46-229081d1bf4c\"\n      }\n    ]\n  }\n}'",
+  "response": "{\n    \"Response\": {\n        \"Id\": \"0740f0b5-a015-40d2-964d-fc6b4bf86152\",\n        \"Title\": \"\",\n        \"Note\": \"\",\n        \"ResultNote\": \"test note text\",\n        \"ActivityTypeId\": \"00000000-0000-0000-0000-000000000000\",\n        \"IsPrivate\": false,\n        \"IsDone\": true,\n        \"IsPinned\": false,\n        \"IsDeleted\": false,\n        \"IsKeepInTouch\": false,\n        \"DueDateType\": \"Default\",\n        \"DueDate\": \"2026-07-27T15:37:42.7509172Z\",\n        \"FinishDate\": \"2026-07-27T15:37:42.7509172Z\",\n        \"OriginalDueDate\": \"2026-07-27T15:37:42.7509172Z\",\n        \"DoneDate\": \"2026-07-27T15:37:42.7509172Z\",\n        \"RegisterDate\": \"2026-07-27T15:37:42.7509172Z\",\n        \"LastUpdateTime\": \"2026-07-27T15:37:42.7509172Z\",\n        \"LastPokeDate\": \"2026-07-27T15:37:42.7509172Z\",\n        \"Duration\": 0,\n        \"DealId\": \"00000000-0000-0000-0000-000000000000\",\n        \"CaseId\": \"00000000-0000-0000-0000-000000000000\",\n        \"TicketId\": \"00000000-0000-0000-0000-000000000000\",\n        \"CreatorId\": \"8c0b89b1-515c-42de-957d-294f0e80dbeb\",\n        \"OwnerId\": \"8c0b89b1-515c-42de-957d-294f0e80dbeb\",\n        \"UpdaterId\": \"00000000-0000-0000-0000-000000000000\",\n        \"ActivityGroupId\": \"00000000-0000-0000-0000-000000000000\",\n        \"RecurrenceType\": \"OneTime\",\n        \"RecurrenceData\": 0,\n        \"RecurrenceEndDate\": \"2026-07-27T15:37:42.7509172Z\",\n        \"FeedbackType\": \"Neutral\",\n        \"NextOccurrence\": \"0001-01-01T00:00:00Z\",\n        \"CanPoke\": false,\n        \"IsAttended\": false,\n        \"Deal\": null,\n        \"Case\": null,\n        \"Contacts\": [\n            {\n                \"ContactId\": \"bdfaf004-2ad3-47cb-89b9-0002fe5e5678\",\n                \"ActivityId\": \"0740f0b5-a015-40d2-964d-fc6b4bf86152\",\n                \"Status\": \"Accepted\",\n                \"Message\": \"\",\n                \"Contact\": {\n                    \"Id\": \"bdfaf004-2ad3-47cb-89b9-0002fe5e5678\",\n                    \"Title\": \"جناب آقای\",\n                    \"FirstName\": \"سهیل\",\n                    \"LastName\": \"شیرازی\",\n                    \"WorkPhone\": \"\",\n                    \"MobilePhone\": \"\",\n                    \"Type\": \"Person\",\n                    \"DisplayName\": \"سهیل شیرازی\"\n                }\n            },\n            {\n                \"ContactId\": \"3d92eedd-3a16-4ef0-ad2a-632a477f8e3b\",\n                \"ActivityId\": \"0740f0b5-a015-40d2-964d-fc6b4bf86152\",\n                \"Status\": \"Accepted\",\n                \"Message\": \"\",\n                \"Contact\": {\n                    \"Id\": \"3d92eedd-3a16-4ef0-ad2a-632a477f8e3b\",\n                    \"Title\": \"\",\n                    \"FirstName\": \"12\",\n                    \"LastName\": \"\",\n                    \"WorkPhone\": \"\",\n                    \"MobilePhone\": \"\",\n                    \"Type\": \"Company\",\n                    \"DisplayName\": \"12\"\n                }\n            }\n        ],\n        \"Creator\": {\n            \"UserId\": \"8c0b89b1-515c-42de-957d-294f0e80dbeb\",\n            \"DisplayName\": \"میلاد مظاهری\",\n            \"PictureUrl\": \"/PortalData/Subsystems/Profile/UserPics/a727ae10-e9ae-4541-b66a-00781811e5f5.jpg\",\n            \"Email\": \"milad@gmail.com\"\n        },\n        \"Owner\": {\n            \"UserId\": \"8c0b89b1-515c-42de-957d-294f0e80dbeb\",\n            \"DisplayName\": \"میلاد مظاهری\",\n            \"PictureUrl\": \"/PortalData/Subsystems/Profile/UserPics/a727ae10-e9ae-4541-b66a-00781811e5f5.jpg\",\n            \"Email\": \"milad@gmail.com\"\n        },\n        \"Users\": [],\n        \"Notifies\": [],\n        \"Comments\": [],\n        \"Attachments\": [],\n        \"Voices\": [],\n        \"Voips\": [],\n        \"Tags\": [\n            {\n                \"ActivityId\": \"00000000-0000-0000-0000-000000000000\",\n                \"TagId\": \"553655d9-8591-4bdd-b4d4-f3aca19ac5bb\"\n            },\n            {\n                \"ActivityId\": \"00000000-0000-0000-0000-000000000000\",\n                \"TagId\": \"161ca98d-b715-4ffe-b9ee-722ce33655f6\"\n            },\n            {\n                \"ActivityId\": \"00000000-0000-0000-0000-000000000000\",\n                \"TagId\": \"75aef7d3-6c14-45b5-be46-229081d1bf4c\"\n            }\n        ],\n        \"CanEdit\": true,\n        \"CanDelete\": true,\n        \"CanDone\": false,\n        \"ActivityTicketStatus\": \"NotAnswered\",\n        \"IsTicket\": false,\n        \"OwnerId_Old\": \"00000000-0000-0000-0000-000000000000\",\n        \"ActivityGroupType\": \"Default\"\n    }\n}",
+  "source": "https://developers.didar.me/Create-Note"
+}

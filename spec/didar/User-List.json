@@ -1,0 +1,17 @@
+{
+  "page": "User-List",
+  "title": "Get Users",
+  "heading": "(مسئول ها) کاربران",
+  "intro": "این Endpoint فهرست کاربرانی را برمی‌گرداند که داخل بیزدامنه دیدار فعالیت می‌کنند؛ مثل مدیر فروش یا کارشناسان فروش. از `UserId` کاربران برای مشخص‌کردن مسئول، ایجادکننده یا کاربران مرتبط با رکوردها در فیلدهایی مثل `OwnerId` و `CreatorId` استفاده می‌شود. کاربران دیدار را با اشخاص و مشتریان ثبت‌شده در CRMمتفاوت است.",
+  "http": "POST {{baseURL}}/api/User/List?apikey={{API_KEY}}",
+  "params": [],
+  "rules": [
+    "این اندپوینت تمام کاربران زیرمجموعه بیزدامنه شما را در پاسخ برمیگرداند",
+    "در درخواست هایی که نیاز به ارسال فیلد `ownerId `هست باید با کال کردن این درخواست مقدار فیلد `userId `کاربر مدنظر رو برداشته و در فیلد `ownerId `درخواست اولیه قرار بدهید"
+  ],
+  "related": [],
+  "requestBody": null,
+  "curl": "curl --location --request POST '{{baseURL}}/api/User/List?apikey={{API_KEY}}'",
+  "response": "{\n  \"Response\": [\n    {\n      \"Id\": \"355de67e-b5fc-417b-9ff5-15c229f5f2eb\",\n      \"Code\": 0,\n      \"UserName\": \"user@email.com\",\n      \"FirstName\": \"کاربر 1\",\n      \"LastName\": \"کاربر 1\",\n      \"HasPicture\": false,\n      \"PictureUrl\": \"\",\n      \"InvitationUrl\": \"https://app.didar.me/account/accept/355de67e-b5fc-417b-9ff5-15c229f5f2eb\",\n      \"InvitationAccepted\": false,\n      \"DisplayName\": \"کاربر 1\",\n      \"UserId\": \"00000000-0000-0000-0000-000000000000\",\n      \"PermissionId\": \"7401a518-d035-4bc3-afec-36f0c66a5c31\",\n      \"VisibilityId\": \"c97e942c-b830-4c70-b383-046c70241f37\",\n      \"Permissions\": null,\n      \"LastAccessTime\": \"2021-02-20T16:10:29Z\",\n      \"IsOwner\": false,\n      \"IsDisabled\": false\n    },\n    {\n      \"Id\": \"03df6a43-8479-47d5-b933-34183820f657\",\n      \"Code\": 0,\n      \"UserName\": \"user2@email.com\",\n      \"FirstName\": \"user2\",\n      \"LastName\": \"user2\",\n      \"HasPicture\": false,\n      \"PictureUrl\": \"\",\n      \"InvitationUrl\": \"https://app.didar.me/account/accept/03df6a43-8479-47d5-b933-34183820f657\",\n      \"InvitationAccepted\": false,\n      \"DisplayName\": \"user2\",\n      \"UserId\": \"00000000-0000-0000-0000-000000000000\",\n      \"PermissionId\": \"7401a518-d035-4bc3-afec-36f0c66a5c31\",\n      \"VisibilityId\": \"c97e942c-b830-4c70-b383-046c70241f37\",\n      \"Permissions\": null,\n      \"LastAccessTime\": \"2021-02-20T16:10:29Z\",\n      \"IsOwner\": false,\n      \"IsDisabled\": false\n    }\n  ]\n}",
+  "source": "https://developers.didar.me/User-List"
+}

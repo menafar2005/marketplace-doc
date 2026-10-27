@@ -54,7 +54,7 @@ export const mcpUrl = (origin) => `${origin}/mcp`;
 
 const FONTS =
   '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
-  '<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&amp;family=Noto+Naskh+Arabic:wght@500;600;700&amp;display=swap" rel="stylesheet">';
+  '<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">';
 
 function head({ title, description, origin, path }) {
   return (
@@ -77,9 +77,7 @@ function header(activeTab) {
     `<header class="topbar"><div class="topbar-start"><a class="brand" href="/">${LOGO}<span class="wordmark">Didar Developers Docs</span></a></div>` +
     `<nav class="tabs-nav" aria-label="بخش‌های اصلی">${tabs}</nav>` +
     `<div class="topbar-end">` +
-    `<a class="top-link" href="/llms.txt" dir="ltr">${I.braces}<span>llms.txt</span></a>` +
     `<button class="icon-btn" id="theme" type="button" aria-label="تغییر تم">${I.theme}</button>` +
-    `<a class="pill-btn" href="https://github.com/menafar2005/marketplace-doc" dir="ltr">${I.github}<span>GitHub</span></a>` +
     `<a class="solid-btn" href="/build-with-mcp">اتصال MCP</a>` +
     `</div></header>`
   );
@@ -122,6 +120,8 @@ const mcpItems = (origin) => {
   return [
     { label: "Claude Code", lang: "bash", code: `claude mcp add --transport http didar ${url}`, hint: "در ترمینال پروژه‌ات اجرا کن:" },
     { label: "Claude", lang: "text", code: url, hint: "در Settings › Connectors یک connector سفارشی اضافه کن و این آدرس را بده:" },
+    { label: "ChatGPT", lang: "text", code: url, hint: "در ChatGPT وارد Settings › Plugins شو، Developer mode را روشن کن و با دکمه‌ی + یک plugin سفارشی بساز: Connection را روی Server URL و Authentication را روی No Auth بگذار و این آدرس را بده:" },
+    { label: "Codex", lang: "bash", code: `codex mcp add didar --url ${url}\ncodex mcp list`, hint: "در Codex CLI اجرا کن. در Codex Desktop یا IDE Extension هم از Settings › MCP servers › Add server با نوع Streamable HTTP و همین آدرس استفاده کن:" },
     { label: "Cursor", lang: "json", code: `{\n  "mcpServers": {\n    "didar": { "url": "${url}" }\n  }\n}`, hint: "این را در .cursor/mcp.json بگذار:" },
     { label: "VS Code", lang: "json", code: `{\n  "servers": {\n    "didar": { "type": "http", "url": "${url}" }\n  }\n}`, hint: "این را در .vscode/mcp.json بگذار:" },
   ];

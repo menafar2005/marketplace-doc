@@ -1,0 +1,16 @@
+{
+  "page": "Activity-Type",
+  "title": "Get Activity Types",
+  "heading": "پارامترهای Query",
+  "intro": "| پارامتر | نوع | وضعیت | توضیح |\n| - | - | - | - |\n| `apikey` | `string` | الزامی | کلید API دیدار. |",
+  "http": "POST {{baseURL}}/api/activity/GetActivityType?apikey={{API_KEY}}",
+  "params": [],
+  "rules": [
+    "مقدار `ID` هر نوع فعالیت را میتوانید در فیلد `ActivityTypeId` ایجاد فعالیت جدید استفاده کنید"
+  ],
+  "related": [],
+  "requestBody": null,
+  "curl": "curl --location --request POST '{{baseURL}}/api/activity/GetActivityType?apikey={{API_KEY}}'",
+  "response": "{\n  \"Response\": [\n    {\n      \"Id\": \"516b387f-0300-4956-81fa-8cf16f078747\",\n      \"Title\": \"جلسه\",\n      \"IsDisabled\": false,\n      \"ShowInAddTask\": true,\n      \"IsRecurrable\": false,\n      \"IsConnection\": true,\n      \"Icon\": \"meeting\",\n      \"Duration\": 120,\n      \"Index\": 1\n    },\n    {\n      \"Id\": \"de0fbb34-ba9c-4af9-b0da-57a92cfb4397\",\n      \"Title\": \"تماس ورودی\",\n      \"IsDisabled\": false,\n      \"ShowInAddTask\": false,\n      \"IsRecurrable\": false,\n      \"IsConnection\": true,\n      \"Icon\": \"incommingcall\",\n      \"Duration\": 5,\n      \"Index\": 2\n    },\n    {\n      \"Id\": \"b9876107-44ea-4dbf-bbfb-2ee9fbcc597c\",\n      \"Title\": \"تماس\",\n      \"IsDisabled\": false,\n      \"ShowInAddTask\": true,\n      \"IsRecurrable\": false,\n      \"IsConnection\": true,\n      \"Icon\": \"outgoingcall\",\n      \"Duration\": 5,\n      \"Index\": 3\n    }\n  ]\n}",
+  "source": "https://developers.didar.me/Activity-Type"
+}

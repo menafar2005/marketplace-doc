@@ -1,0 +1,14 @@
+{
+  "page": "Deal-Labels",
+  "title": "Get Deal Labels",
+  "heading": "پارامترهای Query",
+  "intro": "| پارامتر | نوع | وضعیت | توضیح |\n| - | - | - | - |\n| `apikey` | `string` | الزامی | کلید API دیدار. |",
+  "http": "GET {{baseURL}}/api/Label/GetDealLabels?apikey={{API_KEY}}",
+  "params": [],
+  "rules": [],
+  "related": [],
+  "requestBody": null,
+  "curl": "curl --location --request GET '{{baseURL}}/api/Label/GetDealLabels?apikey={{API_KEY}}'",
+  "response": "{\n    \"Response\": [\n        {\n            \"Id\": \"5331df30-1f8d-4e0b-914a-26f13876d7e0\",\n            \"Title\": \"خیلی مهم\",\n            \"Code\": 3,\n            \"Type\": \"Deal\"\n        },\n        {\n            \"Id\": \"4c248ae5-9118-4a70-b183-92a9b5881314\",\n            \"Title\": \"مهم\",\n            \"Code\": 1,\n            \"Type\": \"Deal\"\n        }\n    ]\n}",
+  "source": "https://developers.didar.me/Deal-Labels"
+}

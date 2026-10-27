@@ -3,7 +3,7 @@ const TOKEN = "RUNTIME_ACCESS_TOKEN";
 
 export function parseRequest(ep) {
   const url = /'(https:[^']+)'/.exec(ep.request)?.[1];
-  const raw = /--data '([\s\S]*)'$/.exec(ep.request)?.[1];
+  const raw = /--data-raw '([\s\S]*)'$/.exec(ep.request)?.[1];
   const body = raw ? JSON.parse(raw) : null;
   const headers = [["Authorization", `Bearer ${TOKEN}`], body ? ["Content-Type", "application/json"] : ["Accept", "application/json"]];
   return { method: ep.method, url, body, headers };

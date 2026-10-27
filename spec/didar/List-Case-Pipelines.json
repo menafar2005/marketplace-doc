@@ -1,0 +1,18 @@
+{
+  "page": "List-Case-Pipelines",
+  "title": "Get Case Pipelines",
+  "heading": "پارامترهای Query",
+  "intro": "| پارامتر | نوع | وضعیت | توضیح |\n| - | - | - | - |\n| `apikey` | `string` | الزامی | کلید API دیدار. |",
+  "http": "POST {{baseURL}}/api/pipeline/list/1?apikey={{API_KEY}}",
+  "params": [],
+  "rules": [
+    "لیستی از پارامتر کاریز کارت ها را میدهد",
+    "مقدار `Response[].Id` برابر است با شناسه کاریز کارت",
+    "مقدار `Response[].Stages[].Id` برابر است با شناسه مرحله یک کاریز مشخص کارت"
+  ],
+  "related": [],
+  "requestBody": null,
+  "curl": "curl --location --request POST '{{baseURL}}/api/pipeline/list/0?apikey={{API_KEY}}'",
+  "response": "{\n    \"Response\": [\n        {\n            \"Id\": \"f7861340-b22c-49b1-bb5a-d96b5cdba979\",\n            \"Title\": \"کاریز کارت تست\",\n            \"Index\": 1,\n            \"Stages\": [\n                {\n                    \"Id\": \"2d34c424-62e5-4fcc-b0f0-bfbd11bf440a\",\n                    \"Title\": \"برنامه ریزی شده\",\n                    \"Color\": \"#b88d7c\",\n                    \"Index\": 1,\n                    \"IdleDay\": 0,\n                    \"Probability\": 100,\n                    \"IdleIsActive\": false,\n                    \"PortalTitle\": \"\",\n                    \"Description\": null\n                },\n                {\n                    \"Id\": \"cfb05e56-98c7-4a11-bcec-b8f9052419f8\",\n                    \"Title\": \"درحال انجام\",\n                    \"Color\": \"#23b13a\",\n                    \"Index\": 2,\n                    \"IdleDay\": 0,\n                    \"Probability\": 100,\n                    \"IdleIsActive\": false,\n                    \"PortalTitle\": \"\",\n                    \"Description\": null\n                },\n                {\n                    \"Id\": \"daf0701d-425e-4ce4-a62c-3b6e1d3d98e6\",\n                    \"Title\": \"انجام شده\",\n                    \"Color\": \"#5d5b55\",\n                    \"Index\": 3,\n                    \"IdleDay\": 0,\n                    \"Probability\": 100,\n                    \"IdleIsActive\": false,\n                    \"PortalTitle\": \"\",\n                    \"Description\": null\n                }\n            ],\n            \"Type\": \"Case\"\n        }\n    ]\n}",
+  "source": "https://developers.didar.me/List-Case-Pipelines"
+}

@@ -1,0 +1,18 @@
+{
+  "page": "List-Deal-Pipelines",
+  "title": "Get Deal Pipelines",
+  "heading": "پارامترهای Query",
+  "intro": "| پارامتر | نوع | وضعیت | توضیح |\n| - | - | - | - |\n| `apikey` | `string` | الزامی | کلید API دیدار. |",
+  "http": "POST {{baseURL}}/api/pipeline/list/0?apikey={{API_KEY}}",
+  "params": [],
+  "rules": [
+    "لیستی از پارامتر کاریز معاملات را میدهد",
+    "مقدار `Response[].Id` برابر است با شناسه کاریز معامله",
+    "مقدار `Response[].Stages[].Id` برابر است با شناسه مرحله یک کاریز مشخص معامله"
+  ],
+  "related": [],
+  "requestBody": null,
+  "curl": "curl --location --request POST '{{baseURL}}/api/pipeline/list/0?apikey={{API_KEY}}'",
+  "response": "{\n    \"Response\": [\n        {\n            \"Id\": \"82063d6f-07b8-4e5b-82ac-b8bea5ed9a38\",\n            \"Title\": \"کاریز تست\",\n            \"Index\": 1,\n            \"Stages\": [\n                {\n                    \"Id\": \"1f98965b-d5fa-40e1-be80-b7fcba79e0cf\",\n                    \"Title\": \"مذاکرات اولیه\",\n                    \"Color\": \"#b88d7c\",\n                    \"Index\": 1,\n                    \"IdleDay\": 0,\n                    \"Probability\": 100,\n                    \"IdleIsActive\": false,\n                    \"PortalTitle\": \"\",\n                    \"Description\": null\n                },\n                {\n                    \"Id\": \"5e623515-7948-4331-8497-bbe1b1ddd12b\",\n                    \"Title\": \"پیگیری\",\n                    \"Color\": \"#23b13a\",\n                    \"Index\": 2,\n                    \"IdleDay\": 0,\n                    \"Probability\": 100,\n                    \"IdleIsActive\": false,\n                    \"PortalTitle\": \"\",\n                    \"Description\": null\n                },\n                {\n                    \"Id\": \"a5b02fa5-9cb6-49ca-96c9-15a3f0b8bfa0\",\n                    \"Title\": \"قیمت و نهایی کردن\",\n                    \"Color\": \"#5d5b55\",\n                    \"Index\": 3,\n                    \"IdleDay\": 0,\n                    \"Probability\": 100,\n                    \"IdleIsActive\": false,\n                    \"PortalTitle\": \"\",\n                    \"Description\": null\n                }\n            ],\n            \"Type\": \"Deal\"\n        }\n    ]\n}",
+  "source": "https://developers.didar.me/List-Deal-Pipelines"
+}
