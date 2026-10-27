@@ -1,0 +1,19 @@
+{
+  "name": "didar-developers-docs",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Didar Marketplace developer docs + MCP server, deployed as a Cloudflare Worker.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "npm run build && wrangler dev",
+    "test": "node --test scripts/docs.test.mjs",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "marked": "^15.0.12"
+  },
+  "devDependencies": {
+    "wrangler": "^4.40.0"
+  }
+}

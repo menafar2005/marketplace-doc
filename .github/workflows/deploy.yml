@@ -1,0 +1,46 @@
+name: Deploy docs to Cloudflare
+
+# هر push روی main: تست، ساخت داک از روی ریپو و deploy به Worker «didar-developers-docs».
+# هر deploy یک Worker Version جدید می‌سازد که با tag کوتاه commit قابل ردیابی است.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+  deploy:
+    needs: test
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Deploy (new Worker version)
+        run: |
+          MSG="${COMMIT_MESSAGE%%$'\n'*}"
+          DOCS_COMMIT_MESSAGE="$MSG" npx wrangler deploy --message "${MSG:0:100}" --tag "${GITHUB_SHA::7}"
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

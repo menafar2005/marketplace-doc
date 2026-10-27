@@ -1,0 +1,11 @@
+{
+  // Worker جدید و مستقل از workerهای دیگر حساب (مثل didar-marketplace-docs)
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "didar-developers-docs",
+  "main": "src/worker.js",
+  "compatibility_date": "2025-09-01",
+  "workers_dev": true,
+  "observability": { "enabled": true },
+  // هر deploy اول داک را از روی ریپو (content/ و spec/) دوباره می‌سازد
+  "build": { "command": "node scripts/build.mjs" }
+}
