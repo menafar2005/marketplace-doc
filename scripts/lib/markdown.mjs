@@ -1,8 +1,9 @@
 // Markdown → HTML برای داک. فقط در زمان build اجرا می‌شود (Worker فقط HTML آماده سرو می‌کند).
 import { Marked } from "marked";
 
-export const escapeHtml = (s) =>
-  String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+import { escapeHtml, codeTabs, normalizeLang } from "../../src/codeblock.js";
+
+export { escapeHtml, codeTabs };
 
 export const slugify = (s) =>
   String(s)
@@ -13,29 +14,15 @@ export const slugify = (s) =>
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-") || "section";
 
-function highlight(code, lang) {
-  let html = escapeHtml(code);
-  if (lang === "json") {
-    html = html.replace(/(&quot;(?:[^&\\]|\\.|&(?!quot;))*?&quot;)(\s*:)/g, '<span class="tk-key">$1</span>$2');
-  }
-  if (lang === "bash" || lang === "text" || lang === "js") {
-    html = html.replace(/(^|\s)(#[^\n]*)$/gm, '$1<span class="tk-comment">$2</span>');
-  }
-  if (lang === "js") {
-    html = html.replace(/(^|\s)(\/\/[^\n]*)$/gm, '$1<span class="tk-comment">$2</span>');
-  }
-  return html;
-}
+const parseInfo = (info = "") => {
+  const m = /^(\S*)\s*(?:title="([^"]*)")?\s*(?:group="([^"]*)")?/.exec(info.trim());
+  const lang = (m && m[1]) || "text";
+  return { lang, title: (m && m[2]) || lang, group: (m && m[3]) || "" };
+};
 
 export function codeFigure(code, info = "") {
-  const m = /^(\S*)\s*(?:title="([^"]*)")?/.exec(info.trim());
-  const lang = (m && m[1]) || "text";
-  const title = (m && m[2]) || lang;
-  return (
-    `<figure class="code" dir="ltr"><div class="code-bar"><span>${escapeHtml(title)}</span>` +
-    `<button class="copy" type="button" aria-label="کپی کد">Copy</button></div>` +
-    `<pre><code class="language-${escapeHtml(lang)}">${highlight(code.replace(/\n$/, ""), lang)}</code></pre></figure>`
-  );
+  const { lang, title } = parseInfo(info);
+  return codeTabs([{ label: title, lang, code }]);
 }
 
 const ICONS = {
@@ -46,6 +33,14 @@ const ICONS = {
 export function createMarked() {
   const marked = new Marked({ gfm: true, breaks: false });
   marked.use({
+    extensions: [
+      {
+        name: "codegroup",
+        renderer(token) {
+          return codeTabs(token.items, { group: token.group }) + "\n";
+        },
+      },
+    ],
     renderer: {
       heading({ tokens, depth, raw }) {
         let text = this.parser.parseInline(tokens);
@@ -85,14 +80,40 @@ export function createMarked() {
   return marked;
 }
 
-/** h2 headingهای متن (برای «در این صفحه»). */
+/** Markdown → HTML؛ بلوک‌های کد پشت‌سرهم با group یکسان در یک بلوک تب‌دار ادغام می‌شوند. */
+export function renderMarkdown(md, marked = createMarked()) {
+  const tokens = marked.lexer(md);
+  const merged = [];
+  for (const t of tokens) {
+    if (t.type === "code") {
+      const { lang, title, group } = parseInfo(t.lang || "");
+      if (group) {
+        let prev = merged.length ? merged[merged.length - 1] : null;
+        if (prev && prev.type === "space" && merged.length > 1) prev = merged[merged.length - 2];
+        const item = { label: title, lang, code: t.text };
+        if (prev && prev.type === "codegroup" && prev.group === group) {
+          prev.items.push(item);
+          if (merged[merged.length - 1].type === "space") merged.pop();
+        } else {
+          merged.push({ type: "codegroup", raw: t.raw, group, items: [item] });
+        }
+        continue;
+      }
+    }
+    merged.push(t);
+  }
+  merged.links = tokens.links;
+  return marked.parser(merged);
+}
+
+/** h2/h3 headingهای متن (برای «در این صفحه»). */
 export function extractToc(md, marked = createMarked()) {
   const toc = [];
   for (const t of marked.lexer(md)) {
-    if (t.type === "heading" && t.depth === 2) {
+    if (t.type === "heading" && (t.depth === 2 || t.depth === 3)) {
       const m = /\s*\{#([\w-]+)\}\s*$/.exec(t.raw.trim());
       const text = t.text.replace(/\s*\{#[\w-]+\}\s*$/, "").replace(/[`*]/g, "");
-      toc.push({ id: m ? m[1] : slugify(t.raw), text });
+      toc.push({ id: m ? m[1] : slugify(t.raw), text, level: t.depth });
     }
   }
   return toc;

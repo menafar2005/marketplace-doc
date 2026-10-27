@@ -1,54 +1,81 @@
-// JS سمت مرورگر (کپی کد، تب‌ها، جستجو، تم، TOC). بدون وابستگی.
+// JS سمت مرورگر: تب‌های کد (همگام‌شده در کل صفحه)، کپی، جستجو، تم، TOC فعال. بدون وابستگی.
 export const clientJs = `
 (function () {
   var doc = document;
   function $(s, r) { return (r || doc).querySelector(s); }
   function $all(s, r) { return Array.prototype.slice.call((r || doc).querySelectorAll(s)); }
-  function copy(text, btn) {
-    var done = function () { var t = btn.textContent; btn.textContent = "Copied"; setTimeout(function () { btn.textContent = t; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(done, function () {}); }
-  }
+  var store = {
+    get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  };
 
-  // کپی کد
+  // ---- بلوک‌های کد: انتخاب تب برای همه‌ی بلوک‌هایی که همان زبان را دارند ----
+  function select(label, root) {
+    $all(".cb", root).forEach(function (cb) {
+      var has = $all(".cb-tab", cb).some(function (t) { return t.getAttribute("data-label") === label; });
+      if (!has) return;
+      $all(".cb-tab", cb).forEach(function (t) { t.setAttribute("aria-selected", String(t.getAttribute("data-label") === label)); });
+      $all(".cb-panel", cb).forEach(function (p) { p.hidden = p.getAttribute("data-label") !== label; });
+    });
+    $all(".hint").forEach(function (h) { h.classList.toggle("on", h.getAttribute("data-for") === label); });
+  }
+  var saved = store.get("codeTab");
+  if (saved) select(saved);
+  var firstHint = $(".hint");
+  if (firstHint && !$(".hint.on")) { var sel = $(".cb-tab[aria-selected=true]"); if (sel) select(sel.getAttribute("data-label")); }
+
   doc.addEventListener("click", function (e) {
-    var b = e.target.closest && e.target.closest(".copy");
-    if (b) { var pre = b.closest(".code").querySelector("pre"); copy(pre.innerText, b); }
+    var tab = e.target.closest && e.target.closest(".cb-tab");
+    if (tab) {
+      var label = tab.getAttribute("data-label");
+      select(label);
+      if ($all(".cb-tab", tab.closest(".cb")).length > 1) store.set("codeTab", label);
+      return;
+    }
+    var btn = e.target.closest && e.target.closest(".cb-copy");
+    if (btn) {
+      var pre = $(".cb-panel:not([hidden])", btn.closest(".cb"));
+      if (navigator.clipboard && pre) {
+        navigator.clipboard.writeText(pre.innerText).then(function () {
+          btn.classList.add("copied");
+          setTimeout(function () { btn.classList.remove("copied"); }, 1500);
+        }, function () {});
+      }
+    }
   });
 
-  // کپی صفحه به Markdown
+  // ---- کپی صفحه به Markdown ----
   var cm = $("#copy-md");
   if (cm) cm.addEventListener("click", function () {
+    var span = $("span", cm), old = span.textContent;
     fetch(cm.getAttribute("data-src")).then(function (r) { return r.text(); }).then(function (t) {
-      var old = cm.textContent;
-      if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { cm.textContent = "کپی شد"; setTimeout(function () { cm.textContent = old; }, 1500); });
+      if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () {
+        span.textContent = "کپی شد";
+        setTimeout(function () { span.textContent = old; }, 1500);
+      });
     });
   });
 
-  // تب‌های اتصال MCP
-  $all(".tabs").forEach(function (tabs) {
-    var btns = $all("[role=tab]", tabs);
-    function pick(id) {
-      btns.forEach(function (b) { b.setAttribute("aria-selected", String(b.getAttribute("data-tab") === id)); });
-      $all("[role=tabpanel]", tabs).forEach(function (p) { p.hidden = p.id !== "panel-" + id; });
-    }
-    btns.forEach(function (b) { b.addEventListener("click", function () { pick(b.getAttribute("data-tab")); }); });
-  });
-
-  // تم
+  // ---- تم ----
   var themeBtn = $("#theme");
   if (themeBtn) themeBtn.addEventListener("click", function () {
     var root = doc.documentElement;
-    var cur = root.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-    var next = cur === "dark" ? "light" : "dark";
+    var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
     root.setAttribute("data-theme", next);
-    try { localStorage.setItem("theme", next); } catch (e) {}
+    store.set("theme", next);
   });
 
-  // سایدبار جمع‌شونده روی موبایل
+  // ---- سایدبار جمع‌شونده روی موبایل + آیتم فعال در دید ----
   var det = $(".sidebar details");
   if (det && matchMedia("(max-width: 900px)").matches) det.open = false;
+  var cur = $(".nav-list a[aria-current]");
+  var sb = $(".sidebar");
+  if (cur && sb && sb.scrollHeight > sb.clientHeight) {
+    var top = cur.getBoundingClientRect().top - sb.getBoundingClientRect().top;
+    if (top > sb.clientHeight - 80) sb.scrollTop = top - 120;
+  }
 
-  // جستجو
+  // ---- جستجو ----
   var q = $("#q"), box = $("#results"), timer, seq = 0;
   function render(items) {
     box.innerHTML = "";
@@ -73,12 +100,16 @@ export const clientJs = `
     });
     doc.addEventListener("click", function (e) { if (!e.target.closest(".search")) box.hidden = true; });
     doc.addEventListener("keydown", function (e) {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); q.focus(); q.select(); }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        if (det) det.open = true;
+        q.focus(); q.select();
+      }
       if (e.key === "Escape") { box.hidden = true; }
     });
   }
 
-  // TOC فعال
+  // ---- TOC فعال ----
   var links = $all(".toc a[href^='#']");
   if (links.length && "IntersectionObserver" in window) {
     var map = {};
@@ -90,7 +121,7 @@ export const clientJs = `
           map[en.target.id].classList.add("on");
         }
       });
-    }, { rootMargin: "0px 0px -70% 0px" });
+    }, { rootMargin: "-60px 0px -70% 0px" });
     Object.keys(map).forEach(function (id) { var h = doc.getElementById(id); if (h) io.observe(h); });
     links[0].classList.add("on");
   }

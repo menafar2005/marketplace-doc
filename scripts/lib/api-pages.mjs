@@ -1,5 +1,6 @@
 // تولید صفحه‌های مرجع API (Markdown و HTML) از spec/endpoints.mjs
-import { escapeHtml, codeFigure } from "./markdown.mjs";
+import { escapeHtml, codeTabs } from "./markdown.mjs";
+import { samplesFor } from "./samples.mjs";
 
 const METHOD_CLASS = { GET: "m-get", POST: "m-post", PUT: "m-put", PATCH: "m-put", DELETE: "m-delete" };
 
@@ -101,8 +102,8 @@ export function endpointHtml(ep) {
     `</tbody></table></div>` +
     `</div>` +
     `<aside class="endpoint-code" aria-label="نمونه کد">` +
-    codeFigure(ep.request, 'bash title="cURL"') +
-    codeFigure(ep.response, 'json title="Response 200"') +
+    codeTabs(samplesFor(ep)) +
+    codeTabs([{ label: "200 OK", lang: "json", code: ep.response }]) +
     `</aside></section>`
   );
 }
