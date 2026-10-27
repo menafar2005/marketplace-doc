@@ -4,7 +4,7 @@ import { readdirSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { execSync } from "node:child_process";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createMarked, extractToc, plainText } from "./lib/markdown.mjs";
+import { createMarked, extractToc, plainText, renderMarkdown } from "./lib/markdown.mjs";
 import { groupMarkdown, groupHtml, groupToc } from "./lib/api-pages.mjs";
 import { groups, baseUrl } from "../spec/endpoints.mjs";
 
@@ -58,7 +58,7 @@ for (const file of readdirSync(contentDir).filter((f) => f.endsWith(".md")).sort
     lead: meta.lead,
     description: meta.description || meta.lead,
     md,
-    html: marked.parse(md),
+    html: renderMarkdown(md, marked),
     toc: extractToc(md, marked),
   });
 }
