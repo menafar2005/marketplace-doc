@@ -37,7 +37,7 @@ src/                  Worker: سایت، MCP، جستجو، scaffold و validate
 
 ## Deploy و نسخه‌بندی
 
-`.github/workflows/deploy.yml` روی هر push به `main` اجرا می‌شود: `npm ci` ← `npm test` ← `wrangler deploy --tag <sha>`.
+**production فقط از شاخه‌ی `main` deploy می‌شود.** `.github/workflows/deploy.yml` روی هر push به `main` اجرا می‌شود (روی PRها فقط تست اجرا می‌شود و شاخه‌های دیگر هرگز deploy نمی‌کنند): `npm ci` ← `npm test` ← `wrangler deploy --tag <sha>`.
 هر deploy یک **Version** جدید در Cloudflare است (Workers › didar-developers-docs › Deployments)؛ برای rollback همان‌جا یا `npx wrangler rollback`.
 
 **یک‌بار** در GitHub › Settings › Secrets and variables › Actions این دو secret را بساز:
