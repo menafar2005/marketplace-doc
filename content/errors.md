@@ -1,7 +1,7 @@
 ---
-title: خطاها
+title: کدهای وضعیت HTTP
 section: reference
-order: 50
+order: 4
 lead: قرارداد خطا پایدار است. تصمیم برنامه را بر اساس HTTP status و error.code بگیر و traceId را برای پیگیری نگه دار.
 description: envelope خطای مارکت‌پلیس، HTTP statusها با رفتار پیشنهادی، و همه‌ی کدهای خطا.
 ---
@@ -35,4 +35,4 @@ description: envelope خطای مارکت‌پلیس، HTTP statusها با رف
 
 <!--ERROR_TABLE-->
 
-راهنمای رفتار امن در برابر خطا و retry: [امنیت](/security#errors).
+راهنمای رفتار امن در برابر خطا و retry: [چک‌لیست امنیت](/security#errors). کدهای خطای تبادل launchCode: [Runtime Token](/runtime-token#errors).

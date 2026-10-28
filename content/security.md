@@ -1,7 +1,7 @@
 ---
-title: امنیت
+title: چک‌لیست امنیت
 section: start
-order: 30
+order: 41
 lead: پلاگین تو به داده‌ی مشتری‌های دیگران دسترسی دارد. این صفحه قواعدی را که همیشه باید رعایت شوند و چک‌لیست پیش از انتشار را یک‌جا آورده است.
 description: نگهداری secretها، مرز اعتماد Runtime Context، CORS، retry و idempotency و چک‌لیست امنیتی پیش از انتشار اپ مارکت‌پلیس دیدار.
 ---
@@ -47,3 +47,9 @@ description: نگهداری secretها، مرز اعتماد Runtime Context، C
 - [ ] `traceId` خطاها برای پشتیبانی ثبت می‌شود، بدون token.
 
 فهرست کامل statusها و کدهای خطا: [مرجع خطاها](/errors).
+
+## بعد از این بخوان {#read-next}
+
+- [Runtime Token](/runtime-token)
+- [Client ID و Client secret](/client-id-and-client-secret)
+- [خطاها](/errors)
