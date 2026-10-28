@@ -73,7 +73,114 @@ const idFromDidar = (page, name, extra) => {
 
 const basic = (def) => build({ scope: { read: "basicinfo" }, ...def });
 
+// ---- endpointهای خود مارکت‌پلیس: با credentials اپ (ClientId / ClientSecret در بدنه) صدا زده می‌شوند، نه با Runtime Token ----
+const APP_BASE = "https://app.didar.me";
+const body = (name, type, description) => ({ name, in: "body", type, required: true, description, sections: [] });
+const field = (name, type, description) => ({ name, type, description });
+function market(def) {
+  const pretty = JSON.stringify(def.body, null, 2);
+  return {
+    id: def.id, title: def.title, method: def.method, path: def.path, baseUrl: def.baseUrl, auth: "client",
+    summary: def.summary, scope: null, context: def.when,
+    params: def.params, bodyNote: null, responseFields: def.responseFields, notes: def.notes || [], errors: def.errors,
+    request: `curl --location '${def.baseUrl}${def.path}' \\\n--header 'Content-Type: application/json' \\\n--data-raw '${pretty}'`,
+    response: JSON.stringify(def.response, null, 2),
+  };
+}
+
 export const groups = [
+  {
+    id: "marketplace", page: "api-auth", title: "نصب و توکن", entity: "endpointهای مارکت‌پلیس",
+    intro:
+      "این دو endpoint قلب اتصال اپ به دیدار هستند: یکی نصب را کامل می‌کند و دیگری هر اجرای اکستنشن را به یک Runtime Token تبدیل می‌کند. هیچ‌کدام Bearer token نمی‌خواهند؛ اپ با ClientId و ClientSecret خودش هویتش را ثابت می‌کند، پس فقط از backend صدا زده می‌شوند.",
+    endpoints: [
+      market({
+        id: "complete-installation", title: "تکمیل نصب", method: "POST", baseUrl: APP_BASE, path: "/api/MarketplaceInstall/CompleteInstallation",
+        summary: "بعد از اینکه کاربر نصب را در دیدار تأیید کرد، دیدار او را با یک code به CallbackUrl اپ برمی‌گرداند. backend اپ این code را همراه credentials خودش به این endpoint می‌فرستد تا نصب کامل شود و نتیجه‌ی نصب (BizDomain، scopeها و کلید نصب) را بگیرد.",
+        when: "یک‌بار به‌ازای هر نصب، داخل handler مسیر CallbackUrl. server-to-server است و به احراز هویت کاربر دیدار نیاز ندارد.",
+        params: [
+          body("Code", "string", "مقدار پارامتر `code` که دیدار در query به CallbackUrl اپ فرستاده است."),
+          body("ClientId", "string", "شناسه‌ی عمومی اپ؛ در Developer Hub، تب OAuth & access scopes."),
+          body("ClientSecret", "string", "secret اپ؛ در Developer Hub، تب OAuth & access scopes. فقط در backend و secret store نگه‌داری شود."),
+        ],
+        body: { Code: "INSTALLATION_CODE", ClientId: "YOUR_CLIENT_ID", ClientSecret: "YOUR_CLIENT_SECRET" },
+        responseFields: [
+          field("Response.Succeeded", "boolean", "موفق بودن تکمیل نصب."),
+          field("Response.Data.InstallationId", "integer", "شناسه‌ی این نصب."),
+          field("Response.Data.AppPublicId", "string", "شناسه‌ی عمومی اپ؛ در صفحه‌ی تنظیمات همان `runtimeId` است."),
+          field("Response.Data.BizDomainId", "string", "کسب‌وکاری که اپ رویش نصب شد. نتیجه‌ی نصب را با این کلید ذخیره کن؛ یک اپ می‌تواند روی چند BizDomain نصب شود."),
+          field("Response.Data.ApiKey", "string", "کلید نصب. فقط رمزگذاری‌شده در secret store نگه‌داری شود."),
+          field("Response.Data.Scopes", "string[]", "scopeهایی که کاربر هنگام نصب تأیید کرد."),
+          field("Response.Data.InstalledAt", "string", "زمان نصب (UTC)."),
+          field("Response.Error", "object | null", "در خطا پر می‌شود."),
+          field("Response.Meta.TraceId", "string", "شناسه‌ی پیگیری برای پشتیبانی."),
+        ],
+        notes: [
+          "پاسخ این endpoint قالب پاسخ دیدار را دارد (PascalCase و بیرونی‌ترین کلید `Response`)، نه envelope استاندارد مارکت‌پلیس (`succeeded` / `data` با camelCase).",
+          "پیش از صدا زدن این endpoint، مقدار `state` برگشتی در callback را با مقداری که پیش از redirect ساخته‌ای مقایسه کن.",
+        ],
+        errors: [
+          { status: "—", code: "INVALID_CLIENT_CREDENTIALS", meaning: "ClientId یا ClientSecret اشتباه است؛ اگر secret را در Developer Hub عوض کرده‌ای، مقدار جدید را در config بگذار." },
+        ],
+        response: {
+          Response: {
+            Succeeded: true,
+            Data: {
+              InstallationId: 14, AppPublicId: "d38a8368-645d-4181-bc14-0e7b65020b5a", BizDomainId: "ffc39d03-0fcf-467d-88cc-b645ad92bf7c",
+              ApiKey: "INSTALLATION_API_KEY", Scopes: ["basicinfo", "deals", "activities.fullaccess"], InstalledAt: "2026-09-29T09:55:22Z",
+            },
+            Error: null,
+            Meta: { TraceId: "TRACE_ID", CorrelationId: null },
+          },
+        },
+      }),
+      market({
+        id: "runtime-token", title: "دریافت Runtime Token", method: "POST", baseUrl: BASE, path: "/api/v1/runtime/token",
+        summary: "هر بار که کاربر یک اکستنشن یا صفحه‌ی تنظیمات اپ را در دیدار باز می‌کند، دیدار یک launchCode یک‌بارمصرف به URL اپ اضافه می‌کند. backend اپ این کد را با این endpoint به یک Runtime Token (JWT کوتاه‌عمر) و Runtime Context همان اجرا تبدیل می‌کند. همه‌ی درخواست‌های داده‌ی دیدار با همین token فرستاده می‌شوند.",
+        when: "یک‌بار در شروع هر اجرا، داخل endpointی که برای اکستنشن یا صفحه‌ی تنظیمات ثبت کرده‌ای.",
+        params: [
+          body("launchCode", "string", "مقدار query parameter `launchCode` که دیدار به URL اپ اضافه کرده. یک‌بارمصرف و کوتاه‌عمر است؛ ذخیره یا log نشود."),
+          body("clientId", "string", "شناسه‌ی عمومی اپ (همان Client ID در Developer Hub)."),
+          body("clientSecret", "string", "secret اپ (همان Client secret در Developer Hub). فقط در backend."),
+        ],
+        body: { launchCode: "ONE_TIME_CODE", clientId: "YOUR_CLIENT_ID", clientSecret: "YOUR_CLIENT_SECRET" },
+        responseFields: [
+          field("data.accessToken", "string", "Runtime Token. در هدر `Authorization: Bearer` همه‌ی درخواست‌های داده‌ی دیدار فرستاده می‌شود."),
+          field("data.tokenType", "string", "همیشه `Bearer`."),
+          field("data.expiresInSeconds", "integer", "عمر token به ثانیه (در نمونه 300). برای اجرای بعدی reuse نشود."),
+          field("data.context.target", "string", "`extension` یا `settings_page`."),
+          field("data.context.runtimeId", "string", "شناسه‌ی runtime اکستنشن؛ در صفحه‌ی تنظیمات، شناسه‌ی عمومی اپ."),
+          field("data.context.location", "integer | null", "محل اجرای اکستنشن (جدول Locationها در صفحه‌ی اکستنشن‌ها)؛ در صفحه‌ی تنظیمات `null`."),
+          field("data.context.entityType", "string | null", "`deal`، `case`، `person` یا `company`؛ در صفحه‌ی تنظیمات `null`."),
+          field("data.context.entityIds", "string[]", "entityهایی که این اجرا اجازه‌ی کار روی آن‌ها را دارد. در صفحه‌های لیست ممکن است چند شناسه باشد."),
+          field("data.context.payload", "object", "مقادیر فرم JSON با همان keyهای schema؛ untrusted input است و باید در backend دوباره validate شود."),
+          field("meta.traceId", "string", "شناسه‌ی پیگیری برای پشتیبانی."),
+        ],
+        notes: [
+          "تنها context معتبر همین پاسخ است. مقادیر query یا هر شناسه‌ای که frontend بفرستد context امنیتی نیست.",
+          "در 401 یا 410 token را refresh نکن؛ کاربر باید اکستنشن را دوباره اجرا کند تا launchCode تازه ساخته شود.",
+        ],
+        errors: [
+          { status: "401", code: "INVALID_CLIENT_CREDENTIALS", meaning: "ClientId یا ClientSecret معتبر نیست." },
+          { status: "—", code: "LAUNCH_CODE_INVALID", meaning: "کد ناشناخته است یا متعلق به این اپ نیست." },
+          { status: "409", code: "LAUNCH_CODE_ALREADY_USED", meaning: "کد قبلاً مصرف شده است؛ launch تازه بگیر." },
+          { status: "410", code: "LAUNCH_CODE_EXPIRED", meaning: "زمان اعتبار کد تمام شده؛ کاربر باید اکستنشن را دوباره اجرا کند." },
+        ],
+        response: {
+          succeeded: true,
+          data: {
+            accessToken: "eyJhbGciOi...", tokenType: "Bearer", expiresInSeconds: 300,
+            context: {
+              target: "extension", runtimeId: "11a16d52-b89a-4d0f-ac51-55b2b8161ba7", location: 2, entityType: "deal",
+              entityIds: ["704e1533-cb4b-42d7-895d-ef71ff32ba5b"], payload: { customerEmail: "customer@example.com" },
+            },
+          },
+          error: null,
+          meta: { traceId: "TRACE_ID", correlationId: null, timestampUtc: "2026-09-30T10:00:00Z" },
+        },
+      }),
+    ],
+  },
   {
     id: "basic", page: "api-basic", title: "اطلاعات پایه", entity: "اطلاعات پایه دیدار",
     intro:

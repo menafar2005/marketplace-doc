@@ -1,5 +1,5 @@
 // اسکلت backend اپ دیدار برای ابزار MCP «scaffold_plugin».
-// همه‌ی endpointها و قواعد از صفحه‌های همین داک آمده‌اند (quick-start، installation، runtime، extensions).
+// همه‌ی endpointها و قواعد از صفحه‌های همین داک آمده‌اند (installation، launch، crm-data، extensions).
 import { spec } from "./generated/content.js";
 
 const KNOWN = new Set(spec.platform.scopes.map((s) => s.name));
@@ -87,7 +87,7 @@ export async function proxy(accessToken, method, path, body) {
       content: `# ${name}\n\nاسکلت اپ دیدار (${extension}).\n\n1. \`cp .env.example .env\` و مقادیر را پر کن\n2. \`npm install && npm start\`\n3. callback نصب: \`/install/callback\`، launch: \`/api/launch\` (هر دو باید HTTPS عمومی باشند)\n\nscopeهای درخواستی: ${scopes.length ? scopes.join(", ") : "[scope]"}\n`,
     },
   ];
-  return { name, extension, scopes, files, notes, docs: [`${origin}/quick-start`, `${origin}/installation`, `${origin}/runtime`, `${origin}/extensions`] };
+  return { name, extension, scopes, files, notes, docs: [`${origin}/create-app`, `${origin}/installation`, `${origin}/launch`, `${origin}/crm-data`, `${origin}/extensions`] };
 }
 
 function serverJs(extension) {

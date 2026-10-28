@@ -1,35 +1,62 @@
 ---
-title: مفاهیم پایه API
+title: مقدمه‌ی API
 section: reference
-order: 6
-lead: این صفحه کمک می‌کند هر endpoint پروکسی را بدون حدس صدا بزنی: آدرس پایه، احراز هویت، scopeها، envelope پاسخ و قاعده‌ی بدنه‌ها.
-description: آدرس پایه، Bearer token، scopeها، Runtime Context، envelope استاندارد و قاعده‌ی بدنه‌ی OpenAPI در APIهای پروکسی مارکت‌پلیس.
+order: 1
+lead: همه‌ی endpointهای مارکت‌پلیس در یک صفحه: کدام دامنه، کدام احراز هویت، چه قالب پاسخی، و هر endpoint کجای این مرجع است.
+description: دامنه‌ها، دو نوع احراز هویت (credentials اپ و Runtime Token)، scopeها، Runtime Context، envelope پاسخ و فهرست همه‌ی endpointهای مارکت‌پلیس دیدار.
 ---
 
-## آدرس پایه و احراز هویت {#base}
+## سه دسته endpoint {#groups}
 
-همه‌ی endpointها روی `https://marketplace.didar.me` هستند و به Runtime Bearer Token نیاز دارند، به‌جز endpoint تبدیل `launchCode` که Bearer نمی‌خواهد.
+| دسته | چه کسی صدا می‌زند | احراز هویت | مرجع |
+| --- | --- | --- | --- |
+| **نصب و توکن** | سرور تو ← دیدار / مارکت‌پلیس | Client ID و Client secret در بدنه | [نصب و توکن](/api-auth) |
+| **داده‌ی دیدار** (API پروکسی) | سرور تو ← مارکت‌پلیس | `Authorization: Bearer <Runtime Token>` | [اطلاعات پایه](/api-basic)، [معامله](/api-deals)، [پرونده](/api-cases)، [شخص و شرکت](/api-contacts)، [فعالیت و یادداشت](/api-activities) |
+| **endpointهای اپ تو** | دیدار ← سرور تو | `code` یا `launchCode` در query | [endpointهای اپ تو](/api-app-endpoints) |
 
-```bash title="الگوی مشترک درخواست"
+## همه‌ی endpointها {#all}
+
+| Method | URL | کار |
+| --- | --- | --- |
+| `POST` | `https://app.didar.me/api/MarketplaceInstall/CompleteInstallation` | [تکمیل نصب](/api-auth#complete-installation) |
+| `POST` | `https://marketplace.didar.me/api/v1/runtime/token` | [دریافت Runtime Token](/api-auth#runtime-token) |
+| `GET` | `/api/v1/proxy/biz-domain/info` | [اطلاعات BizDomain](/api-basic#biz-domain-info) |
+| `GET` | `/api/v1/proxy/activity-types` | [انواع فعالیت](/api-basic#activity-types) |
+| `GET` | `/api/v1/proxy/lost-reasons` | [دلایل شکست معامله](/api-basic#lost-reasons) |
+| `GET` | `/api/v1/proxy/pipelines/deals` و `/cases` | [کاریزها](/api-basic#pipelines-deals) |
+| `GET` | `/api/v1/proxy/pipeline-stages/deals` و `/cases` | [مراحل کاریز](/api-basic#pipeline-stages-deals) |
+| `GET` | `/api/v1/proxy/labels/deals` و `/cases` | [برچسب‌ها](/api-basic#labels-deals) |
+| `GET` | `/api/v1/proxy/users` | [کاربران](/api-basic#users) |
+| `GET` / `PUT` | `/api/v1/deals/{dealId}` | [دریافت](/api-deals#deal-get) و [ویرایش](/api-deals#deal-update) معامله |
+| `GET` / `PUT` | `/api/v1/cases/{caseId}` | [دریافت](/api-cases#case-get) و [ویرایش](/api-cases#case-update) پرونده |
+| `GET` / `PUT` | `/api/v1/contacts/persons/{personId}` | [دریافت](/api-contacts#person-get) و [ویرایش](/api-contacts#person-update) شخص |
+| `GET` / `PUT` | `/api/v1/contacts/companies/{companyId}` | [دریافت](/api-contacts#company-get) و [ویرایش](/api-contacts#company-update) شرکت |
+| `POST` | `/api/v1/activities/search` | [جستجوی فعالیت](/api-activities#activity-search) |
+| `GET` / `PUT` | `/api/v1/activities/{activityId}` | [دریافت](/api-activities#activity-get) و [ویرایش](/api-activities#activity-update) فعالیت |
+| `POST` | `/api/v1/activities` | [ساخت فعالیت](/api-activities#activity-create) |
+| `POST` / `PUT` | `/api/v1/notes` و `/api/v1/notes/{noteId}` | [ساخت](/api-activities#note-create) و [ویرایش](/api-activities#note-update) یادداشت |
+
+مسیرهای بدون دامنه روی `https://marketplace.didar.me` هستند.
+
+## احراز هویت {#auth}
+
+**نصب و توکن:** بدون هدر Authorization. اپ با `ClientId` / `ClientSecret` (برای تکمیل نصب) یا `clientId` / `clientSecret` (برای Runtime Token) در بدنه هویتش را ثابت می‌کند. این درخواست‌ها فقط از backend فرستاده می‌شوند.
+
+**داده‌ی دیدار:** هر درخواست هدر Runtime Token را دارد:
+
+```bash title="الگوی مشترک درخواست داده"
 curl --location 'https://marketplace.didar.me/api/v1/proxy/activity-types' \
-  --header 'Authorization: Bearer RUNTIME_ACCESS_TOKEN' \
-  --header 'Accept: application/json'
+--header 'Authorization: Bearer RUNTIME_ACCESS_TOKEN' \
+--header 'Accept: application/json'
 ```
 
-## بدنه‌ها دقیقاً مثل API دیدار {#openapi}
-
-بدنه‌ی endpointهای پروکسی دقیقاً بدنه‌ی endpointهای OpenAPI دیدار است و همان مقادیر را می‌گیرد و برمی‌گرداند. پس برای ساختار، نوع و توضیح هر پراپرتی همان API reference دیدار مرجع است؛ جدول پارامترهای این داک از آن گرفته شده‌اند. تفاوت‌ها فقط این‌هاست:
-
-- **شناسه در route می‌آید.** به‌جای فیلد `Id` در بدنه‌ی GET، شناسه در مسیر است؛ برای PUT، شناسه‌ی بدنه (مثل `Deal.Id`) باید با route برابر باشد.
-- **احراز هویت با Runtime Token است**، نه `apikey` در query. کلید API دیدار فقط در سمت سرور مارکت‌پلیس استفاده می‌شود.
-- **context بررسی می‌شود.** علاوه بر scope، نوع و شناسه‌های entity داخل Runtime Context هم کنترل می‌شود.
-
-> [!WARNING]
-> **حساسیت نام فیلدها.** نام و casing فیلدهای JSON را دقیقاً مطابق نمونه‌ها ارسال کن؛ از جمله `Deal`، `Case`، `Contact`، `Activity` و `ContactIds`.
+مارکت‌پلیس نصب، scope و context را از token درمی‌آورد. فرستادن `BizDomainId` یا کلید API دیدار لازم نیست.
 
 ## Scope و Runtime Context {#scopes}
 
-| Resource | Read scope | Write scope |
+هر درخواست داده دو بار چک می‌شود: اپ باید scope لازم را داشته باشد، و رکورد باید جزو `entityIds` همان اجرا باشد.
+
+| Resource | scope خواندن | scope نوشتن |
 | --- | --- | --- |
 | اطلاعات پایه | `basicinfo` | — |
 | Deal | `deals` یا `deals.fullaccess` | `deals.fullaccess` |
@@ -37,9 +64,9 @@ curl --location 'https://marketplace.didar.me/api/v1/proxy/activity-types' \
 | Person / Company | `contacts` یا `contacts.fullaccess` | `contacts.fullaccess` |
 | Activity / Note | `activities` یا `activities.fullaccess` | `activities.fullaccess` |
 
-## envelope استاندارد {#envelope}
+## قالب پاسخ {#envelope}
 
-پاسخ موفق در envelope استاندارد مارکت‌پلیس قرار می‌گیرد. مقدار `data.Response` بسته به endpoint یک object یا array است.
+پاسخ endpointهای `marketplace.didar.me` در envelope استاندارد مارکت‌پلیس است. در APIهای داده، `data.Response` همان پاسخ API دیدار است و بسته به endpoint یک object یا array است:
 
 ```json title="Response 200"
 {
@@ -53,17 +80,20 @@ curl --location 'https://marketplace.didar.me/api/v1/proxy/activity-types' \
 }
 ```
 
-خطاها: [امنیت و خطاها](/security-errors).
+`CompleteInstallation` روی `app.didar.me` است و قالب پاسخ دیدار را دارد (PascalCase، داخل `Response`). [جزئیات](/api-auth#complete-installation)
 
-## فهرست endpointها {#endpoints}
+## بدنه‌ها دقیقاً مثل API دیدار {#openapi}
 
-| صفحه | شامل |
-| --- | --- |
-| [اطلاعات پایه](/api-basic) | BizDomain، انواع فعالیت، دلایل شکست، pipelineها، stageها، labelها، کاربران |
-| [معامله](/api-deals) | دریافت و ویرایش |
-| [پرونده](/api-cases) | دریافت و ویرایش |
-| [شخص و شرکت](/api-contacts) | دریافت و ویرایش |
-| [فعالیت و یادداشت](/api-activities) | جستجو، دریافت، ساخت، ویرایش |
+بدنه‌ی endpointهای داده دقیقاً بدنه‌ی API دیدار است و جدول پارامترهای این مرجع از مستندات رسمی API دیدار آمده است. سه تفاوت:
+
+- **شناسه در مسیر است.** برای GET، شناسه در route می‌آید؛ برای PUT، شناسه‌ی بدنه (مثل `Deal.Id`) باید با route برابر باشد.
+- **احراز هویت با Runtime Token است**، نه `apikey` در query.
+- **context هم چک می‌شود**، نه فقط scope.
+
+> [!WARNING]
+> نام و casing فیلدها را دقیقاً مطابق نمونه‌ها بفرست؛ از جمله `Deal`، `Case`، `Contact`، `Activity` و `ContactIds`.
+
+خطاها: [مرجع خطاها](/errors).
 
 > [!NOTE]
-> **MCP وصل است؟** از `get_api_spec` برای گرفتن مشخصات دقیق هر endpoint استفاده کن. [اتصال به MCP](/build-with-mcp)
+> **MCP وصل است؟** ابزار `get_api_spec` مشخصات دقیق هر endpoint را برمی‌گرداند. [اتصال به MCP](/build-with-mcp)

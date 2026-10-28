@@ -15,7 +15,7 @@
 
 ```
 content/*.md          صفحه‌های راهنما و مرجع (frontmatter: title, section, order, lead)
-spec/endpoints.mjs    مشخصات endpointهای پروکسی؛ صفحه‌های API و ابزار get_api_spec از همین ساخته می‌شوند
+spec/endpoints.mjs    مشخصات همه‌ی endpointها (نصب، توکن، پروکسی)؛ صفحه‌های API و ابزار get_api_spec از همین ساخته می‌شوند
 spec/platform.json    scopeها، locationها، خطاها (منبع list_scopes، list_extensions، list_error_codes)
 scripts/build.mjs     content + spec  →  src/generated/content.js
 src/                  Worker: سایت، MCP، جستجو، scaffold و validate
@@ -24,8 +24,15 @@ src/                  Worker: سایت، MCP، جستجو، scaffold و validate
 ### منبع محتوا
 
 - محتوای فنی از بسته‌ی مستندات رسمی Marketplace (zip) گرفته شده و منبع حقیقت است.
+- رفتار Developer Hub (ساخت و ویرایش اپ، scopeها، انواع اکستنشن، ظرفیت Locationها، Refresh کردن Client secret، Change to live و حذف) از یوزراستوری‌های پروژه و دیزاین Figma آن گرفته شده است.
 - بدنه‌ی endpointهای پروکسی دقیقاً از API reference دیدار (OpenAPI) است؛ نام، casing، نوع و الزام هر فیلد در `spec/endpoints.mjs` با آن تطبیق داده شده.
-- مقدار نامعلوم هرگز حدس زده نمی‌شود (صفحه‌های «حساب و محیط تست» و «ثبت و مدیریت اپ» بخش «هنوز مستند نشده» دارند).
+- مقدار نامعلوم هرگز حدس زده نمی‌شود؛ صفحه‌هایی که موضوع بازی دارند بخش «هنوز مستند نشده» دارند.
+
+### ساختار داک
+
+- **راهنما:** مارکت‌پلیس را بشناس (معرفی، مفاهیم، چرخه‌ی کار) ← اولین پلاگینت را بساز (۵ قدم) ← قابلیت‌ها ← امنیت.
+- **مرجع API:** مقدمه ← نصب و توکن (`CompleteInstallation`، `runtime/token`) و endpointهای اپ تو ← داده‌ی دیدار (پروکسی) ← خطاها.
+- slugهای قدیمی با 301 به صفحه‌ی جدید می‌روند (`MOVED` در `src/worker.js`).
 
 ## ویرایش داک
 

@@ -44,7 +44,7 @@ test("every endpoint has unique id, path and sample request/response JSON", () =
     for (const e of g.endpoints) {
       assert.ok(!ids.has(e.id), e.id);
       ids.add(e.id);
-      assert.ok(e.path.startsWith("/api/v1/"), e.path);
+      assert.ok(e.path.startsWith("/api/"), e.path);
       assert.doesNotThrow(() => JSON.parse(e.response), e.id);
       const m = /--data-raw '([\s\S]*)'$/.exec(e.request);
       if (m) assert.doesNotThrow(() => JSON.parse(m[1]), e.id);
@@ -70,7 +70,7 @@ test("MCP handshake, tools and notifications", async () => {
 
 test("search_docs finds launch code docs", async () => {
   const r = await call("search_docs", { query: "launch code منقضی" });
-  assert.match(r.content[0].text, /runtime|security-errors|quick-start/);
+  assert.match(r.content[0].text, /launch|api-auth|errors/);
 });
 
 test("get_api_spec resolves by id, by method+path with real ids, and by query", async () => {
@@ -107,7 +107,8 @@ test("multi-language samples are generated for every endpoint", async () => {
       assert.deepEqual(s.map((x) => x.label), ["cURL", "Python", "JavaScript", "TypeScript", "Go", "PHP", "Ruby", "Java", "C#"], e.id);
       const js = s.find((x) => x.label === "JavaScript").code;
       assert.doesNotThrow(() => new Function(`return (async () => {${js}})`), e.id);
-      assert.ok(s.every((x) => x.code.includes("RUNTIME_ACCESS_TOKEN")), e.id);
+      if (e.auth === "client") assert.ok(s.every((x) => !x.code.includes("RUNTIME_ACCESS_TOKEN") && /client_?secret/i.test(x.code)), e.id);
+      else assert.ok(s.every((x) => x.code.includes("RUNTIME_ACCESS_TOKEN")), e.id);
     }
   }
 });
@@ -150,4 +151,38 @@ test("header has no GitHub or llms.txt links", async () => {
   const home = await (await get("/")).text();
   const header = /<header class="topbar">[\s\S]*?<\/header>/.exec(home)[0];
   assert.doesNotMatch(header, /github|llms\.txt/i);
+});
+
+test("marketplace install and token endpoints are in the API reference", async () => {
+  const auth = spec.groups.find((g) => g.id === "marketplace");
+  assert.deepEqual(auth.endpoints.map((e) => e.id), ["complete-installation", "runtime-token"]);
+  const html = await (await get("/api-auth")).text();
+  assert.match(html, /https:\/\/app\.didar\.me\/api\/MarketplaceInstall\/CompleteInstallation/);
+  assert.match(html, /https:\/\/marketplace\.didar\.me\/api\/v1\/runtime\/token/);
+  assert.match(html, /فیلدهای پاسخ/);
+  const tok = JSON.parse((await call("get_api_spec", { method: "POST", path: "/api/v1/runtime/token" })).content[0].text);
+  assert.equal(tok.id, "runtime-token");
+  assert.equal(tok.url, "https://marketplace.didar.me/api/v1/runtime/token");
+  assert.doesNotMatch(tok.auth, /Bearer <Runtime Token>/);
+  const inst = JSON.parse((await call("get_api_spec", { id: "complete-installation" })).content[0].text);
+  assert.equal(inst.url, "https://app.didar.me/api/MarketplaceInstall/CompleteInstallation");
+});
+
+test("old page slugs redirect to their new home", async () => {
+  for (const [from, to] of [["/quick-start", "/launch"], ["/anatomy", "/how-it-works"], ["/security-errors.md", "/errors.md"], ["/glossary", "/concepts#glossary"]]) {
+    const r = await get(from);
+    assert.equal(r.status, 301, from);
+    assert.equal(r.headers.get("location"), to, from);
+  }
+});
+
+test("every page in the sidebar exists and every page is in the sidebar", async () => {
+  const html = await (await get("/introduction")).text();
+  for (const s of ["introduction", "concepts", "how-it-works", "create-app", "installation", "launch", "crm-data", "go-live", "extensions", "settings-page", "manage-app", "security"]) {
+    assert.match(html, new RegExp(`href="/${s}"`), s);
+  }
+  const api = await (await get("/api-concepts")).text();
+  for (const s of ["api-concepts", "api-auth", "api-app-endpoints", "api-basic", "api-deals", "api-cases", "api-contacts", "api-activities", "errors"]) {
+    assert.match(api, new RegExp(`href="/${s}"`), s);
+  }
 });

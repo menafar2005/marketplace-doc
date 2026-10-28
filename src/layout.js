@@ -35,13 +35,16 @@ const TABS = [
 ];
 const NAV = {
   guide: [
-    { title: "شروع", items: ["introduction", "anatomy", "quick-start", "test-environment", "glossary"] },
-    { title: "اپ و اجرا", items: ["app-registration", "installation", "runtime", "extensions", "settings-page"] },
-    { title: "امنیت", items: ["security-errors"] },
+    { title: "مارکت‌پلیس را بشناس", items: ["introduction", "concepts", "how-it-works"] },
+    { title: "اولین پلاگینت را بساز", items: ["create-app", "installation", "launch", "crm-data", "go-live"] },
+    { title: "قابلیت‌ها", items: ["extensions", "settings-page", "manage-app"] },
+    { title: "امنیت", items: ["security"] },
   ],
   api: [
-    { title: "مفاهیم پایه", items: ["api-concepts"] },
-    { title: "endpointها", items: ["api-basic", "api-deals", "api-cases", "api-contacts", "api-activities"] },
+    { title: "شروع", items: ["api-concepts"] },
+    { title: "نصب و اجرا", items: ["api-auth", "api-app-endpoints"] },
+    { title: "داده‌ی دیدار", items: ["api-basic", "api-deals", "api-cases", "api-contacts", "api-activities"] },
+    { title: "مرجع", items: ["errors"] },
   ],
 };
 export const bySlug = new Map(pages.map((p) => [p.slug, p]));
@@ -196,18 +199,18 @@ export function renderHome(origin) {
     codeTabs(mcpItems(origin).map(({ hint, ...r }) => r)) +
     `<a class="solid-btn lg" href="/build-with-mcp">اتصال در ۵ دقیقه ←</a></div>` +
     `<h2 id="steps">از صفر شروع می‌کنی؟ این سه قدم</h2><p>به همین ترتیب جلو برو؛ هر قدم پیش‌نیاز قدم بعدی است.</p><ol class="steps">` +
-    `<li class="step"><span class="n">۱</span><h3>بفهم</h3><p>دیدار چیست، مارکت‌پلیس چه مسئله‌ای را حل می‌کند و یک پلاگین از چه بخش‌هایی ساخته می‌شود.</p><a href="/anatomy">آناتومی یک پلاگین ←</a></li>` +
-    `<li class="step"><span class="n">۲</span><h3>وصل کن</h3><p>MCP دیدار را به ابزار AI خودت وصل کن و از آن بخواه ساختار و API را توضیح بدهد.</p><a href="/build-with-mcp">اتصال به MCP ←</a></li>` +
-    `<li class="step"><span class="n">۳</span><h3>بساز</h3><p>یک launch code را به token تبدیل کن و اولین درخواست پروکسی را بفرست.</p><a href="/quick-start">شروع سریع ←</a></li></ol>` +
+    `<li class="step"><span class="n">۱</span><h3>بفهم</h3><p>مارکت‌پلیس چیست، پلاگین کجای دیدار دیده می‌شود و شش مفهوم پایه‌ی آن چیست.</p><a href="/introduction">مارکت‌پلیس دیدار چیست؟ ←</a></li>` +
+    `<li class="step"><span class="n">۲</span><h3>تصویر کلی را ببین</h3><p>مسیر کامل یک پلاگین: ساخت اپ، نصب، اجرا و دسترسی به داده.</p><a href="/how-it-works">پلاگین چطور کار می‌کند ←</a></li>` +
+    `<li class="step"><span class="n">۳</span><h3>بساز</h3><p>در پنج قدم اولین پلاگینت را بساز، نصب کن و Live کن.</p><a href="/create-app">ساخت اپ در Developer Hub ←</a></li></ol>` +
     `<h2 id="all">همه بخش‌ها</h2><div class="cards">` +
-    card("/introduction", "info", "مارکت‌پلیس دیدار را بشناس", "دو دامنه، معماری، چرخه عمر و قواعد") +
-    card("/anatomy", "grid", "آناتومی یک پلاگین", "پنج بخش پلاگین و نقش هرکدام") +
+    card("/introduction", "info", "مارکت‌پلیس دیدار چیست؟", "مسئله، جای نمایش پلاگین و نقش‌ها") +
+    card("/concepts", "grid", "مفاهیم کلیدی", "اپ، نصب، scope، اکستنشن، اجرا و API") +
     card("/build-with-mcp", "plug", "ساخت پلاگین با MCP دیدار", "مسیر پیش‌فرض ساخت", true) +
-    card("/test-environment", "layers", "حساب و محیط تست", "چک‌لیست تست و موارد باز") +
-    card("/app-registration", "doc", "ثبت و مدیریت اپ", "ClientId، ClientSecret و آدرس‌ها") +
-    card("/installation", "lock", "احراز هویت و نصب", "نصب، CompleteInstallation و state") +
-    card("/api-concepts", "code", "API دیدار", "مفاهیم پایه، scopeها و endpointها") +
-    card("/extensions", "window", "App Extensions", "IFrame، Link، JSON و locationها") +
+    card("/create-app", "doc", "اولین پلاگینت را بساز", "آموزش پنج‌قدمی از Developer Hub تا Live") +
+    card("/extensions", "window", "اکستنشن‌ها", "Links، JSON، Custom و Locationها") +
+    card("/manage-app", "layers", "مدیریت اپ", "وضعیت‌ها، Client secret و حذف") +
+    card("/api-auth", "lock", "نصب و توکن", "CompleteInstallation و Runtime Token") +
+    card("/api-concepts", "code", "مرجع API", "همه‌ی endpointها، احراز هویت و قالب پاسخ") +
     `</div></div>`;
   return shell({
     title: "Didar Developers — مستندات توسعه‌دهنده مارکت‌پلیس دیدار",

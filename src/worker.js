@@ -13,6 +13,12 @@ const baseHeaders = (extra = {}) => ({
   ...extra,
 });
 
+// slugهای قدیمی ← صفحه‌ی جدید (لینک‌های بیرونی نشکنند)
+const MOVED = {
+  anatomy: "how-it-works", "quick-start": "launch", glossary: "concepts#glossary", "app-registration": "create-app",
+  runtime: "launch", "test-environment": "go-live", "security-errors": "errors",
+};
+
 const page = (body, type, cache = "public, max-age=60, must-revalidate") =>
   new Response(body, { headers: baseHeaders({ "content-type": type, "cache-control": cache, etag: `"${meta.shortCommit}"` }) });
 
@@ -46,6 +52,13 @@ export default {
       const limit = Math.min(20, Number(url.searchParams.get("limit")) || 8);
       const results = searchDocs(url.searchParams.get("q") || "", { limit });
       return page(JSON.stringify({ results }), "application/json; charset=utf-8", "public, max-age=60");
+    }
+
+    const old = /^\/([\w-]+)(\.md)?$/.exec(path);
+    if (old && MOVED[old[1]]) {
+      const [slug, hash] = MOVED[old[1]].split("#");
+      const to = old[2] ? `/${slug}.md` : `/${slug}${hash ? "#" + hash : ""}`;
+      return new Response(null, { status: 301, headers: baseHeaders({ location: to }) });
     }
 
     const md = /^\/([\w-]+)\.md$/.exec(path);

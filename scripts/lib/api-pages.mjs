@@ -88,6 +88,37 @@ function paramsHtml(ep) {
   return out;
 }
 
+const urlOf = (ep) => (ep.baseUrl || baseUrl) + ep.path;
+const DEFAULT_ERRORS = [
+  { status: "400", meaning: "بدنه یا پارامتر نامعتبر" },
+  { status: "401", meaning: "Runtime Token نامعتبر یا منقضی" },
+  { status: "403", meaning: "scope یا entity مجاز نیست", codes: ["PROXY_ACCESS_DENIED", "RUNTIME_ENTITY_TYPE_DENIED", "RUNTIME_ENTITY_ACCESS_DENIED"] },
+  { status: "404", meaning: "منبع پیدا نشد" },
+  { status: "502", meaning: "خطا یا timeout در دیدار", codes: ["DIDAR_PROXY_*"] },
+];
+const CLIENT_AUTH = "بدون Bearer token؛ اپ با ClientId و ClientSecret در بدنه هویتش را ثابت می‌کند. فقط از backend.";
+const RUNTIME_AUTH = "هدر Authorization: Bearer <Runtime Token>";
+
+function errorsHtml(ep) {
+  if (ep.errors) {
+    return `<div class="table-wrap"><table><thead><tr><th scope="col">کد HTTP</th><th scope="col">error.code</th><th scope="col">معنی</th></tr></thead><tbody>` +
+      ep.errors.map((e) => `<tr><td><code>${escapeHtml(e.status)}</code></td><td><code>${escapeHtml(e.code)}</code></td><td>${escapeHtml(e.meaning)}</td></tr>`).join("") +
+      `</tbody></table></div>`;
+  }
+  return `<div class="table-wrap"><table><thead><tr><th scope="col">کد HTTP</th><th scope="col">معنی</th></tr></thead><tbody>` +
+    DEFAULT_ERRORS.map((e) => `<tr><td><code>${e.status}</code></td><td>${escapeHtml(e.meaning)}${e.codes ? ` (${e.codes.map((c) => `<code>${c}</code>`).join("، ")})` : ""}</td></tr>`).join("") +
+    `</tbody></table></div>`;
+}
+
+function responseFieldsHtml(ep) {
+  if (!ep.responseFields?.length) return "";
+  return `<h3>فیلدهای پاسخ</h3><div class="params">` +
+    ep.responseFields.map((f) =>
+      `<div class="param"><div class="param-head" dir="ltr"><code class="param-name">${escapeHtml(f.name)}</code><span class="param-type">${escapeHtml(f.type)}</span></div>` +
+      `<div class="param-body">${mdHtml(f.description)}</div></div>`).join("") +
+    `</div>`;
+}
+
 const COPY_ICON =
   '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg>';
 const CHECK_ICON =
@@ -95,7 +126,7 @@ const CHECK_ICON =
 
 export function endpointHtml(ep) {
   const methodClass = METHOD_CLASS[ep.method] || "m-get";
-  const url = baseUrl + ep.path;
+  const url = urlOf(ep);
   const doc = ep.didarDoc;
   const intro = doc
     ? (doc.heading !== ep.title ? `<p class="didar-heading">${escapeHtml(doc.heading)}</p>` : "") + mdHtml(doc.intro)
@@ -110,22 +141,19 @@ export function endpointHtml(ep) {
     `<code class="ep-path">${escapeHtml(url).replace(/(\{[^}]+\})/g, '<b>$1</b>')}</code>` +
     `<button class="ep-copy" type="button" data-copy="${escapeHtml(url)}" aria-label="کپی آدرس endpoint"><span class="i-copy">${COPY_ICON}</span><span class="i-done">${CHECK_ICON}</span></button></div>` +
     intro +
-    `<div class="ep-facts"><p><strong>scope لازم</strong> ${scopeHtml(ep.scope)}</p>` +
-    (ep.context ? `<p><strong>Runtime Context</strong> ${escapeHtml(ep.context)}</p>` : "") +
+    `<div class="ep-facts"><p><strong>احراز هویت</strong> ${escapeHtml(ep.auth === "client" ? CLIENT_AUTH : RUNTIME_AUTH)}</p>` +
+    (ep.scope ? `<p><strong>scope لازم</strong> ${scopeHtml(ep.scope)}</p>` : "") +
+    (ep.context ? `<p><strong>${ep.auth === "client" ? "کی صدا زده می‌شود" : "Runtime Context"}</strong> ${escapeHtml(ep.context)}</p>` : "") +
     (ep.summary && doc ? `<p><strong>در مارکت‌پلیس</strong> ${escapeHtml(ep.summary)}</p>` : "") +
     (ep.didar ? `<p><strong>معادل در API دیدار</strong> <code>${escapeHtml(doc.operation)}</code> (<a href="${escapeHtml(doc.source)}" target="_blank" rel="noopener noreferrer" class="ext">${escapeHtml(ep.didar.split(" — ")[0])}</a>)</p>` : "") +
     `</div>` +
     paramsHtml(ep) +
+    responseFieldsHtml(ep) +
+    (ep.notes?.length ? `<h3>نکته‌ها</h3><ul>${ep.notes.map((n) => `<li>${fragment.parseInline(n)}</li>`).join("")}</ul>` : "") +
     rules +
     related +
     `<h3>خطاهای ممکن</h3>` +
-    `<div class="table-wrap"><table><thead><tr><th scope="col">کد HTTP</th><th scope="col">معنی</th></tr></thead><tbody>` +
-    `<tr><td><code>400</code></td><td>بدنه یا پارامتر نامعتبر</td></tr>` +
-    `<tr><td><code>401</code></td><td>Runtime Token نامعتبر یا منقضی</td></tr>` +
-    `<tr><td><code>403</code></td><td>scope یا entity مجاز نیست (<code>PROXY_ACCESS_DENIED</code>، <code>RUNTIME_ENTITY_TYPE_DENIED</code>، <code>RUNTIME_ENTITY_ACCESS_DENIED</code>)</td></tr>` +
-    `<tr><td><code>404</code></td><td>منبع پیدا نشد</td></tr>` +
-    `<tr><td><code>502</code></td><td>خطا یا timeout در دیدار (<code>DIDAR_PROXY_*</code>)</td></tr>` +
-    `</tbody></table></div>` +
+    errorsHtml(ep) +
     `</div>` +
     `<aside class="endpoint-code" aria-label="نمونه کد">` +
     codeTabs(samplesFor(ep)) +
@@ -157,10 +185,11 @@ function paramMd(node, depth) {
 
 export function endpointMarkdown(ep) {
   const doc = ep.didarDoc;
-  const lines = [`## ${ep.title} {#${ep.id}}`, "", `\`${ep.method} ${baseUrl}${ep.path}\``, ""];
+  const lines = [`## ${ep.title} {#${ep.id}}`, "", `\`${ep.method} ${urlOf(ep)}\``, ""];
   lines.push(doc ? `${doc.heading}\n\n${doc.intro}` : ep.summary, "");
-  lines.push(`- scope لازم: ${scopeText(ep.scope)}`);
-  if (ep.context) lines.push(`- Runtime Context: ${ep.context}`);
+  lines.push(`- احراز هویت: ${ep.auth === "client" ? CLIENT_AUTH : RUNTIME_AUTH}`);
+  if (ep.scope) lines.push(`- scope لازم: ${scopeText(ep.scope)}`);
+  if (ep.context) lines.push(`- ${ep.auth === "client" ? "کی صدا زده می‌شود" : "Runtime Context"}: ${ep.context}`);
   if (doc && ep.summary) lines.push(`- در مارکت‌پلیس: ${ep.summary}`);
   if (ep.didar) lines.push(`- معادل در API دیدار: ${doc.operation} (${doc.source})`);
   lines.push("");
@@ -169,17 +198,18 @@ export function endpointMarkdown(ep) {
   if (pathP.length) lines.push("### پارامتر مسیر", "", buildTree(pathP).map((n) => paramMd(n, 0)).join("\n"), "");
   if (bodyP.length) lines.push("### پارامترهای بدنه", "", buildTree(bodyP).map((n) => paramMd(n, 0)).join("\n"), "");
   else if (ep.bodyNote) lines.push(ep.bodyNote, "");
+  if (ep.responseFields?.length) lines.push("### فیلدهای پاسخ", "", ...ep.responseFields.map((f) => `- \`${f.name}\` (${f.type}): ${f.description}`), "");
+  if (ep.notes?.length) lines.push("### نکته‌ها", "", ...ep.notes.map((n) => `- ${n}`), "");
   if (doc && doc.rules.length) lines.push("### قواعد و محدودیت‌ها", "", ...doc.rules.map((r) => `- ${r}`), "");
   if (doc && doc.related.length) lines.push("### لینک‌های مرتبط", "", ...doc.related.map((r) => `- ${r}`), "");
   lines.push("### نمونه درخواست", "", '```bash title="cURL"', ep.request, "```", "");
   lines.push("### نمونه پاسخ موفق", "", '```json title="200 OK"', ep.response, "```", "");
-  lines.push("### خطاهای ممکن", "", "| کد HTTP | معنی |", "| --- | --- |",
-    "| 400 | بدنه یا پارامتر نامعتبر |",
-    "| 401 | Runtime Token نامعتبر یا منقضی |",
-    "| 403 | scope یا entity مجاز نیست (`PROXY_ACCESS_DENIED`، `RUNTIME_ENTITY_TYPE_DENIED`، `RUNTIME_ENTITY_ACCESS_DENIED`) |",
-    "| 404 | منبع پیدا نشد |",
-    "| 502 | خطا یا timeout در دیدار (`DIDAR_PROXY_*`) |",
-    "");
+  if (ep.errors) {
+    lines.push("### خطاهای ممکن", "", "| کد HTTP | error.code | معنی |", "| --- | --- | --- |", ...ep.errors.map((e) => `| ${e.status} | \`${e.code}\` | ${e.meaning} |`), "");
+  } else {
+    lines.push("### خطاهای ممکن", "", "| کد HTTP | معنی |", "| --- | --- |",
+      ...DEFAULT_ERRORS.map((e) => `| ${e.status} | ${e.meaning}${e.codes ? ` (${e.codes.map((c) => `\`${c}\``).join("، ")})` : ""} |`), "");
+  }
   return lines.join("\n");
 }
 
