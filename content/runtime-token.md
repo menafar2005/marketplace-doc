@@ -6,7 +6,7 @@ lead: هر بار که کاربر اکستنشن یا تنظیمات اپ را �
 description: قدم‌به‌قدم دریافت Runtime Token در دیدار؛ درخواست launch با launchCode، تبادل با /api/v1/runtime/token، فیلدهای Runtime Context، استفاده از token و انقضا.
 ---
 
-<!--DIAGRAM:runtime-flow کل جریان در یک نگاه؛ شماره‌ها همان قدم‌های این صفحه است-->
+![Extension launch flowchart: launchCode, runtime token, context checks, data API, response](/images/flows/runtime-flow.png "کل جریان در یک نگاه؛ شماره‌ها همان قدم‌های این صفحه است")
 
 ## قدم ۱: دیدار اکستنشن را اجرا می‌کند {#step-1}
 
@@ -101,7 +101,7 @@ curl --location 'https://marketplace.didar.me/api/v1/deals/704e1533-cb4b-42d7-89
 
 مارکت‌پلیس پیش از فرستادن درخواست به دیدار این‌ها را چک می‌کند:
 
-<!--DIAGRAM:request-checks-->
+![Data request checks: token, scope, record type, entityIds](/images/flows/request-checks.png)
 
 [Scopeها](/scopes) · [کدهای وضعیت HTTP](/errors)
 

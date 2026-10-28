@@ -6,7 +6,7 @@ lead: نصب در پنج قدم کامل می‌شود؛ ادمین را به ص
 description: قدم‌به‌قدم تکمیل نصب اپ دیدار؛ لینک نصب، تأیید ادمین، callback با code و state، درخواست CompleteInstallation، فیلدهای پاسخ و ذخیره‌ی نتیجه.
 ---
 
-<!--DIAGRAM:install-flow کل جریان در یک نگاه؛ شماره‌ها همان قدم‌های این صفحه است-->
+![Installation flowchart: install link, Allow & Install, Callback URL, state check, CompleteInstallation, store, account, setup](/images/flows/installation-flow.png "کل جریان در یک نگاه؛ شماره‌ها همان قدم‌های این صفحه است")
 
 ## قدم ۱: فرستادن ادمین به صفحه‌ی نصب {#step-1}
 

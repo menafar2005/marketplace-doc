@@ -19,7 +19,7 @@ description: نوع اپ در مارکت‌پلیس دیدار، ساخت اپ �
 
 ## ساخت اپ در ۵ قدم {#steps}
 
-<!--DIAGRAM:lifecycle-->
+![Didar app lifecycle: register, install, launch, data](/images/flows/lifecycle.png)
 
 ### قدم ۱: محیط تست آماده کن {#step-1}
 
