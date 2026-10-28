@@ -2,19 +2,21 @@
 title: Custom panel
 section: start
 order: 26
-lead: Custom panel صفحه‌ی اپ تو را به‌شکل یک پنل در سایدبار سمت چپ صفحه‌ی جزئیات معامله، شخص و شرکت نشان می‌دهد.
+lead: Custom panel صفحه‌ی اپ تو را به‌شکل یک پنل در ستون کناری صفحه‌ی جزئیات معامله، شخص و شرکت نشان می‌دهد.
 description: اکستنشن Custom panel در دیدار؛ جای نمایش، ظرفیت و افزودن در Developer Hub.
 ---
 
 ## Custom panel چیست؟ {#what}
 
-یک iframe داخل پنل سایدبار. کاربر بدون اجرای عملیات خاصی، با باز کردن صفحه‌ی جزئیات، پنل اپ را می‌بیند و با آن کار می‌کند. [درباره‌ی Custom UI](/custom-ui-extensions)
+یک iframe داخل پنل ستون کناری. کاربر بدون اجرای عملیات خاصی، با باز کردن صفحه‌ی جزئیات، پنل اپ را می‌بیند و با آن کار می‌کند. [درباره‌ی Custom UI](/custom-ui-extensions)
 
 ## در UI دیدار کجاست؟ {#visibility}
 
-- در سایدبار سمت چپ **Deal details**، **Person details** و **Organization details**.
+- در ستون کناری **Deal details**، **Person details** و **Organization details**.
 - هر اپ در هر صفحه‌ی جزئیات فقط **یک پنل** دارد: یا Custom panel یا [JSON panel](/json-panels)، نه هر دو.
 - `context.entityIds` شناسه‌ی همان رکوردی است که صفحه‌ی جزئیاتش باز است.
+
+![پنل مانده‌حساب مشتری در صفحه‌ی جزئیات معامله](/images/extensions/panel-balance.webp "پنل اپ در ستون کناری صفحه‌ی جزئیات معامله")
 
 ## Custom panel را چطور اضافه کنم؟ {#add}
 

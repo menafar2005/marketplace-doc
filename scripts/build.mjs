@@ -40,6 +40,16 @@ const injections = {
   ),
 };
 
+// نمودارهای SVG (content/diagrams/*.svg): در HTML درون‌خطی می‌شوند تا با تم روشن/تیره رنگ بگیرند؛
+// در نسخه‌ی Markdown (MCP، llms.txt) حذف می‌شوند چون متن صفحه همان جریان را قدم‌به‌قدم دارد.
+const diagramsDir = join(root, "content/diagrams");
+const diagram = (name) => readFileSync(join(diagramsDir, `${name}.svg`), "utf8").replace(/\n\s*\n/g, "\n").trim();
+const DIAGRAM_RE = /^<!--DIAGRAM:([\w-]+)(?:\s+(.+?))?-->$/gm;
+const withDiagrams = (md) =>
+  md.replace(DIAGRAM_RE, (_m, name, caption) =>
+    `<figure class="diagram">${diagram(name)}${caption ? `<figcaption>${caption}</figcaption>` : ""}</figure>`);
+const withoutDiagrams = (md) => md.replace(DIAGRAM_RE, "").replace(/\n{3,}/g, "\n\n");
+
 const pages = [];
 
 // ---- صفحه‌های دستی ----
@@ -57,8 +67,8 @@ for (const file of readdirSync(contentDir).filter((f) => f.endsWith(".md")).sort
     order: meta.order,
     lead: meta.lead,
     description: meta.description || meta.lead,
-    md,
-    html: renderMarkdown(md, marked),
+    md: withoutDiagrams(md),
+    html: renderMarkdown(withDiagrams(md), marked),
     toc: extractToc(md, marked),
   });
 }

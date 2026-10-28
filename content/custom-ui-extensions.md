@@ -13,7 +13,7 @@ description: اکستنشن‌های Custom UI دیدار (Custom modal، Custom
 | اکستنشن | کجا | جزئیات |
 | --- | --- | --- |
 | Custom modal | یک modal که کاربر از منوی عملیات باز می‌کند | [Custom modal](/custom-modals) |
-| Custom panel | پنل در سایدبار سمت چپ صفحه‌ی جزئیات معامله، شخص و شرکت | [Custom panel](/custom-panels) |
+| Custom panel | پنل در ستون کناری صفحه‌ی جزئیات معامله، شخص و شرکت | [Custom panel](/custom-panels) |
 | App settings (Custom UI) | iframe داخل بخش تنظیمات دیدار، برای تنظیمات اپ | [App settings](/app-settings) |
 
 ## چه کارهایی می‌شود کرد؟ {#uses}

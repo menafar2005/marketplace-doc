@@ -66,6 +66,11 @@ export function createMarked() {
           .join("");
         return `<div class="table-wrap"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>\n`;
       },
+      image({ href, title, text }) {
+        // اسکرین‌شات: تصویر + زیرنویس (title)؛ span تا داخل <p> معتبر بماند
+        const cap = title ? `<span class="shot-cap">${escapeHtml(title)}</span>` : "";
+        return `<span class="shot"><img src="${escapeHtml(href)}" alt="${escapeHtml(text)}" loading="lazy" decoding="async">${cap}</span>`;
+      },
       blockquote({ tokens }) {
         const inner = this.parser.parse(tokens);
         const m = /^<p>\s*\[!(NOTE|WARNING)\]\s*/.exec(inner);
@@ -124,6 +129,7 @@ export function plainText(md) {
   return md
     .replace(/```[\s\S]*?```/g, (b) => b.replace(/```[^\n]*\n?/g, ""))
     .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/!\[([^\]]*)\]\([^)]+\)/g, "$1")
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
     .replace(/[`*>|#]/g, " ")
     .replace(/\{#[\w-]+\}/g, "")

@@ -6,6 +6,8 @@ lead: هر بار که کاربر اکستنشن یا تنظیمات اپ را �
 description: قدم‌به‌قدم دریافت Runtime Token در دیدار؛ درخواست launch با launchCode، تبادل با /api/v1/runtime/token، فیلدهای Runtime Context، استفاده از token و انقضا.
 ---
 
+<!--DIAGRAM:runtime-flow کل جریان در یک نگاه؛ شماره‌ها همان قدم‌های این صفحه است-->
+
 ## قدم ۱: دیدار اکستنشن را اجرا می‌کند {#step-1}
 
 کاربر اکستنشن را باز می‌کند. دیدار یک `launchCode` یک‌بارمصرف برای همین اجرا می‌سازد و آدرس ثبت‌شده‌ی اکستنشن (URL، API endpoint یا Iframe URL) را با آن صدا می‌زند:
@@ -97,7 +99,11 @@ curl --location 'https://marketplace.didar.me/api/v1/deals/704e1533-cb4b-42d7-89
 --header 'Accept: application/json'
 ```
 
-مارکت‌پلیس هر درخواست را دو بار چک می‌کند: آیا اپ [scope](/scopes) لازم را دارد، و آیا رکورد جزو `entityIds` همین اجراست. [درباره‌ی API](/api-concepts)
+مارکت‌پلیس پیش از فرستادن درخواست به دیدار این‌ها را چک می‌کند:
+
+<!--DIAGRAM:request-checks-->
+
+[Scopeها](/scopes) · [کدهای وضعیت HTTP](/errors)
 
 ## قدم ۴: انقضا و اجرای بعدی {#step-4}
 
