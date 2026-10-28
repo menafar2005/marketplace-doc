@@ -37,7 +37,7 @@ src/                  Worker: سایت، MCP، جستجو، scaffold و validate
 - **راهنما:** شروع (شروع کار، ساخت اپ، محیط تست، MCP) ← مارکت‌پلیس (درباره، جریان نصب، Developer Hub، ثبت اپ، Client ID و secret) ← اکستنشن‌ها (مرور، Links، JSON modal، JSON panel، Custom UI، Custom modal، Custom panel، App settings) ← احراز هویت (مرور، تکمیل نصب، Runtime Token، Scopeها، state) ← آموزش‌ها و مقاله‌ها.
 - **الگوی صفحه‌ی هر قابلیت:** چیست؟ ← کجای دیدار دیده می‌شود ← افزودن در Developer Hub (جدول فیلد) ← تبادل داده ← هنوز مستند نشده ← بعد از این بخوان.
 - **مرجع API:** مفاهیم پایه (درباره، درخواست‌ها، پاسخ‌ها، کدهای وضعیت) ← نصب و اجرا ← داده‌ی دیدار.
-- **تصویرها:** اسکرین‌شات‌های `public/images/extensions` از صفحه‌ی extensions فایل Figma «avangard» ساخته شده‌اند؛ فقط اکستنشن واقعی است و بقیه‌ی صفحه skeleton شده. برای ساخت دوباره: `python3 scripts/extension-skeleton.py SRC.png OUT.png "x0,y0,x1,y1"` و سپس تبدیل به WebP.
+- **تصویرها:** اسکرین‌شات‌های `public/images/extensions` از صفحه‌ی extensions فایل Figma «avangard» ساخته شده‌اند؛ فقط اکستنشن واقعی است و بقیه‌ی صفحه skeleton شده. برای ساخت دوباره: `python3 scripts/extension-skeleton.py SRC.png OUT.png "x0,y0,x1,y1" [--crop …] [--dim]` (`--dim` برای صفحه‌هایی که اکستنشن modal است) و سپس تبدیل به WebP.
 - **نمودارها:** `python3 scripts/diagrams.py content/diagrams` هر چهار SVG را از نو می‌سازد. رنگ‌ها از متغیرهای CSS سایت می‌آیند، پس با تم روشن و تیره عوض می‌شوند. در نسخه‌ی Markdown (MCP، llms.txt) نمودارها حذف می‌شوند.
 - slugهای قدیمی با 301 به صفحه‌ی جدید می‌روند (`MOVED` در `src/worker.js`).
 
