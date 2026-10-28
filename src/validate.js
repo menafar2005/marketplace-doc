@@ -22,18 +22,18 @@ export function validatePlugin(cfg, origin) {
 
   // ۱–۲: ثبت و نصب
   for (const key of ["callbackUrl", "installationUrl"]) {
-    if (cfg[key] != null && !isHttps(cfg[key])) err(`${key}-https`, `${key} باید HTTPS معتبر باشد.`, "app-registration");
+    if (cfg[key] != null && !isHttps(cfg[key])) err(`${key}-https`, `${key} باید HTTPS معتبر باشد.`, "create-app");
   }
   if (cfg.callbackUrl == null) warn("callbackUrl-missing", "callbackUrl داده نشده؛ بدون آن نصب کامل نمی‌شود.", "installation");
   if (cfg.usesStateParam === false) err("state", "state یک‌بارمصرف باید ساخته و در callback تطبیق داده شود.", "installation");
 
   // scopeها
   const scopes = Array.isArray(cfg.scopes) ? cfg.scopes : [];
-  if (!scopes.length) warn("scopes-empty", "هیچ scopeی تعریف نشده؛ فقط scopeهای لازم را درخواست کن.", "api-concepts");
-  for (const s of scopes) if (!SCOPES.has(s)) err("scope-unknown", `scope ناشناخته: «${s}». فهرست معتبر: ${[...SCOPES.keys()].join(", ")}`, "api-concepts");
+  if (!scopes.length) warn("scopes-empty", "هیچ scopeی تعریف نشده؛ فقط scopeهای لازم را درخواست کن.", "concepts");
+  for (const s of scopes) if (!SCOPES.has(s)) err("scope-unknown", `scope ناشناخته: «${s}». فهرست معتبر: ${[...SCOPES.keys()].join(", ")}`, "concepts");
   for (const s of scopes) {
     if (s.endsWith(".fullaccess")) {
-      warn("scope-fullaccess", `«${s}» نوشتن هم می‌دهد؛ اگر اپ فقط می‌خواند، «${s.replace(".fullaccess", "")}» کافی است.`, "api-concepts");
+      warn("scope-fullaccess", `«${s}» نوشتن هم می‌دهد؛ اگر اپ فقط می‌خواند، «${s.replace(".fullaccess", "")}» کافی است.`, "concepts");
     }
   }
 
@@ -64,17 +64,17 @@ export function validatePlugin(cfg, origin) {
   }
 
   // ۵: امنیت سرور
-  if (cfg.secretInFrontend) err("secret-frontend", "ClientSecret/ApiKey/Runtime Token نباید در frontend باشند.", "security-errors");
+  if (cfg.secretInFrontend) err("secret-frontend", "ClientSecret/ApiKey/Runtime Token نباید در frontend باشند.", "security");
   if (cfg.tokenInLocalStorage) err("token-storage", "Runtime Token را در localStorage نگذار؛ فقط تا پایان همان اجرا در حافظه.", "settings-page");
-  if (cfg.logsSecrets) err("log-secrets", "secret، launch code و JWT نباید log یا analytics شوند.", "security-errors");
-  if (cfg.reusesRuntimeToken) err("token-reuse", "Runtime Token برای همان اجرا ساخته می‌شود؛ reuse نکن.", "quick-start");
-  if (cfg.trustsClientEntityIds) err("entity-trust", "شناسه‌ی entity را فقط از context.entityIds بخوان، نه از query/frontend.", "runtime");
+  if (cfg.logsSecrets) err("log-secrets", "secret، launch code و JWT نباید log یا analytics شوند.", "security");
+  if (cfg.reusesRuntimeToken) err("token-reuse", "Runtime Token برای همان اجرا ساخته می‌شود؛ reuse نکن.", "launch");
+  if (cfg.trustsClientEntityIds) err("entity-trust", "شناسه‌ی entity را فقط از context.entityIds بخوان، نه از query/frontend.", "launch");
 
   return {
     valid: errors.length === 0,
     errors,
     warnings,
-    checkedAgainst: ["app-registration", "installation", "runtime", "extensions", "settings-page", "api-concepts", "security-errors"].map((p) => `${origin}/${p}`),
+    checkedAgainst: ["create-app", "installation", "launch", "extensions", "settings-page", "concepts", "security"].map((p) => `${origin}/${p}`),
     note: "این چک فقط قواعد منتشرشده در داک را می‌سنجد؛ جایگزین تست روی BizDomain آزمایشی نیست.",
   };
 }

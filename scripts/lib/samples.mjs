@@ -5,7 +5,8 @@ export function parseRequest(ep) {
   const url = /'(https:[^']+)'/.exec(ep.request)?.[1];
   const raw = /--data-raw '([\s\S]*)'$/.exec(ep.request)?.[1];
   const body = raw ? JSON.parse(raw) : null;
-  const headers = [["Authorization", `Bearer ${TOKEN}`], body ? ["Content-Type", "application/json"] : ["Accept", "application/json"]];
+  const auth = ep.auth === "client" ? [] : [["Authorization", `Bearer ${TOKEN}`]];
+  const headers = [...auth, body ? ["Content-Type", "application/json"] : ["Accept", "application/json"]];
   return { method: ep.method, url, body, headers };
 }
 
@@ -79,7 +80,7 @@ export function samplesFor(ep) {
 
   const cs =
     `using System.Net.Http;\nusing System.Text;\n\nvar client = new HttpClient();\nvar request = new HttpRequestMessage(new HttpMethod("${M}"), "${U}");\n` +
-    `request.Headers.Add("Authorization", "Bearer ${TOKEN}");\n` +
+    (ep.auth === "client" ? "" : `request.Headers.Add("Authorization", "Bearer ${TOKEN}");\n`) +
     (B ? `request.Content = new StringContent("""\n${pretty(B)}\n""", Encoding.UTF8, "application/json");\n` : `request.Headers.Add("Accept", "application/json");\n`) +
     `\nvar response = await client.SendAsync(request);\nConsole.WriteLine(await response.Content.ReadAsStringAsync());`;
 

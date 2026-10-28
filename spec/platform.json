@@ -3,72 +3,395 @@
     "app": "https://app.didar.me",
     "marketplace": "https://marketplace.didar.me"
   },
+  "developerHub": {
+    "url": "https://app.didar.me/developerhub",
+    "access": "فقط ادمین BizDomain",
+    "appStatuses": [
+      {
+        "name": "Draft",
+        "meaning": "در حال ساخت؛ لینک نصب هنوز برای کسب‌وکارهای دیگر قابل اشتراک نیست"
+      },
+      {
+        "name": "Live",
+        "meaning": "لینک نصب برای هر کسب‌وکاری کار می‌کند؛ برگشت به Draft ممکن نیست"
+      }
+    ],
+    "appType": "فعلاً همیشه Private"
+  },
   "scopes": [
-    { "name": "basicinfo", "grants": "اطلاعات پایه: BizDomain، کاربران، pipelineها، stageها، labelها، انواع فعالیت و دلایل شکست", "access": "read", "pages": ["api-basic"] },
-    { "name": "deals", "grants": "خواندن معامله", "access": "read", "pages": ["api-deals"] },
-    { "name": "deals.fullaccess", "grants": "خواندن و نوشتن معامله", "access": "write", "pages": ["api-deals"] },
-    { "name": "cases", "grants": "خواندن پرونده", "access": "read", "pages": ["api-cases"] },
-    { "name": "cases.fullaccess", "grants": "خواندن و نوشتن پرونده", "access": "write", "pages": ["api-cases"] },
-    { "name": "contacts", "grants": "خواندن شخص و شرکت", "access": "read", "pages": ["api-contacts"] },
-    { "name": "contacts.fullaccess", "grants": "خواندن و نوشتن شخص و شرکت", "access": "write", "pages": ["api-contacts"] },
-    { "name": "activities", "grants": "خواندن فعالیت و یادداشت", "access": "read", "pages": ["api-activities"] },
-    { "name": "activities.fullaccess", "grants": "خواندن و نوشتن فعالیت و یادداشت", "access": "write", "pages": ["api-activities"] }
+    {
+      "name": "basicinfo",
+      "grants": "اطلاعات پایه: BizDomain، کاربران، pipelineها، stageها، labelها، انواع فعالیت و دلایل شکست",
+      "access": "read",
+      "pages": [
+        "api-basic"
+      ]
+    },
+    {
+      "name": "deals",
+      "grants": "خواندن معامله",
+      "access": "read",
+      "pages": [
+        "api-deals"
+      ]
+    },
+    {
+      "name": "deals.fullaccess",
+      "grants": "خواندن و نوشتن معامله",
+      "access": "write",
+      "pages": [
+        "api-deals"
+      ]
+    },
+    {
+      "name": "cases",
+      "grants": "خواندن پرونده",
+      "access": "read",
+      "pages": [
+        "api-cases"
+      ]
+    },
+    {
+      "name": "cases.fullaccess",
+      "grants": "خواندن و نوشتن پرونده",
+      "access": "write",
+      "pages": [
+        "api-cases"
+      ]
+    },
+    {
+      "name": "contacts",
+      "grants": "خواندن شخص و شرکت",
+      "access": "read",
+      "pages": [
+        "api-contacts"
+      ]
+    },
+    {
+      "name": "contacts.fullaccess",
+      "grants": "خواندن و نوشتن شخص و شرکت",
+      "access": "write",
+      "pages": [
+        "api-contacts"
+      ]
+    },
+    {
+      "name": "activities",
+      "grants": "خواندن فعالیت و یادداشت",
+      "access": "read",
+      "pages": [
+        "api-activities"
+      ]
+    },
+    {
+      "name": "activities.fullaccess",
+      "grants": "خواندن و نوشتن فعالیت و یادداشت",
+      "access": "write",
+      "pages": [
+        "api-activities"
+      ]
+    }
   ],
   "extensionContentTypes": [
-    { "name": "IFrame", "value": 1, "behavior": "endpoint اپ داخل iframe باز می‌شود." },
-    { "name": "Link", "value": 2, "behavior": "endpoint در مسیر لینک/صفحه خارجی باز می‌شود." },
-    { "name": "Json", "value": 3, "behavior": "دیدار schema را render می‌کند و نتیجه فرم را به launch endpoint می‌فرستد." }
+    {
+      "name": "IFrame",
+      "value": 1,
+      "behavior": "endpoint اپ داخل iframe باز می‌شود."
+    },
+    {
+      "name": "Link",
+      "value": 2,
+      "behavior": "endpoint در مسیر لینک/صفحه خارجی باز می‌شود."
+    },
+    {
+      "name": "Json",
+      "value": 3,
+      "behavior": "دیدار schema را render می‌کند و نتیجه فرم را به launch endpoint می‌فرستد."
+    }
   ],
+  "developerHubExtensionTypes": [
+    {
+      "name": "Links",
+      "shownIn": "منوی عملیات",
+      "ui": "صفحه‌ی اپ (لینک)",
+      "fields": [
+        "Action name",
+        "Action description (optional)",
+        "URL",
+        "JWT secret",
+        "Locations (حداقل یک)"
+      ]
+    },
+    {
+      "name": "JSON modal",
+      "shownIn": "منوی عملیات ← modal",
+      "ui": "دیدار از روی JSON schema",
+      "fields": [
+        "Action name",
+        "Action description (optional)",
+        "API endpoint",
+        "JWT secret",
+        "JSON schema",
+        "Locations (حداقل یک)"
+      ]
+    },
+    {
+      "name": "Custom modal",
+      "shownIn": "منوی عملیات ← modal",
+      "ui": "iframe اپ",
+      "fields": [
+        "Modal name",
+        "Modal description (optional)",
+        "Iframe URL (HTTPS)",
+        "JWT secret",
+        "Entry points (اختیاری؛ بدون آن فقط با SDK)"
+      ]
+    },
+    {
+      "name": "JSON panel",
+      "shownIn": "داخل صفحه‌ی جزئیات",
+      "ui": "دیدار از روی JSON data structure",
+      "fields": [
+        "Panel name",
+        "Panel description (optional)",
+        "API endpoint",
+        "JWT secret",
+        "JSON data structure",
+        "Panel locations (حداقل یک)"
+      ]
+    },
+    {
+      "name": "Custom panel",
+      "shownIn": "داخل صفحه‌ی جزئیات",
+      "ui": "iframe اپ",
+      "fields": [
+        "Panel name",
+        "Panel description (optional)",
+        "Iframe URL (HTTPS)",
+        "JWT secret",
+        "Panel locations (حداقل یک)"
+      ]
+    },
+    {
+      "name": "App settings",
+      "shownIn": "تنظیمات اپ نصب‌شده",
+      "ui": "External link (URL) یا Custom UI (Iframe URL با HTTPS و JWT secret)",
+      "fields": [
+        "Type",
+        "URL یا Iframe URL",
+        "JWT secret (برای Custom UI)"
+      ]
+    }
+  ],
+  "extensionCapacity": {
+    "menuPerLocation": "Links + JSON modal + Custom modal: حداکثر ۳ در هر Location منو",
+    "menuPerApp": "Links + JSON modal + Custom modal: حداکثر ۱۸ در کل اپ",
+    "panelLocations": [
+      "Deal details",
+      "Person details",
+      "Organization details"
+    ],
+    "panelPerLocation": "۱ پنل در هر صفحه‌ی جزئیات (JSON panel یا Custom panel، نه هر دو)",
+    "appSettingsPerApp": 1,
+    "nameMaxLength": 30,
+    "descriptionMaxLength": 150
+  },
   "extensionSurfaceTypes": [
-    { "name": "Modal", "value": 1 },
-    { "name": "Sidebar", "value": 2 },
-    { "name": "ActionLink", "value": 3 }
+    {
+      "name": "Modal",
+      "value": 1
+    },
+    {
+      "name": "Sidebar",
+      "value": 2
+    },
+    {
+      "name": "ActionLink",
+      "value": 3
+    }
   ],
   "extensionLocations": [
-    { "value": 1, "name": "لیست معاملات", "entityType": "deal" },
-    { "value": 2, "name": "جزئیات معامله", "entityType": "deal" },
-    { "value": 3, "name": "لیست اشخاص", "entityType": "person" },
-    { "value": 4, "name": "جزئیات شخص", "entityType": "person" },
-    { "value": 5, "name": "لیست شرکت‌ها", "entityType": "company" },
-    { "value": 6, "name": "جزئیات شرکت", "entityType": "company" },
-    { "value": 7, "name": "لیست پرونده‌ها", "entityType": "case" },
-    { "value": 8, "name": "جزئیات پرونده", "entityType": "case" }
+    {
+      "value": 1,
+      "name": "لیست معاملات",
+      "entityType": "deal",
+      "developerHubName": "Deals list"
+    },
+    {
+      "value": 2,
+      "name": "جزئیات معامله",
+      "entityType": "deal",
+      "developerHubName": "Deal details"
+    },
+    {
+      "value": 3,
+      "name": "لیست اشخاص",
+      "entityType": "person",
+      "developerHubName": "People list"
+    },
+    {
+      "value": 4,
+      "name": "جزئیات شخص",
+      "entityType": "person",
+      "developerHubName": "Person details"
+    },
+    {
+      "value": 5,
+      "name": "لیست شرکت‌ها",
+      "entityType": "company",
+      "developerHubName": "Organizations list"
+    },
+    {
+      "value": 6,
+      "name": "جزئیات شرکت",
+      "entityType": "company",
+      "developerHubName": "Organization details"
+    },
+    {
+      "value": 7,
+      "name": "لیست پرونده‌ها",
+      "entityType": "case",
+      "developerHubName": "Case list"
+    },
+    {
+      "value": 8,
+      "name": "جزئیات پرونده",
+      "entityType": "case",
+      "developerHubName": "Case details"
+    }
   ],
   "settingsPageTypes": [
-    { "name": "ExternalLink", "value": 1, "behavior": "تنظیمات در صفحه یا tab خارجی باز می‌شود." },
-    { "name": "CustomUI", "value": 2, "behavior": "UI تنظیمات داخل container دیدار نمایش داده می‌شود." }
+    {
+      "name": "ExternalLink",
+      "value": 1,
+      "behavior": "تنظیمات در صفحه یا tab خارجی باز می‌شود."
+    },
+    {
+      "name": "CustomUI",
+      "value": 2,
+      "behavior": "UI تنظیمات داخل container دیدار نمایش داده می‌شود."
+    }
   ],
   "httpStatuses": [
-    { "status": 400, "meaning": "بدنه یا پارامتر نامعتبر", "action": "ورودی و casing را اصلاح کنید." },
-    { "status": 401, "meaning": "token/credentials نامعتبر", "action": "launch جدید آغاز کنید؛ token را refresh نکنید." },
-    { "status": 403, "meaning": "scope یا entity مجاز نیست", "action": "قابلیت را غیرفعال کنید؛ با retry حل نمی‌شود." },
-    { "status": 404, "meaning": "منبع پیدا نشد", "action": "شناسه و وضعیت نصب را بررسی کنید." },
-    { "status": 409, "meaning": "تعارض یا code مصرف‌شده", "action": "عملیات را idempotent کنید؛ launch تازه بگیرید." },
-    { "status": 410, "meaning": "code منقضی شده", "action": "کاربر باید اکستنشن را دوباره اجرا کند." },
-    { "status": 422, "meaning": "قاعده کسب‌وکار رعایت نشده", "action": "پیام validation مناسب نمایش دهید." },
-    { "status": 502, "meaning": "خطا یا timeout در دیدار", "action": "retry محدود با backoff و correlation id." }
+    {
+      "status": 400,
+      "meaning": "بدنه یا پارامتر نامعتبر",
+      "action": "ورودی و casing را اصلاح کنید."
+    },
+    {
+      "status": 401,
+      "meaning": "token/credentials نامعتبر",
+      "action": "launch جدید آغاز کنید؛ token را refresh نکنید."
+    },
+    {
+      "status": 403,
+      "meaning": "scope یا entity مجاز نیست",
+      "action": "قابلیت را غیرفعال کنید؛ با retry حل نمی‌شود."
+    },
+    {
+      "status": 404,
+      "meaning": "منبع پیدا نشد",
+      "action": "شناسه و وضعیت نصب را بررسی کنید."
+    },
+    {
+      "status": 409,
+      "meaning": "تعارض یا code مصرف‌شده",
+      "action": "عملیات را idempotent کنید؛ launch تازه بگیرید."
+    },
+    {
+      "status": 410,
+      "meaning": "code منقضی شده",
+      "action": "کاربر باید اکستنشن را دوباره اجرا کند."
+    },
+    {
+      "status": 422,
+      "meaning": "قاعده کسب‌وکار رعایت نشده",
+      "action": "پیام validation مناسب نمایش دهید."
+    },
+    {
+      "status": 502,
+      "meaning": "خطا یا timeout در دیدار",
+      "action": "retry محدود با backoff و correlation id."
+    }
   ],
   "errorCodes": [
-    { "code": "INVALID_CLIENT_CREDENTIALS", "meaning": "credentials اپ (ClientId / ClientSecret) اشتباه است." },
-    { "code": "LAUNCH_CODE_INVALID", "meaning": "launch code معتبر یا متعلق به این اپ نیست." },
-    { "code": "LAUNCH_CODE_ALREADY_USED", "meaning": "کد یک‌بارمصرف قبلاً استفاده شده." },
-    { "code": "LAUNCH_CODE_EXPIRED", "meaning": "کد منقضی شده است." },
-    { "code": "RUNTIME_TOKEN_INVALID", "meaning": "context توکن ناقص یا نامعتبر است." },
-    { "code": "PROXY_ACCESS_DENIED", "meaning": "scope لازم به اپ داده نشده است." },
-    { "code": "RUNTIME_ENTITY_TYPE_DENIED", "meaning": "نوع entity با context اجرا سازگار نیست." },
-    { "code": "RUNTIME_ENTITY_ACCESS_DENIED", "meaning": "شناسه در entityIds مجاز وجود ندارد." },
-    { "code": "DIDAR_API_KEY_NOT_CONFIGURED", "meaning": "نصب credential قابل‌استفاده ندارد." },
-    { "code": "DIDAR_PROXY_UNAVAILABLE", "meaning": "ارتباط با دیدار برقرار نشد." },
-    { "code": "DIDAR_PROXY_TIMEOUT", "meaning": "دیدار در زمان مقرر پاسخ نداد." },
-    { "code": "DIDAR_PROXY_FAILED", "meaning": "دیدار درخواست upstream را رد کرد." },
-    { "code": "DIDAR_PROXY_INVALID_RESPONSE", "meaning": "پاسخ دیدار قابل پردازش نبود." }
+    {
+      "code": "INVALID_CLIENT_CREDENTIALS",
+      "meaning": "credentials اپ (ClientId / ClientSecret) اشتباه است."
+    },
+    {
+      "code": "LAUNCH_CODE_INVALID",
+      "meaning": "launch code معتبر یا متعلق به این اپ نیست."
+    },
+    {
+      "code": "LAUNCH_CODE_ALREADY_USED",
+      "meaning": "کد یک‌بارمصرف قبلاً استفاده شده."
+    },
+    {
+      "code": "LAUNCH_CODE_EXPIRED",
+      "meaning": "کد منقضی شده است."
+    },
+    {
+      "code": "RUNTIME_TOKEN_INVALID",
+      "meaning": "context توکن ناقص یا نامعتبر است."
+    },
+    {
+      "code": "PROXY_ACCESS_DENIED",
+      "meaning": "scope لازم به اپ داده نشده است."
+    },
+    {
+      "code": "RUNTIME_ENTITY_TYPE_DENIED",
+      "meaning": "نوع entity با context اجرا سازگار نیست."
+    },
+    {
+      "code": "RUNTIME_ENTITY_ACCESS_DENIED",
+      "meaning": "شناسه در entityIds مجاز وجود ندارد."
+    },
+    {
+      "code": "DIDAR_API_KEY_NOT_CONFIGURED",
+      "meaning": "نصب credential قابل‌استفاده ندارد."
+    },
+    {
+      "code": "DIDAR_PROXY_UNAVAILABLE",
+      "meaning": "ارتباط با دیدار برقرار نشد."
+    },
+    {
+      "code": "DIDAR_PROXY_TIMEOUT",
+      "meaning": "دیدار در زمان مقرر پاسخ نداد."
+    },
+    {
+      "code": "DIDAR_PROXY_FAILED",
+      "meaning": "دیدار درخواست upstream را رد کرد."
+    },
+    {
+      "code": "DIDAR_PROXY_INVALID_RESPONSE",
+      "meaning": "پاسخ دیدار قابل پردازش نبود."
+    }
   ],
   "runtimeContextFields": [
-    { "field": "target", "desc": "extension یا settings_page" },
-    { "field": "runtimeId", "desc": "شناسه runtime اکستنشن؛ برای settings شناسه عمومی اپ" },
-    { "field": "location", "desc": "محل اجرای اکستنشن؛ در settings مقدار null" },
-    { "field": "entityType", "desc": "deal، case، person یا company" },
-    { "field": "entityIds", "desc": "لیست entityهای مجاز در این اجرا؛ ممکن است بیش از یک شناسه داشته باشد" },
-    { "field": "payload", "desc": "مقادیر فرم JSON که بر اساس keyهای schema جمع‌آوری شده‌اند" }
+    {
+      "field": "target",
+      "desc": "extension یا settings_page"
+    },
+    {
+      "field": "runtimeId",
+      "desc": "شناسه runtime اکستنشن؛ برای settings شناسه عمومی اپ"
+    },
+    {
+      "field": "location",
+      "desc": "محل اجرای اکستنشن؛ در settings مقدار null"
+    },
+    {
+      "field": "entityType",
+      "desc": "deal، case، person یا company"
+    },
+    {
+      "field": "entityIds",
+      "desc": "لیست entityهای مجاز در این اجرا؛ ممکن است بیش از یک شناسه داشته باشد"
+    },
+    {
+      "field": "payload",
+      "desc": "مقادیر فرم JSON که بر اساس keyهای schema جمع‌آوری شده‌اند"
+    }
   ]
 }

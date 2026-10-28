@@ -1,53 +1,90 @@
 ---
-title: App Extensions
-section: reference
-order: 4
-lead: این صفحه کمک می‌کند قابلیت اپ را داخل محیط دیدار نشان بدهی؛ نوع محتوا تعیین می‌کند دیدار صفحه‌ای باز کند یا یک فرم JSON را render و submit کند.
-description: نوع محتوا، surface، locationها، جریان launch، فرم JSON، پاسخ submit و CORS برای اکستنشن‌های دیدار.
+title: اکستنشن‌ها
+section: start
+order: 20
+lead: اکستنشن جایی است که کاربر اپ تو را داخل دیدار می‌بیند. این صفحه شش نوع اکستنشن Developer Hub، جای نمایش هرکدام، محدودیت‌ها و قرارداد فرم JSON را توضیح می‌دهد.
+description: انواع اکستنشن در Developer Hub (Links، JSON modal، JSON panel، Custom modal، Custom panel، App settings)، Locationها، ظرفیت‌ها، فرم JSON، پاسخ submit و CORS.
 ---
 
-## نوع محتوا و سطح نمایش {#types}
+## کدام نوع را انتخاب کنم؟ {#choose}
 
-| ContentType | مقدار | رفتار |
-| --- | --- | --- |
-| `IFrame` | 1 | endpoint اپ داخل iframe باز می‌شود. |
-| `Link` | 2 | endpoint در مسیر لینک/صفحه‌ی خارجی باز می‌شود. |
-| `Json` | 3 | دیدار schema را render می‌کند و نتیجه‌ی فرم را به launch endpoint می‌فرستد. |
-
-| SurfaceType | مقدار |
+| اگر می‌خواهی… | نوع |
 | --- | --- |
-| `Modal` | 1 |
-| `Sidebar` | 2 |
-| `ActionLink` | 3 |
+| کاربر با یک کلیک به صفحه‌ای روی سایت تو برود | **Links** |
+| کاربر یک فرم ساده پر کند و تو کاری انجام بدهی، بدون نوشتن UI | **JSON modal** |
+| UI کامل خودت را در یک پنجره‌ی modal نشان بدهی | **Custom modal** |
+| اطلاعات همیشه کنار صفحه‌ی جزئیات دیده شود، بدون نوشتن UI | **JSON panel** |
+| UI کامل خودت را به‌شکل پنل در صفحه‌ی جزئیات نشان بدهی | **Custom panel** |
+| هر کسب‌وکار اپ را پیکربندی کند | **App settings** ([صفحه‌ی تنظیمات](/settings-page)) |
+
+## شش نوع اکستنشن {#types}
+
+| نوع | کجا دیده می‌شود | چه کسی UI را می‌سازد | چه چیزی ثبت می‌کنی |
+| --- | --- | --- | --- |
+| Links | منوی عملیات | — (به سایت تو می‌رود) | Action name، URL، JWT secret، Locations |
+| JSON modal | منوی عملیات ← modal | دیدار، از روی schema | Action name، API endpoint، JWT secret، JSON schema، Locations |
+| Custom modal | منوی عملیات ← modal | تو (iframe) | Modal name، Iframe URL، JWT secret، Entry points |
+| JSON panel | داخل صفحه‌ی جزئیات | دیدار، از روی ساختار داده | Panel name، API endpoint، JWT secret، JSON data structure، Panel locations |
+| Custom panel | داخل صفحه‌ی جزئیات | تو (iframe) | Panel name، Iframe URL، JWT secret، Panel locations |
+| App settings | تنظیمات اپ نصب‌شده | تو (لینک خارجی یا iframe) | Type، URL یا Iframe URL، JWT secret |
+
+توضیح (description) در همه‌ی انواع اختیاری است.
 
 ## Locationها {#locations}
 
-| مقدار | محل | entityType |
+**Links، JSON modal و Custom modal** در منوی عملیات این صفحه‌ها می‌نشینند. در صفحه‌های لیست، اکستنشن روی یک یا چند ردیف انتخاب‌شده اجرا می‌شود (از منوی ⋯ کنار عملیات گروهی) و `entityIds` می‌تواند چند شناسه داشته باشد.
+
+| در Developer Hub | `location` در context | `entityType` |
 | --- | --- | --- |
-| 1 | لیست معاملات | `deal` |
-| 2 | جزئیات معامله | `deal` |
-| 3 | لیست اشخاص | `person` |
-| 4 | جزئیات شخص | `person` |
-| 5 | لیست شرکت‌ها | `company` |
-| 6 | جزئیات شرکت | `company` |
-| 7 | لیست پرونده‌ها | `case` |
-| 8 | جزئیات پرونده | `case` |
+| Deals list | `1` | `deal` |
+| Deal details | `2` | `deal` |
+| People list | `3` | `person` |
+| Person details | `4` | `person` |
+| Organizations list | `5` | `company` |
+| Organization details | `6` | `company` |
+| Case list | `7` | `case` |
+| Case details | `8` | `case` |
 
-در صفحات لیست، `entityIds` می‌تواند شامل چند شناسه‌ی انتخاب‌شده باشد. در صفحات جزئیات معمولاً یک شناسه وجود دارد.
+**JSON panel و Custom panel** فقط در صفحه‌های جزئیات نمایش داده می‌شوند: Deal details، Person details و Organization details.
 
-## جریان launch {#flow}
+## ظرفیت هر اپ {#limits}
 
-1. frontend دیدار اکستنشن‌های نصب‌شده برای location فعلی را دریافت می‌کند.
-2. هنگام اجرا، دیدار یک launch code برای `runtimeId` و context فعلی می‌سازد.
-3. دیدار `launchCode` را به `EndpointUrl` اضافه می‌کند.
-4. backend اپ code را با Runtime Token تعویض می‌کند.
-5. iframe/link UI خودش را نمایش می‌دهد؛ JSON endpoint عملیات را انجام می‌دهد و نتیجه‌ی ساختاریافته می‌دهد.
+| قاعده | مقدار |
+| --- | --- |
+| Links + JSON modal + Custom modal در هر Location منو (Deals list، Deal details، People list، Person details، Organizations list، Organization details) | حداکثر ۳، با هر ترکیبی |
+| Links + JSON modal + Custom modal در کل اپ | حداکثر ۱۸ |
+| پنل در هر صفحه‌ی جزئیات | ۱ (یا JSON panel یا Custom panel، نه هر دو) |
+| App settings | ۱ |
+| Links و JSON modal | حداقل یک Location الزامی |
+| JSON panel و Custom panel | حداقل یک Panel location الزامی |
+| Custom modal | Entry point اختیاری ([پایین‌تر](#custom-modal)) |
 
-## فرم JSON و payload {#json-form}
+## قواعد فیلدها {#validation}
 
-هر input یک `key` دارد. frontend دیدار مقدار واردشده را با همان key در `payload` قرار می‌دهد. نمونه schema دوزبانه:
+| فیلد | قاعده | پیام خطای Developer Hub |
+| --- | --- | --- |
+| نام (Action / Modal / Panel name) | الزامی، حداکثر ۳۰ کاراکتر | `Name must be 30 characters or fewer.` |
+| Description | اختیاری، حداکثر ۱۵۰ کاراکتر | `Description must be 150 characters or fewer.` |
+| URL و API endpoint | URL معتبر | `Enter a valid URL.` |
+| Iframe URL | فقط HTTPS | `Enter a valid HTTPS URL.` |
+| JWT secret | الزامی | `Enter a JWT secret.` |
+| JSON schema / JSON data structure | فایل JSON معتبر | `This file isn’t valid JSON. Please upload a valid JSON file.` |
 
-```json title="Form schema"
+## اجرای اکستنشن {#flow}
+
+همه‌ی انواع یک الگو دارند:
+
+1. دیدار اکستنشن‌های اپ‌های نصب‌شده برای Location فعلی را نشان می‌دهد.
+2. کاربر یکی را اجرا می‌کند؛ دیدار یک `launchCode` برای همان اکستنشن و رکوردها می‌سازد.
+3. دیدار `launchCode` را به آدرس ثبت‌شده‌ی اکستنشن (URL، API endpoint یا Iframe URL) اضافه می‌کند.
+4. backend تو کد را به Runtime Token تبدیل می‌کند ([قدم ۳](/launch)).
+5. iframe یا لینک، UI خودش را نشان می‌دهد؛ endpoint اکستنشن JSON نتیجه‌ی ساختاریافته برمی‌گرداند.
+
+## فرم JSON modal {#json-form}
+
+برای JSON modal یک فایل schema آپلود می‌کنی و دیدار از روی آن فرم را می‌سازد. هر input یک `key` دارد؛ مقدار واردشده با همان key در `context.payload` به دستت می‌رسد. متن‌ها دوزبانه (`fa` و `en`) هستند.
+
+```json title="form.json"
 {
   "schemaVersion": 1,
   "layout": "form",
@@ -102,7 +139,7 @@ description: نوع محتوا، surface، locationها، جریان launch، ف
 }
 ```
 
-`payload` متناظر در Runtime Context:
+بعد از submit، `context.payload` این‌طور است:
 
 ```json title="context.payload"
 {
@@ -113,26 +150,11 @@ description: نوع محتوا، surface، locationها، جریان launch، ف
 }
 ```
 
-## پاسخ JSON extension {#response}
+endpoint تو با یک پاسخ JSON کوتاه جواب می‌دهد و دیدار بر اساس آن پیام موفقیت یا خطا نشان می‌دهد. [قرارداد پاسخ](/api-app-endpoints#json-response)
 
-فقط برای submit فرم JSON، frontend دیدار پاسخ endpoint Third-party را می‌خواند و بر اساس آن toast نشان می‌دهد:
+## HTTPS و CORS برای اکستنشن‌های JSON {#cors}
 
-```json title="Response"
-{
-  "succeeded": true,
-  "message": "جلسه ساخته شد و یادداشت معامله ذخیره شد.",
-  "data": {
-    "dealId": "704e1533-cb4b-42d7-895d-ef71ff32ba5b",
-    "url": "https://meet.google.com/mock-53c79f7df0"
-  }
-}
-```
-
-در خطا `succeeded: false` و یک `message` قابل‌نمایش برگردان. برای iframe و action link، دیدار این قرارداد toast را پردازش نمی‌کند.
-
-## HTTPS و CORS {#cors}
-
-JSON extension با fetch مرورگر فراخوانی می‌شود؛ endpoint باید HTTPS باشد و origin دقیق دیدار را مجاز کند:
+اکستنشن JSON با fetch مرورگر صدا زده می‌شود؛ endpoint باید HTTPS باشد و origin دقیق دیدار را مجاز کند:
 
 ```http title="Response headers"
 Access-Control-Allow-Origin: https://app.didar.me
@@ -142,9 +164,26 @@ Access-Control-Allow-Headers: Content-Type
 ```
 
 > [!WARNING]
-> **از wildcard استفاده نکن.** اگر محیط‌های دیگری داری، allowlist صریح بساز. CORS جایگزین launch code، token و validation سمت سرور نیست.
+> از wildcard (`*`) استفاده نکن؛ اگر محیط دیگری داری، allowlist صریح بساز. CORS جای launchCode، token و validation سمت سرور را نمی‌گیرد.
+
+## اکستنشن‌های iframe (Custom modal و Custom panel) {#iframe}
+
+دیدار Iframe URL تو را با `?launchCode=…` داخل modal یا پنل باز می‌کند. صفحه‌ی تو باید کد را در backend به token تبدیل کند و بعد UI خودش را نشان بدهد. دیدار تم روشن و تیره دارد؛ مطمئن شو UI تو در هر دو خواناست.
+
+### Custom modal و Entry point {#custom-modal}
+
+Developer Hub برای هر Custom modal یک **ID** می‌سازد که قابل کپی است. Entry pointها همان Locationهای منوی عملیات‌اند و انتخابشان اختیاری است؛ اگر هیچ Entry pointی انتخاب نکنی، modal فقط از طریق SDK اجرا می‌شود.
+
+## JWT secret {#jwt-secret}
+
+Developer Hub برای هر اکستنشن (و برای App settings از نوع Custom UI) یک JWT secret می‌خواهد. یک رشته‌ی تصادفی و طولانی بساز و آن را مثل Client secret فقط روی سرورت نگه دار.
+
+## هنوز مستند نشده {#open}
+
+> [!WARNING]
+> این موارد هنوز در منبع فنی نیامده‌اند و در این داک حدس زده نمی‌شوند: دیدار JWT secret هر اکستنشن را دقیقاً کجا و چطور استفاده می‌کند، قالب «JSON data structure» در JSON panel و نحوه‌ی خواندن داده‌ی پنل از API endpoint، و SDK اجرای Custom modal.
 
 ## قدم بعدی {#next}
 
-- [صفحه تنظیمات](/settings-page)
-- [API دیدار](/api-concepts)
+- [صفحه‌ی تنظیمات](/settings-page)
+- [endpointهای اپ تو](/api-app-endpoints): قرارداد دقیق درخواست‌هایی که دیدار به سرور تو می‌فرستد.

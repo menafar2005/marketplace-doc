@@ -14,11 +14,11 @@ const json = (v) => text(JSON.stringify(v, null, 2));
 const slugOf = (s) => String(s || "").trim().replace(/^https?:\/\/[^/]+/, "").replace(/^\/+|\.md$|#.*$/g, "");
 
 const ANATOMY = [
-  { part: 1, name: "ثبت و تنظیمات اپ", what: "هویت اپ در دیدار: ClientId، ClientSecret، CallbackUrl و Installation URL", rules: ["ClientSecret فقط در backend / secret store", "CallbackUrl و EndpointUrl باید HTTPS باشند"], page: "app-registration" },
-  { part: 2, name: "احراز هویت و نصب", what: "کاربر نصب را تأیید می‌کند؛ backend اپ code را با CompleteInstallation کامل می‌کند", rules: ["state یک‌بارمصرف بساز و در callback تطبیق بده", "نتیجه را با BizDomainId ذخیره کن", "ApiKey فقط رمزگذاری‌شده"], page: "installation" },
-  { part: 3, name: "داده با API", what: "خواندن و نوشتن معامله، پرونده، شخص، شرکت، فعالیت و یادداشت از APIهای پروکسی", rules: ["فقط با Runtime Bearer Token", "فقط در محدوده‌ی scope و entityIds همان اجرا", "بدنه دقیقاً مثل OpenAPI دیدار؛ casing را حفظ کن"], page: "api-concepts" },
-  { part: 4, name: "رابط کاربری (App Extensions)", what: "اکستنشن IFrame / Link / Json و صفحه‌ی تنظیمات داخل دیدار؛ هر اجرا با launchCode شروع می‌شود", rules: ["launchCode یک‌بارمصرف است؛ log نکن", "CORS فقط برای origin دقیق دیدار", "payload را در backend validate کن"], page: "extensions" },
-  { part: 5, name: "سرور پلاگین", what: "جایی که کد تو اجرا می‌شود: endpoint launch، تبادل code با Runtime Token، نگهداری credentials", rules: ["Runtime Token را فقط تا پایان همان اجرا نگه دار", "token را در localStorage نگذار", "تصمیم‌ها بر اساس HTTP status و error.code"], page: "quick-start" },
+  { part: 1, name: "ساخت اپ در Developer Hub", what: "نام، Callback URL، scopeها و اکستنشن‌ها؛ خروجی: Client ID و Client secret. اپ Draft است تا Change to live.", rules: ["فقط ادمین BizDomain به https://app.didar.me/developerhub دسترسی دارد", "Client secret فقط در backend / secret store", "Callback URL و آدرس اکستنشن‌ها HTTPS"], page: "create-app" },
+  { part: 2, name: "نصب", what: "ادمین با لینک نصب، اپ را روی BizDomain خودش تأیید می‌کند؛ Callback URL اپ code را با CompleteInstallation کامل می‌کند", rules: ["state یک‌بارمصرف بساز و در callback تطبیق بده", "نتیجه را با BizDomainId ذخیره کن", "ApiKey فقط رمزگذاری‌شده"], page: "installation" },
+  { part: 3, name: "اجرا (launch)", what: "دیدار با ?launchCode= آدرس اکستنشن را صدا می‌زند؛ backend کد را با /api/v1/runtime/token به Runtime Token و Runtime Context تبدیل می‌کند", rules: ["launchCode یک‌بارمصرف است؛ ذخیره یا log نکن", "فقط به context برگشتی اعتماد کن", "payload را در backend validate کن"], page: "launch" },
+  { part: 4, name: "داده با API پروکسی", what: "خواندن و نوشتن معامله، پرونده، شخص، شرکت، فعالیت و یادداشت از marketplace.didar.me با Bearer Runtime Token", rules: ["فقط در محدوده‌ی scope و entityIds همان اجرا", "بدنه دقیقاً مثل API دیدار؛ casing را حفظ کن", "Runtime Token را برای اجرای بعدی reuse نکن"], page: "crm-data" },
+  { part: 5, name: "رابط کاربری (اکستنشن‌ها)", what: "Links، JSON modal، JSON panel، Custom modal، Custom panel و App settings در Locationهای دیدار", rules: ["CORS فقط برای origin دقیق دیدار", "Iframe URL فقط HTTPS", "ظرفیت: ۳ اکستنشن منو در هر Location، ۱ پنل در هر صفحه‌ی جزئیات"], page: "extensions" },
 ];
 
 const TOOLS = [
@@ -40,7 +40,7 @@ const TOOLS = [
   {
     name: "get_page",
     description: "متن کامل یک صفحه‌ی داک به Markdown. slug را از list_pages یا search_docs بگیر.",
-    inputSchema: { type: "object", properties: { slug: { type: "string", description: "مثل quick-start یا installation" } }, required: ["slug"] },
+    inputSchema: { type: "object", properties: { slug: { type: "string", description: "مثل launch یا installation" } }, required: ["slug"] },
     run: (a, o) => {
       const p = bySlug.get(slugOf(a.slug));
       if (!p) return text(`صفحه‌ای با slug «${a.slug}» نیست. صفحه‌های موجود: ${pages.map((x) => x.slug).join(", ")}`, true);
@@ -49,14 +49,14 @@ const TOOLS = [
   },
   {
     name: "get_plugin_anatomy",
-    description: "پنج بخش استاندارد یک اپ/پلاگین دیدار، نقش هرکدام، قواعد کلیدی و صفحه‌ی مرجع.",
+    description: "بخش‌های یک اپ/پلاگین دیدار به ترتیب ساخت (Developer Hub، نصب، اجرا، داده، اکستنشن‌ها)، قواعد کلیدی هرکدام و صفحه‌ی مرجع.",
     inputSchema: { type: "object", properties: {} },
-    run: (_a, o) => json({ summary: bySlug.get("anatomy").lead, parts: ANATOMY.map((p) => ({ ...p, url: `${o}/${p.page}` })), docs: `${o}/anatomy` }),
+    run: (_a, o) => json({ summary: bySlug.get("how-it-works").lead, parts: ANATOMY.map((p) => ({ ...p, url: `${o}/${p.page}` })), docs: `${o}/how-it-works` }),
   },
   {
     name: "get_api_spec",
     description:
-      "مشخصات دقیق endpoint پروکسی مارکت‌پلیس: مسیر، scope، شرط Runtime Context، همه‌ی پارامترها (نام، محل، نوع، الزام)، نمونه درخواست و پاسخ. بدنه‌ی پروکسی دقیقاً همان بدنه‌ی OpenAPI دیدار است. با id، یا method+path، یا عبارت جستجو؛ بدون ورودی فهرست endpointها را می‌دهد.",
+      "مشخصات دقیق endpointهای مارکت‌پلیس (تکمیل نصب، دریافت Runtime Token و APIهای پروکسی داده‌ی دیدار): مسیر، احراز هویت، scope، شرط Runtime Context، همه‌ی پارامترها (نام، محل، نوع، الزام)، نمونه درخواست و پاسخ. بدنه‌ی پروکسی دقیقاً همان بدنه‌ی OpenAPI دیدار است. با id، یا method+path، یا عبارت جستجو؛ بدون ورودی فهرست endpointها را می‌دهد.",
     inputSchema: { type: "object", properties: { id: { type: "string", description: "مثل deal-update" }, method: { type: "string" }, path: { type: "string", description: "مثل /api/v1/deals/{dealId} یا با شناسه‌ی واقعی" }, query: { type: "string", description: "عبارت آزاد، مثل «ویرایش معامله»" } } },
     run: (a, o) => {
       if (!a.id && !a.path && !a.query) {
@@ -76,14 +76,16 @@ const TOOLS = [
       }
       if (!hit && a.query) {
         const q = a.query.toLowerCase();
-        hit = endpoints.find((e) => [e.id, e.title, e.path, e.summary].some((s) => s.toLowerCase().includes(q)));
+        hit = endpoints.find((e) => [e.id, e.title, e.path, e.summary].some((s) => String(s || "").toLowerCase().includes(q)));
       }
       if (!hit) return text("endpointی پیدا نشد. get_api_spec را بدون ورودی صدا بزن تا فهرست کامل را ببینی.", true);
       const params = hit.params.map((p) => ({ name: p.name, in: p.in, type: p.type, required: !!p.required, description: p.description, ...(p.sections?.length ? { details: p.sections } : {}) }));
       return json({
-        id: hit.id, title: hit.title, method: hit.method, path: hit.path, url: spec.baseUrl + hit.path,
+        id: hit.id, title: hit.title, method: hit.method, path: hit.path, url: (hit.baseUrl || spec.baseUrl) + hit.path,
         summary: hit.summary, didarDescription: hit.didarDoc ? { heading: hit.didarDoc.heading, intro: hit.didarDoc.intro, rules: hit.didarDoc.rules, source: hit.didarDoc.source } : null, scope: hit.scope, runtimeContext: hit.context ?? null, didarApiEquivalent: hit.didar ?? null,
-        auth: "Authorization: Bearer <Runtime Token>", bodyNote: hit.bodyNote ?? null, params,
+        auth: hit.auth === "client" ? "بدون Bearer؛ ClientId و ClientSecret اپ در بدنه (فقط backend)" : "Authorization: Bearer <Runtime Token>",
+        bodyNote: hit.bodyNote ?? null, params,
+        ...(hit.responseFields ? { responseFields: hit.responseFields } : {}), ...(hit.notes?.length ? { notes: hit.notes } : {}), ...(hit.errors ? { errors: hit.errors } : {}),
         exampleRequest: hit.request, exampleResponse: hit.response, docs: `${o}/${hit.page}#${hit.id}`,
       });
     },
@@ -98,13 +100,13 @@ const TOOLS = [
     name: "list_extensions",
     description: "نوع محتوا، surface و locationهای اکستنشن، و انواع صفحه‌ی تنظیمات.",
     inputSchema: { type: "object", properties: {} },
-    run: (_a, o) => json({ contentTypes: spec.platform.extensionContentTypes, surfaceTypes: spec.platform.extensionSurfaceTypes, locations: spec.platform.extensionLocations, settingsPageTypes: spec.platform.settingsPageTypes, runtimeContextFields: spec.platform.runtimeContextFields, docs: [`${o}/extensions`, `${o}/settings-page`, `${o}/runtime`] }),
+    run: (_a, o) => json({ developerHubTypes: spec.platform.developerHubExtensionTypes, capacity: spec.platform.extensionCapacity, contentTypes: spec.platform.extensionContentTypes, surfaceTypes: spec.platform.extensionSurfaceTypes, locations: spec.platform.extensionLocations, settingsPageTypes: spec.platform.settingsPageTypes, runtimeContextFields: spec.platform.runtimeContextFields, docs: [`${o}/extensions`, `${o}/settings-page`, `${o}/launch`] }),
   },
   {
     name: "list_error_codes",
     description: "HTTP statusها و کدهای خطای مارکت‌پلیس همراه رفتار پیشنهادی.",
     inputSchema: { type: "object", properties: {} },
-    run: (_a, o) => json({ httpStatuses: spec.platform.httpStatuses, errorCodes: spec.platform.errorCodes, docs: `${o}/security-errors` }),
+    run: (_a, o) => json({ httpStatuses: spec.platform.httpStatuses, errorCodes: spec.platform.errorCodes, docs: `${o}/errors` }),
   },
   {
     name: "scaffold_plugin",

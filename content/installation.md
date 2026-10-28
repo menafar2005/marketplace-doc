@@ -1,42 +1,43 @@
 ---
-title: احراز هویت و نصب
-section: reference
-order: 2
-lead: این صفحه کمک می‌کند جریان نصب را پیاده کنی؛ نصب، اپ را به یک BizDomain متصل می‌کند و scopeهایی را که کاربر تأیید کرده ثبت می‌کند.
-description: فرایند نصب اپ، CompleteInstallation، پارامتر state و ذخیره‌سازی امن نتیجه.
+title: ۲. پیاده‌سازی نصب
+section: start
+order: 11
+lead: در این قدم Callback URL را روی سرورت پیاده می‌کنی و اپ را روی BizDomain خودت نصب می‌کنی. نصب، اپ را به یک کسب‌وکار وصل می‌کند و دسترسی‌هایی را که ادمین تأیید کرده ثبت می‌کند.
+description: جریان نصب اپ مارکت‌پلیس دیدار، پیاده‌سازی Callback URL، فراخوانی CompleteInstallation، state و ذخیره‌ی امن نتیجه.
 ---
 
-## مراحل نصب {#steps}
+## نصب از دید ادمین {#admin-view}
 
-| قدم | چه اتفاقی می‌افتد |
+1. ادمین **لینک نصب** اپ را باز می‌کند. این لینک را در Developer Hub از منوی ⋯ کنار اپ با **Share install link** (یا دکمه‌ی **Share app** در صفحه‌ی ویرایش) برمی‌داری.
+2. دیدار صفحه‌ی تأیید را نشان می‌دهد: نام اپ و سازنده، BizDomainی که اپ رویش نصب می‌شود، فهرست دسترسی‌ها، و اینکه کدام کاربران به اپ دسترسی داشته باشند.
+3. ادمین **تأیید دسترسی به اطلاعات و نصب** را می‌زند.
+4. دیدار مرورگر ادمین را به **Callback URL** اپ تو برمی‌گرداند و `code` (و اگر داشته باشی `state`) را در query می‌گذارد.
+
+از قدم ۴ به بعد کار سرور توست.
+
+## کار سرور تو: سه قدم {#steps}
+
+| قدم | چه کار کنی |
 | --- | --- |
-| ۱. ارسال کاربر به صفحه‌ی نصب | از Installation URL تولیدشده هنگام ثبت اپ استفاده کن. کاربر کسب‌وکار و دسترسی‌های اپ را در دیدار می‌بیند و تأیید می‌کند. |
-| ۲. دریافت code در callback | دیدار کاربر را به Callback URL برمی‌گرداند و `code` و در صورت وجود `state` را در query قرار می‌دهد. |
-| ۳. Complete کردن نصب | backend اپ، `code` را همراه credentials به endpoint دیدار می‌فرستد. این درخواست به credential کاربر دیدار نیاز ندارد. |
-| ۴. ثبت نتیجه | نتیجه را بر اساس `BizDomainId` ذخیره کن. یک اپ می‌تواند روی چند BizDomain نصب شود. |
+| ۱. code را بگیر | `code` و `state` را از query درخواست callback بخوان. |
+| ۲. نصب را کامل کن | `code` را همراه Client ID و Client secret به `CompleteInstallation` بفرست. این درخواست server-to-server است و به ورود کاربر دیدار نیاز ندارد. |
+| ۳. نتیجه را ذخیره کن | `BizDomainId`، scopeها و کلید نصب را ذخیره کن و به ادمین یک صفحه‌ی «نصب شد» نشان بده. |
 
-## CompleteInstallation {#complete}
-
-```http title="POST"
-POST https://app.didar.me/api/MarketplaceInstall/CompleteInstallation
-```
-
-فقط server-to-server است. احراز هویت کاربر دیدار لازم نیست.
+## درخواست CompleteInstallation {#complete}
 
 ```bash title="cURL"
-curl --request POST \
-  --url https://app.didar.me/api/MarketplaceInstall/CompleteInstallation \
-  --header "Content-Type: application/json" \
-  --data '{
-    "Code": "INSTALLATION_CODE",
-    "ClientId": "YOUR_CLIENT_ID",
-    "ClientSecret": "YOUR_CLIENT_SECRET"
-  }'
+curl --location 'https://app.didar.me/api/MarketplaceInstall/CompleteInstallation' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "Code": "INSTALLATION_CODE",
+  "ClientId": "YOUR_CLIENT_ID",
+  "ClientSecret": "YOUR_CLIENT_SECRET"
+}'
 ```
 
-پاسخ دیدار یک envelope بیرونی دارد (casing با PascalCase)؛ نتیجه‌ی عملیات در `Response` قرار می‌گیرد:
+پاسخ موفق:
 
-```json title="Response 200"
+```json title="200 OK"
 {
   "Response": {
     "Succeeded": true,
@@ -49,35 +50,80 @@ curl --request POST \
       "InstalledAt": "2026-09-29T09:55:22Z"
     },
     "Error": null,
-    "Meta": { "TraceId": "...", "CorrelationId": null }
+    "Meta": { "TraceId": "TRACE_ID", "CorrelationId": null }
   }
 }
 ```
 
 > [!NOTE]
-> این envelope با envelope استاندارد APIهای مارکت‌پلیس (`succeeded` / `data` / `error` / `meta` با camelCase) فرق دارد. [مفاهیم پایه API](/api-concepts)
+> قالب این پاسخ با بقیه‌ی APIهای مارکت‌پلیس فرق دارد: PascalCase است و نتیجه داخل `Response` قرار دارد. همه‌ی فیلدها در [مرجع API: تکمیل نصب](/api-auth#complete-installation).
 
-## استفاده از state {#state}
+## نمونه‌ی کد callback {#code}
 
-پیش از redirect یک مقدار تصادفی و یک‌بارمصرف بساز، آن را به session نصب متصل کن و هنگام callback با `state` دریافتی مقایسه کن. این کار جلوی متصل شدن callback جعلی به session اشتباه را می‌گیرد.
+```js title="routes/callback.js (Express)"
+app.get("/didar/callback", async (req, res) => {
+  const { code, state } = req.query;
 
-## چه چیزی ذخیره شود؟ {#store}
+  // اگر state ساخته‌ای، اینجا با مقدار session مقایسه کن
+  if (state && state !== req.session.installState) {
+    return res.status(400).send("Invalid state");
+  }
 
-- `InstallationId` و `BizDomainId` برای تشخیص نصب
-- scopeهای تأییدشده برای نمایش قابلیت‌های قابل استفاده
-- کلید نصب (`ApiKey`) فقط به‌شکل رمزگذاری‌شده در secret storage
-- زمان نصب و وضعیت فعال/لغوشده
+  const r = await fetch(
+    "https://app.didar.me/api/MarketplaceInstall/CompleteInstallation",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        Code: code,
+        ClientId: process.env.DIDAR_CLIENT_ID,
+        ClientSecret: process.env.DIDAR_CLIENT_SECRET,
+      }),
+    }
+  );
+  const result = (await r.json()).Response;
+  if (!r.ok || !result?.Succeeded) {
+    return res.status(502).send("Installation failed");
+  }
+
+  const { InstallationId, BizDomainId, Scopes, ApiKey, InstalledAt } = result.Data;
+  await db.installations.upsert({
+    bizDomainId: BizDomainId,
+    installationId: InstallationId,
+    scopes: Scopes,
+    apiKey: encrypt(ApiKey), // فقط رمزگذاری‌شده
+    installedAt: InstalledAt,
+    active: true,
+  });
+
+  res.send("نصب کامل شد. می‌توانی به دیدار برگردی.");
+});
+```
+
+## state چیست و چرا مهم است؟ {#state}
+
+اگر کاربر را از سایت خودت به صفحه‌ی نصب می‌فرستی، پیش از آن یک مقدار تصادفی و یک‌بارمصرف بساز، در session کاربر نگه دار و در callback با `state` برگشتی مقایسه کن. این کار نمی‌گذارد یک callback جعلی به session اشتباه وصل شود.
+
+## چه چیزی ذخیره کنی؟ {#store}
+
+| داده | چرا |
+| --- | --- |
+| `BizDomainId` و `InstallationId` | کلید اصلی هر نصب. یک اپ می‌تواند روی چند BizDomain نصب باشد. |
+| `Scopes` | بدانی در این کسب‌وکار کدام قابلیت‌ها مجازند. |
+| `ApiKey` | فقط رمزگذاری‌شده در secret storage. |
+| زمان نصب و وضعیت فعال/لغوشده | مدیریت چرخه‌ی عمر نصب. |
 
 > [!WARNING]
-> **نکته‌ی امنیتی.** `ClientSecret` و `ApiKey` را در URL، log، analytics، پاسخ browser یا کد frontend قرار نده.
+> Client secret و `ApiKey` را در URL، log، analytics، پاسخ مرورگر یا کد frontend قرار نده.
 
-## خطاهای رایج {#errors}
+## امتحانش کن {#try}
 
-| خطا | علت | راه‌حل |
-| --- | --- | --- |
-| `INVALID_CLIENT_CREDENTIALS` | `ClientId` یا `ClientSecret` اشتباه است | credentials را از secret store بخوان و مقایسه کن |
-| callback جعلی یا session اشتباه | `state` مقایسه نشده | `state` یک‌بارمصرف بساز و تطبیق بده |
+1. سرورت را با Callback URL ثبت‌شده بالا بیاور.
+2. در Developer Hub لینک نصب اپ را بردار و در مرورگری که با ادمین BizDomain خودت وارد شده‌ای باز کن.
+3. نصب را تأیید کن. باید به callback تو برگردی و رکورد نصب در دیتابیس ساخته شود.
+
+اگر `INVALID_CLIENT_CREDENTIALS` گرفتی، Client ID و Client secret را با مقدار Developer Hub مقایسه کن (شاید secret را Refresh کرده باشی).
 
 ## قدم بعدی {#next}
 
-- [Launch Code و Runtime](/runtime): بعد از نصب، هر اجرا با یک launch code شروع می‌شود.
+[۳. اجرای اکستنشن و گرفتن token](/launch): وقتی کاربر «ایجاد جلسه» را می‌زند، چه اتفاقی روی سرور تو می‌افتد.
