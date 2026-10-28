@@ -30,21 +30,21 @@ const I = {
 
 // ---- ناوبری: تب‌های بالا تعیین می‌کنند سایدبار چه گروه‌هایی نشان بدهد (مثل Claude Platform Docs) ----
 const TABS = [
-  { key: "guide", label: "راهنما", href: "/introduction" },
+  { key: "guide", label: "راهنما", href: "/getting-started" },
   { key: "api", label: "مرجع API", href: "/api-concepts" },
 ];
 const NAV = {
   guide: [
-    { title: "مارکت‌پلیس را بشناس", items: ["introduction", "concepts", "how-it-works"] },
-    { title: "اولین پلاگینت را بساز", items: ["create-app", "installation", "launch", "crm-data", "go-live"] },
-    { title: "قابلیت‌ها", items: ["extensions", "settings-page", "manage-app"] },
-    { title: "امنیت", items: ["security"] },
+    { title: "شروع", items: ["getting-started", "creating-an-app", "test-environment", "build-with-mcp"] },
+    { title: "مارکت‌پلیس", items: ["about-the-marketplace", "app-installation-flows", "developer-hub", "registering-an-app", "client-id-and-client-secret"] },
+    { title: "اکستنشن‌ها", items: ["app-extensions", "link-actions", "json-modals", "json-panels", "custom-ui-extensions", "custom-modals", "custom-panels", "app-settings"] },
+    { title: "احراز هویت", items: ["authentication", "installation-authorization", "runtime-token", "scopes", "state-parameter"] },
+    { title: "آموزش‌ها و مقاله‌ها", items: ["tutorial-first-app", "security"] },
   ],
   api: [
-    { title: "شروع", items: ["api-concepts"] },
+    { title: "مفاهیم پایه", items: ["api-concepts", "api-requests", "api-responses", "errors"] },
     { title: "نصب و اجرا", items: ["api-auth", "api-app-endpoints"] },
     { title: "داده‌ی دیدار", items: ["api-basic", "api-deals", "api-cases", "api-contacts", "api-activities"] },
-    { title: "مرجع", items: ["errors"] },
   ],
 };
 export const bySlug = new Map(pages.map((p) => [p.slug, p]));
@@ -199,18 +199,18 @@ export function renderHome(origin) {
     codeTabs(mcpItems(origin).map(({ hint, ...r }) => r)) +
     `<a class="solid-btn lg" href="/build-with-mcp">اتصال در ۵ دقیقه ←</a></div>` +
     `<h2 id="steps">از صفر شروع می‌کنی؟ این سه قدم</h2><p>به همین ترتیب جلو برو؛ هر قدم پیش‌نیاز قدم بعدی است.</p><ol class="steps">` +
-    `<li class="step"><span class="n">۱</span><h3>بفهم</h3><p>مارکت‌پلیس چیست، پلاگین کجای دیدار دیده می‌شود و شش مفهوم پایه‌ی آن چیست.</p><a href="/introduction">مارکت‌پلیس دیدار چیست؟ ←</a></li>` +
-    `<li class="step"><span class="n">۲</span><h3>تصویر کلی را ببین</h3><p>مسیر کامل یک پلاگین: ساخت اپ، نصب، اجرا و دسترسی به داده.</p><a href="/how-it-works">پلاگین چطور کار می‌کند ←</a></li>` +
-    `<li class="step"><span class="n">۳</span><h3>بساز</h3><p>در پنج قدم اولین پلاگینت را بساز، نصب کن و Live کن.</p><a href="/create-app">ساخت اپ در Developer Hub ←</a></li></ol>` +
+    `<li class="step"><span class="n">۱</span><h3>بفهم</h3><p>مارکت‌پلیس چیست، اپ چطور با دیدار کار می‌کند و کجای دیدار دیده می‌شود.</p><a href="/about-the-marketplace">درباره‌ی مارکت‌پلیس ←</a></li>` +
+    `<li class="step"><span class="n">۲</span><h3>نقشه را ببین</h3><p>پنج قدم از محیط تست تا Live کردن اپ و دادن لینک نصب.</p><a href="/creating-an-app">ساخت اپ ←</a></li>` +
+    `<li class="step"><span class="n">۳</span><h3>بساز</h3><p>یک اپ کامل با کد، از ثبت در Developer Hub تا ثبت یادداشت روی معامله.</p><a href="/tutorial-first-app">آموزش ساخت اولین اپ ←</a></li></ol>` +
     `<h2 id="all">همه بخش‌ها</h2><div class="cards">` +
-    card("/introduction", "info", "مارکت‌پلیس دیدار چیست؟", "مسئله، جای نمایش پلاگین و نقش‌ها") +
-    card("/concepts", "grid", "مفاهیم کلیدی", "اپ، نصب، scope، اکستنشن، اجرا و API") +
-    card("/build-with-mcp", "plug", "ساخت پلاگین با MCP دیدار", "مسیر پیش‌فرض ساخت", true) +
-    card("/create-app", "doc", "اولین پلاگینت را بساز", "آموزش پنج‌قدمی از Developer Hub تا Live") +
-    card("/extensions", "window", "اکستنشن‌ها", "Links، JSON، Custom و Locationها") +
-    card("/manage-app", "layers", "مدیریت اپ", "وضعیت‌ها، Client secret و حذف") +
-    card("/api-auth", "lock", "نصب و توکن", "CompleteInstallation و Runtime Token") +
-    card("/api-concepts", "code", "مرجع API", "همه‌ی endpointها، احراز هویت و قالب پاسخ") +
+    card("/about-the-marketplace", "info", "درباره‌ی مارکت‌پلیس", "مارکت‌پلیس چیست و اپ چطور کار می‌کند") +
+    card("/creating-an-app", "grid", "ساخت اپ", "نوع اپ و پنج قدم تا انتشار") +
+    card("/build-with-mcp", "plug", "ساخت اپ با MCP دیدار", "مسیر پیش‌فرض ساخت", true) +
+    card("/developer-hub", "doc", "Developer Hub", "ثبت، وضعیت‌ها، به‌روزرسانی و حذف اپ") +
+    card("/app-extensions", "window", "اکستنشن‌ها", "Links، JSON و Custom UI") +
+    card("/authentication", "lock", "احراز هویت", "نصب، Runtime Token و scopeها") +
+    card("/tutorial-first-app", "layers", "آموزش ساخت اولین اپ", "یک اپ کامل با کد") +
+    card("/api-concepts", "code", "مرجع API", "همه‌ی endpointها، درخواست و پاسخ") +
     `</div></div>`;
   return shell({
     title: "Didar Developers — مستندات توسعه‌دهنده مارکت‌پلیس دیدار",

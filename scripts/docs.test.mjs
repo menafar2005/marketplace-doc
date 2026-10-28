@@ -70,7 +70,7 @@ test("MCP handshake, tools and notifications", async () => {
 
 test("search_docs finds launch code docs", async () => {
   const r = await call("search_docs", { query: "launch code منقضی" });
-  assert.match(r.content[0].text, /launch|api-auth|errors/);
+  assert.match(r.content[0].text, /runtime-token|api-auth|errors|test-environment/);
 });
 
 test("get_api_spec resolves by id, by method+path with real ids, and by query", async () => {
@@ -169,7 +169,7 @@ test("marketplace install and token endpoints are in the API reference", async (
 });
 
 test("old page slugs redirect to their new home", async () => {
-  for (const [from, to] of [["/quick-start", "/launch"], ["/anatomy", "/how-it-works"], ["/security-errors.md", "/errors.md"], ["/glossary", "/concepts#glossary"]]) {
+  for (const [from, to] of [["/quick-start", "/tutorial-first-app"], ["/introduction", "/getting-started"], ["/launch", "/runtime-token"], ["/security-errors.md", "/errors.md"], ["/glossary", "/about-the-marketplace#glossary"], ["/extensions", "/app-extensions"]]) {
     const r = await get(from);
     assert.equal(r.status, 301, from);
     assert.equal(r.headers.get("location"), to, from);
@@ -177,12 +177,17 @@ test("old page slugs redirect to their new home", async () => {
 });
 
 test("every page in the sidebar exists and every page is in the sidebar", async () => {
-  const html = await (await get("/introduction")).text();
-  for (const s of ["introduction", "concepts", "how-it-works", "create-app", "installation", "launch", "crm-data", "go-live", "extensions", "settings-page", "manage-app", "security"]) {
+  const html = await (await get("/getting-started")).text();
+  for (const s of ["getting-started", "creating-an-app", "test-environment", "build-with-mcp", "about-the-marketplace", "app-installation-flows", "developer-hub", "registering-an-app", "client-id-and-client-secret", "app-extensions", "link-actions", "json-modals", "json-panels", "custom-ui-extensions", "custom-modals", "custom-panels", "app-settings", "authentication", "installation-authorization", "runtime-token", "scopes", "state-parameter", "tutorial-first-app", "security"]) {
     assert.match(html, new RegExp(`href="/${s}"`), s);
   }
   const api = await (await get("/api-concepts")).text();
-  for (const s of ["api-concepts", "api-auth", "api-app-endpoints", "api-basic", "api-deals", "api-cases", "api-contacts", "api-activities", "errors"]) {
+  for (const s of ["api-concepts", "api-requests", "api-responses", "errors", "api-auth", "api-app-endpoints", "api-basic", "api-deals", "api-cases", "api-contacts", "api-activities"]) {
     assert.match(api, new RegExp(`href="/${s}"`), s);
   }
+});
+
+test("every page is reachable from the sidebar", async () => {
+  const navHtml = (await (await get("/getting-started")).text()) + (await (await get("/api-concepts")).text());
+  for (const p of pages) assert.match(navHtml, new RegExp(`href="/${p.slug}"`), p.slug);
 });

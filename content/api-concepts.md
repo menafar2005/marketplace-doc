@@ -1,8 +1,8 @@
 ---
-title: مقدمه‌ی API
+title: درباره‌ی API
 section: reference
 order: 1
-lead: همه‌ی endpointهای مارکت‌پلیس در یک صفحه: کدام دامنه، کدام احراز هویت، چه قالب پاسخی، و هر endpoint کجای این مرجع است.
+lead: APIهای مارکت‌پلیس دیدار سه دسته‌اند؛ نصب و توکن، داده‌ی دیدار، و endpointهایی که اپ تو پیاده می‌کند. این صفحه هر سه را معرفی می‌کند و همه‌ی endpointها را یک‌جا فهرست کرده است.
 description: دامنه‌ها، دو نوع احراز هویت (credentials اپ و Runtime Token)، scopeها، Runtime Context، envelope پاسخ و فهرست همه‌ی endpointهای مارکت‌پلیس دیدار.
 ---
 
@@ -38,62 +38,14 @@ description: دامنه‌ها، دو نوع احراز هویت (credentials ا
 
 مسیرهای بدون دامنه روی `https://marketplace.didar.me` هستند.
 
-## احراز هویت {#auth}
+## قبل از شروع {#basics}
 
-**نصب و توکن:** بدون هدر Authorization. اپ با `ClientId` / `ClientSecret` (برای تکمیل نصب) یا `clientId` / `clientSecret` (برای Runtime Token) در بدنه هویتش را ثابت می‌کند. این درخواست‌ها فقط از backend فرستاده می‌شوند.
-
-**داده‌ی دیدار:** هر درخواست هدر Runtime Token را دارد:
-
-```bash title="الگوی مشترک درخواست داده"
-curl --location 'https://marketplace.didar.me/api/v1/proxy/activity-types' \
---header 'Authorization: Bearer RUNTIME_ACCESS_TOKEN' \
---header 'Accept: application/json'
-```
-
-مارکت‌پلیس نصب، scope و context را از token درمی‌آورد. فرستادن `BizDomainId` یا کلید API دیدار لازم نیست.
-
-## Scope و Runtime Context {#scopes}
-
-هر درخواست داده دو بار چک می‌شود: اپ باید scope لازم را داشته باشد، و رکورد باید جزو `entityIds` همان اجرا باشد.
-
-| Resource | scope خواندن | scope نوشتن |
-| --- | --- | --- |
-| اطلاعات پایه | `basicinfo` | — |
-| Deal | `deals` یا `deals.fullaccess` | `deals.fullaccess` |
-| Case | `cases` یا `cases.fullaccess` | `cases.fullaccess` |
-| Person / Company | `contacts` یا `contacts.fullaccess` | `contacts.fullaccess` |
-| Activity / Note | `activities` یا `activities.fullaccess` | `activities.fullaccess` |
-
-## قالب پاسخ {#envelope}
-
-پاسخ endpointهای `marketplace.didar.me` در envelope استاندارد مارکت‌پلیس است. در APIهای داده، `data.Response` همان پاسخ API دیدار است و بسته به endpoint یک object یا array است:
-
-```json title="Response 200"
-{
-  "succeeded": true,
-  "data": { "Response": { } },
-  "error": null,
-  "meta": {
-    "traceId": "TRACE_ID",
-    "timestampUtc": "2026-01-01T00:00:00Z"
-  }
-}
-```
-
-`CompleteInstallation` روی `app.didar.me` است و قالب پاسخ دیدار را دارد (PascalCase، داخل `Response`). [جزئیات](/api-auth#complete-installation)
-
-## بدنه‌ها دقیقاً مثل API دیدار {#openapi}
-
-بدنه‌ی endpointهای داده دقیقاً بدنه‌ی API دیدار است و جدول پارامترهای این مرجع از مستندات رسمی API دیدار آمده است. سه تفاوت:
-
-- **شناسه در مسیر است.** برای GET، شناسه در route می‌آید؛ برای PUT، شناسه‌ی بدنه (مثل `Deal.Id`) باید با route برابر باشد.
-- **احراز هویت با Runtime Token است**، نه `apikey` در query.
-- **context هم چک می‌شود**، نه فقط scope.
-
-> [!WARNING]
-> نام و casing فیلدها را دقیقاً مطابق نمونه‌ها بفرست؛ از جمله `Deal`، `Case`، `Contact`، `Activity` و `ContactIds`.
-
-خطاها: [مرجع خطاها](/errors).
+| موضوع | صفحه |
+| --- | --- |
+| دامنه‌ها، هدرها، احراز هویت و قاعده‌ی بدنه‌ها | [درخواست‌ها](/api-requests) |
+| قالب پاسخ موفق و فیلدهای `meta` | [پاسخ‌ها](/api-responses) |
+| HTTP statusها و کدهای خطا | [کدهای وضعیت HTTP](/errors) |
+| scope لازم برای هر endpoint | [Scopeها و دسترسی‌ها](/scopes) |
 
 > [!NOTE]
 > **MCP وصل است؟** ابزار `get_api_spec` مشخصات دقیق هر endpoint را برمی‌گرداند. [اتصال به MCP](/build-with-mcp)

@@ -20,7 +20,7 @@ GET https://your-app.example.com/didar/callback?code=INSTALLATION_CODE&state=STA
 | `state` | اگر پیش از فرستادن کاربر به نصب ساخته باشی، همان مقدار برمی‌گردد؛ با session مقایسه کن. |
 
 **کجا ثبت می‌شود:** Developer Hub ← Basic info ← Callback URL.
-**چه برگردانی:** این یک redirect مرورگر است؛ پس از تکمیل نصب، یک صفحه‌ی HTML به ادمین نشان بده. [راهنمای نصب](/installation)
+**چه برگردانی:** این یک redirect مرورگر است؛ پس از تکمیل نصب، یک صفحه‌ی HTML به ادمین نشان بده. [تکمیل نصب](/installation-authorization)
 
 ## URL اکستنشن (launch) {#launch}
 
@@ -87,4 +87,4 @@ Access-Control-Allow-Headers: Content-Type
 GET https://your-app.example.com/didar/settings?launchCode=ONE_TIME_CODE
 ```
 
-مثل URL اکستنشن است؛ فقط `context.target` برابر `settings_page` است و رکوردی ندارد. **کجا ثبت می‌شود:** App settings ← URL (External link) یا Iframe URL (Custom UI). [صفحه‌ی تنظیمات](/settings-page)
+مثل URL اکستنشن است؛ فقط `context.target` برابر `settings_page` است و رکوردی ندارد. **کجا ثبت می‌شود:** App settings ← URL (External link) یا Iframe URL (Custom UI). [App settings](/app-settings)

@@ -1,5 +1,5 @@
 // اسکلت backend اپ دیدار برای ابزار MCP «scaffold_plugin».
-// همه‌ی endpointها و قواعد از صفحه‌های همین داک آمده‌اند (installation، launch، crm-data، extensions).
+// همه‌ی endpointها و قواعد از صفحه‌های همین داک آمده‌اند (installation-authorization، runtime-token، app-extensions، tutorial-first-app).
 import { spec } from "./generated/content.js";
 
 const KNOWN = new Set(spec.platform.scopes.map((s) => s.name));
@@ -16,7 +16,7 @@ export function scaffoldPlugin(args, origin) {
     "ذخیره‌ی نصب (saveInstallation) را با دیتابیس خودت جایگزین کن؛ ApiKey را رمزگذاری‌شده نگه دار.",
     "state در حافظه نگه داشته می‌شود؛ برای چند instance از session/Redis استفاده کن.",
     "نحوه‌ی ارسال state به Installation URL (query param) را با فرمت Installation URL اپ خودت تطبیق بده.",
-    `پیش از نصب، config را با validate_plugin چک کن. مرجع: ${origin}/installation و ${origin}/extensions`,
+    `پیش از نصب، config را با validate_plugin چک کن. مرجع: ${origin}/installation-authorization و ${origin}/app-extensions`,
   ];
   if (unknown.length) notes.unshift(`scope ناشناخته: ${unknown.join(", ")} — list_scopes را ببین.`);
 
@@ -87,7 +87,7 @@ export async function proxy(accessToken, method, path, body) {
       content: `# ${name}\n\nاسکلت اپ دیدار (${extension}).\n\n1. \`cp .env.example .env\` و مقادیر را پر کن\n2. \`npm install && npm start\`\n3. callback نصب: \`/install/callback\`، launch: \`/api/launch\` (هر دو باید HTTPS عمومی باشند)\n\nscopeهای درخواستی: ${scopes.length ? scopes.join(", ") : "[scope]"}\n`,
     },
   ];
-  return { name, extension, scopes, files, notes, docs: [`${origin}/create-app`, `${origin}/installation`, `${origin}/launch`, `${origin}/crm-data`, `${origin}/extensions`] };
+  return { name, extension, scopes, files, notes, docs: [`${origin}/registering-an-app`, `${origin}/installation-authorization`, `${origin}/runtime-token`, `${origin}/app-extensions`, `${origin}/tutorial-first-app`] };
 }
 
 function serverJs(extension) {
