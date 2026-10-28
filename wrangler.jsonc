@@ -7,5 +7,7 @@
   "workers_dev": true,
   "observability": { "enabled": true },
   // هر deploy اول داک را از روی ریپو (content/ و spec/) دوباره می‌سازد
-  "build": { "command": "node scripts/build.mjs" }
+  "build": { "command": "node scripts/build.mjs" },
+  // تصویرها (public/images) به‌صورت Static Assets سرو می‌شوند، پیش از رسیدن درخواست به Worker
+  "assets": { "directory": "./public" }
 }

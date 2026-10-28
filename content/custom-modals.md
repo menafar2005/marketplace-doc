@@ -16,6 +16,10 @@ description: اکستنشن Custom modal در دیدار؛ جای نمایش، E
 - ظرفیت هر Location منو بین Links، JSON modal و Custom modal مشترک است (حداکثر ۳). [ظرفیت‌ها](/app-extensions#limits)
 - **Entry point اختیاری است.** اگر هیچ Entry pointی انتخاب نکنی، modal در منوها دیده نمی‌شود و فقط از طریق SDK اجرا می‌شود. در فهرست My added extensions، اکستنشنی که از طریق SDK قابل اجراست برچسب **SDK** دارد، کنار برچسب Entry pointهایش.
 
+![اکشن اپ در لیست معاملات](/images/extensions/action-menu-list.webp "اجرا از صفحه‌ی لیست روی ردیف‌های انتخاب‌شده")
+
+![modal اپ روی لیست معاملات](/images/extensions/modal-list.webp "modal اپ روی صفحه باز می‌شود؛ context.entityIds همه‌ی ردیف‌های انتخاب‌شده است")
+
 ## Custom modal را چطور اضافه کنم؟ {#add}
 
 در Developer Hub، تب **App extensions**، کارت **Custom modal** را انتخاب کن و **Add** بزن.

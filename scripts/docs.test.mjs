@@ -191,3 +191,20 @@ test("every page is reachable from the sidebar", async () => {
   const navHtml = (await (await get("/getting-started")).text()) + (await (await get("/api-concepts")).text());
   for (const p of pages) assert.match(navHtml, new RegExp(`href="/${p.slug}"`), p.slug);
 });
+
+test("screenshots exist in public/ and diagrams are inline only in HTML", async () => {
+  const { existsSync } = await import("node:fs");
+  let images = 0, diagrams = 0;
+  for (const p of pages) {
+    for (const m of p.md.matchAll(/!\[[^\]]*\]\((\/images\/[^ )]+)/g)) {
+      images++;
+      assert.ok(existsSync(join(root, "public", m[1])), `${p.slug}: missing ${m[1]}`);
+    }
+    assert.doesNotMatch(p.md, /<svg|<!--DIAGRAM/, `${p.slug}: diagram leaked into markdown`);
+    diagrams += (p.html.match(/<figure class="diagram"><svg/g) || []).length;
+  }
+  assert.ok(images >= 10, `images: ${images}`);
+  assert.ok(diagrams >= 6, `diagrams: ${diagrams}`);
+  const html = await (await get("/installation-authorization")).text();
+  assert.match(html, /<figure class="diagram"><svg[^>]*role="img"/);
+});

@@ -15,6 +15,10 @@ Link یک گزینه در منوی عملیات دیدار است که آدرس�
 - **صفحه‌های جزئیات** (Deal details، Person details، Organization details، Case details): در منوی عملیات همان رکورد.
 - **صفحه‌های لیست** (Deals list، People list، Organizations list، Case list): کاربر یک یا چند ردیف را انتخاب می‌کند، روی ⋯ کنار عملیات گروهی می‌زند و گزینه‌ی اپ را انتخاب می‌کند. بدون انتخاب ردیف، اکشن در دسترس نیست.
 
+![اکشن اپ در منوی عملیات صفحه‌ی جزئیات معامله](/images/extensions/action-menu-deal.webp "صفحه‌ی جزئیات: اکشن اپ داخل منوی ⋯ همان رکورد")
+
+![اکشن اپ در لیست معاملات روی ردیف‌های انتخاب‌شده](/images/extensions/action-menu-list.webp "صفحه‌ی لیست: بعد از انتخاب ردیف‌ها، اکشن اپ در منوی ⋯ کنار عملیات گروهی")
+
 هر اپ در هر Location منو حداکثر ۳ اکستنشن از Links، JSON modal و Custom modal دارد و در کل حداکثر ۱۸. [ظرفیت‌ها](/app-extensions#limits)
 
 ## Links چطور کار می‌کند؟ {#how}

@@ -6,6 +6,8 @@ lead: نصب در پنج قدم کامل می‌شود؛ ادمین را به ص
 description: قدم‌به‌قدم تکمیل نصب اپ دیدار؛ لینک نصب، تأیید ادمین، callback با code و state، درخواست CompleteInstallation، فیلدهای پاسخ و ذخیره‌ی نتیجه.
 ---
 
+<!--DIAGRAM:install-flow کل جریان در یک نگاه؛ شماره‌ها همان قدم‌های این صفحه است-->
+
 ## قدم ۱: فرستادن ادمین به صفحه‌ی نصب {#step-1}
 
 ادمین **لینک نصب** اپ را باز می‌کند. این لینک را از Developer Hub با **Share install link** برمی‌داری. [اشتراک اپ](/registering-an-app#install-link)

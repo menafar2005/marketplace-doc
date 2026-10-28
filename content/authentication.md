@@ -28,9 +28,13 @@ description: مدل احراز هویت مارکت‌پلیس دیدار؛ crede
 - **context:** اکستنشن، Location و رکوردهایی (`entityIds`) که این اجرا روی آن‌ها کار می‌کند
 - **زمان انقضا:** در نمونه‌ی مستند ۳۰۰ ثانیه
 
+<!--DIAGRAM:request-checks هر درخواست داده با Runtime Token از این بررسی‌ها رد می‌شود-->
+
 پس حتی با scope کامل، اپ فقط روی رکوردهای همان اجرا کار می‌کند. این بزرگ‌ترین تفاوت دیدار با مدل‌های OAuth رایج است: token بلندمدت و refresh token وجود ندارد.
 
 ## قدم‌های رسیدن به Runtime Token {#steps}
+
+<!--DIAGRAM:runtime-flow-->
 
 1. **[محیط تست](/test-environment) را آماده کن:** ادمین یک BizDomain باش.
 2. **[اپ را ثبت کن](/registering-an-app):** Client ID و Client secret بگیر و scopeها را انتخاب کن.

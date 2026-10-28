@@ -16,6 +16,10 @@ JSON modal یک اکشن به‌شکل modal است که با آن کاربر ک
 
 مثل [Links](/link-actions#visibility): در منوی عملیات صفحه‌های جزئیات، و در صفحه‌های لیست روی ردیف‌های انتخاب‌شده. ظرفیت هر Location منو بین Links، JSON modal و Custom modal مشترک است (حداکثر ۳). [ظرفیت‌ها](/app-extensions#limits)
 
+![اکشن اپ در منوی عملیات صفحه‌ی جزئیات معامله](/images/extensions/action-menu-deal.webp "۱. کاربر اکشن اپ را از منوی ⋯ معامله انتخاب می‌کند")
+
+![modal اپ روی صفحه‌ی جزئیات معامله](/images/extensions/modal-deal.webp "۲. modal روی همان صفحه باز می‌شود؛ کاربر فرم را پر و ثبت می‌کند")
+
 ## ساختار schema {#schema}
 
 schema از این بخش‌ها ساخته می‌شود. متن‌ها دوزبانه‌اند (`fa` و `en`).

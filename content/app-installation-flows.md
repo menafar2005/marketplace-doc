@@ -21,6 +21,8 @@ description: نصب اپ مارکت‌پلیس دیدار از دید ادمین
 
 ## تأیید و نصب {#allow-and-install}
 
+<!--DIAGRAM:install-flow جریان نصب؛ شماره‌ها همان قدم‌های صفحه‌ی «تکمیل نصب» است-->
+
 بعد از تأیید، دیدار مرورگر ادمین را به **Callback URL** اپ برمی‌گرداند و `code` نصب را در query می‌گذارد. سرور تو باید:
 
 1. `code` را با [`CompleteInstallation`](/installation-authorization#step-4) کامل کند،
