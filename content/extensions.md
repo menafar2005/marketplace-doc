@@ -11,11 +11,11 @@ description: انواع اکستنشن در Developer Hub (Links، JSON modal، 
 | اگر می‌خواهی… | نوع |
 | --- | --- |
 | کاربر با یک کلیک به صفحه‌ای روی سایت تو برود | **Links** |
-| کاربر یک فرم ساده پر کند و تو کاری انجام بدهی، بدون نوشتن UI | **JSON modal** |
+| کاربر با یک فرم از قبل تعریف‌شده یک کار کامل را داخل خود دیدار انجام بدهد، بدون نوشتن UI | **JSON modal** |
 | UI کامل خودت را در یک پنجره‌ی modal نشان بدهی | **Custom modal** |
-| اطلاعات همیشه کنار صفحه‌ی جزئیات دیده شود، بدون نوشتن UI | **JSON panel** |
+| داده‌ی اپ تو (مثلاً مانده‌حساب مشتری) با اجزای آماده‌ی دیدار در صفحه‌ی جزئیات دیده شود، بدون نوشتن UI | **JSON panel** |
 | UI کامل خودت را به‌شکل پنل در صفحه‌ی جزئیات نشان بدهی | **Custom panel** |
-| هر کسب‌وکار اپ را پیکربندی کند | **App settings** ([صفحه‌ی تنظیمات](/settings-page)) |
+| کاربر با یک کلیک از فهرست اپ‌های نصب‌شده به تنظیمات اپ تو برسد | **App settings** ([صفحه‌ی تنظیمات](/settings-page)) |
 
 ## شش نوع اکستنشن {#types}
 
@@ -24,8 +24,8 @@ description: انواع اکستنشن در Developer Hub (Links، JSON modal، 
 | Links | منوی عملیات | — (به سایت تو می‌رود) | Action name، URL، JWT secret، Locations |
 | JSON modal | منوی عملیات ← modal | دیدار، از روی schema | Action name، API endpoint، JWT secret، JSON schema، Locations |
 | Custom modal | منوی عملیات ← modal | تو (iframe) | Modal name، Iframe URL، JWT secret، Entry points |
-| JSON panel | داخل صفحه‌ی جزئیات | دیدار، از روی ساختار داده | Panel name، API endpoint، JWT secret، JSON data structure، Panel locations |
-| Custom panel | داخل صفحه‌ی جزئیات | تو (iframe) | Panel name، Iframe URL، JWT secret، Panel locations |
+| JSON panel | پنل در سایدبار صفحه‌ی جزئیات | دیدار، با اجزای آماده | Panel name، API endpoint، JWT secret، JSON data structure، Panel locations |
+| Custom panel | پنل در سایدبار سمت چپ صفحه‌ی جزئیات | تو (iframe) | Panel name، Iframe URL، JWT secret، Panel locations |
 | App settings | تنظیمات اپ نصب‌شده | تو (لینک خارجی یا iframe) | Type، URL یا Iframe URL، JWT secret |
 
 توضیح (description) در همه‌ی انواع اختیاری است.
@@ -45,7 +45,7 @@ description: انواع اکستنشن در Developer Hub (Links، JSON modal، 
 | Case list | `7` | `case` |
 | Case details | `8` | `case` |
 
-**JSON panel و Custom panel** فقط در صفحه‌های جزئیات نمایش داده می‌شوند: Deal details، Person details و Organization details.
+**JSON panel و Custom panel** به‌شکل یک پنل در سایدبار سمت چپ صفحه‌های جزئیات نمایش داده می‌شوند: Deal details، Person details و Organization details. کاربر بدون اجرای عملیات خاصی پنل را می‌بیند.
 
 ## ظرفیت هر اپ {#limits}
 
