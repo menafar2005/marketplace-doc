@@ -261,7 +261,6 @@ a.ext::after{content:"↗";font-size:.8em;margin-inline-start:2px}
 .prose .shot{display:block;margin:20px 0 24px}
 .prose .shot img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
 .prose .shot-cap{display:block;margin-top:8px;font-size:13px;color:var(--muted);text-align:center}
-.prose figure.diagram{margin:20px 0 28px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--surface);overflow-x:auto}
-.prose figure.diagram svg{display:block;min-width:620px;height:auto}
-.prose figure.diagram figcaption{margin-top:10px;font-size:13px;color:var(--muted);text-align:center}
+.prose .shot img[src*="/images/flows/"]{max-width:640px;margin:0 auto;background:#fff}
+.prose .shot img[src$="/lifecycle.png"]{max-width:100%}
 `;

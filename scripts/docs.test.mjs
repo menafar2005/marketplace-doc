@@ -192,19 +192,17 @@ test("every page is reachable from the sidebar", async () => {
   for (const p of pages) assert.match(navHtml, new RegExp(`href="/${p.slug}"`), p.slug);
 });
 
-test("screenshots exist in public/ and diagrams are inline only in HTML", async () => {
+test("screenshots and flowcharts referenced in pages exist in public/", async () => {
   const { existsSync } = await import("node:fs");
-  let images = 0, diagrams = 0;
+  const seen = new Set();
   for (const p of pages) {
     for (const m of p.md.matchAll(/!\[[^\]]*\]\((\/images\/[^ )]+)/g)) {
-      images++;
+      seen.add(m[1]);
       assert.ok(existsSync(join(root, "public", m[1])), `${p.slug}: missing ${m[1]}`);
     }
-    assert.doesNotMatch(p.md, /<svg|<!--DIAGRAM/, `${p.slug}: diagram leaked into markdown`);
-    diagrams += (p.html.match(/<figure class="diagram"><svg/g) || []).length;
   }
-  assert.ok(images >= 10, `images: ${images}`);
-  assert.ok(diagrams >= 6, `diagrams: ${diagrams}`);
+  assert.ok([...seen].filter((s) => s.startsWith("/images/flows/")).length === 4, [...seen].join(", "));
+  assert.ok([...seen].filter((s) => s.startsWith("/images/extensions/")).length === 7, [...seen].join(", "));
   const html = await (await get("/installation-authorization")).text();
-  assert.match(html, /<figure class="diagram"><svg[^>]*role="img"/);
+  assert.match(html, /<img src="\/images\/flows\/installation-flow\.png"/);
 });

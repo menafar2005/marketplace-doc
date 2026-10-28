@@ -15,8 +15,7 @@
 
 ```
 content/*.md          صفحه‌های راهنما و مرجع (frontmatter: title, section, order, lead)
-content/diagrams/     نمودارهای SVG جریان‌ها؛ در صفحه با <!--DIAGRAM:name کپشن--> درون‌خطی می‌شوند
-public/images/        اسکرین‌شات‌های اکستنشن‌ها (Static Assets در Cloudflare)
+public/images/        اسکرین‌شات‌های اکستنشن‌ها و فلوچارت‌ها (Static Assets در Cloudflare)
 spec/endpoints.mjs    مشخصات همه‌ی endpointها (نصب، توکن، پروکسی)؛ صفحه‌های API و ابزار get_api_spec از همین ساخته می‌شوند
 spec/platform.json    scopeها، locationها، خطاها (منبع list_scopes، list_extensions، list_error_codes)
 scripts/build.mjs     content + spec  →  src/generated/content.js
@@ -38,7 +37,7 @@ src/                  Worker: سایت، MCP، جستجو، scaffold و validate
 - **الگوی صفحه‌ی هر قابلیت:** چیست؟ ← کجای دیدار دیده می‌شود ← افزودن در Developer Hub (جدول فیلد) ← تبادل داده ← هنوز مستند نشده ← بعد از این بخوان.
 - **مرجع API:** مفاهیم پایه (درباره، درخواست‌ها، پاسخ‌ها، کدهای وضعیت) ← نصب و اجرا ← داده‌ی دیدار.
 - **تصویرها:** اسکرین‌شات‌های `public/images/extensions` از صفحه‌ی extensions فایل Figma «avangard» ساخته شده‌اند؛ فقط اکستنشن واقعی است و بقیه‌ی صفحه skeleton شده. برای ساخت دوباره: `python3 scripts/extension-skeleton.py SRC.png OUT.png "x0,y0,x1,y1" [--crop …] [--dim]` (`--dim` برای صفحه‌هایی که اکستنشن modal است) و سپس تبدیل به WebP.
-- **نمودارها:** `python3 scripts/diagrams.py content/diagrams` هر چهار SVG را از نو می‌سازد. رنگ‌ها از متغیرهای CSS سایت می‌آیند، پس با تم روشن و تیره عوض می‌شوند. در نسخه‌ی Markdown (MCP، llms.txt) نمودارها حذف می‌شوند.
+- **فلوچارت‌ها:** تصویرهای `public/images/flows` (انگلیسی، به سبک فلوچارت‌های Pipedrive) با `python3 scripts/flowcharts.py DIR` و `node scripts/render-flowcharts.cjs DIR public/images/flows` از نو ساخته می‌شوند (Playwright لازم است).
 - slugهای قدیمی با 301 به صفحه‌ی جدید می‌روند (`MOVED` در `src/worker.js`).
 
 ## ویرایش داک

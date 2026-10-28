@@ -21,7 +21,7 @@ description: نصب اپ مارکت‌پلیس دیدار از دید ادمین
 
 ## تأیید و نصب {#allow-and-install}
 
-<!--DIAGRAM:install-flow جریان نصب؛ شماره‌ها همان قدم‌های صفحه‌ی «تکمیل نصب» است-->
+![Installation flowchart: install link, Allow & Install, Callback URL, state check, CompleteInstallation, store, account, setup](/images/flows/installation-flow.png "جریان نصب؛ شماره‌ها همان قدم‌های صفحه‌ی «تکمیل نصب» است")
 
 بعد از تأیید، دیدار مرورگر ادمین را به **Callback URL** اپ برمی‌گرداند و `code` نصب را در query می‌گذارد. سرور تو باید:
 
