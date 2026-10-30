@@ -147,5 +147,5 @@ description: ثبت پلاگین در Developer Hub دیدار؛ فیلدهای 
 ## بعد از این بخوان {#read-next}
 
 - [Client ID و Client secret](/client-id-and-client-secret)
-- [جریان نصب از دید ادمین](/app-installation-flows)
+- [تکمیل نصب](/installation-authorization)
 - [مرور اکستنشن‌ها](/app-extensions)

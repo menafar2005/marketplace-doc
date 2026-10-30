@@ -91,4 +91,4 @@ curl --location 'https://marketplace.didar.me/api/v1/proxy/biz-domain/info' \
 ## بعد از این بخوان {#read-next}
 
 - [درباره‌ی Custom UI](/custom-ui-extensions)
-- [جریان نصب از دید ادمین](/app-installation-flows): بعد از نصب، ادمین را به تنظیمات پلاگین ببر.
+- [تکمیل نصب](/installation-authorization#step-5): بعد از نصب، ادمین را به تنظیمات پلاگین ببر.

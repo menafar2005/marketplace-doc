@@ -38,7 +38,7 @@ const NAV = {
     { title: "معرفی", items: ["getting-started", "plugin-anatomy", "about-the-marketplace"] },
     { title: "شروع ساخت", items: ["tutorial-first-app", "build-with-mcp", "test-environment"] },
     { title: "Developer Hub", items: ["developer-hub", "registering-an-app", "client-id-and-client-secret"] },
-    { title: "نصب و احراز هویت", items: ["authentication", "app-installation-flows", "installation-authorization", "state-parameter", "runtime-token", "scopes"] },
+    { title: "نصب و احراز هویت", items: ["installation-authorization", "state-parameter", "runtime-token", "scopes"] },
     { title: "اکستنشن‌ها", items: ["app-extensions", "link-actions", "json-modals", "json-panels", "custom-ui-extensions", "custom-modals", "custom-panels", "app-settings"] },
     { title: "انتشار و امنیت", items: ["publishing", "security"] },
   ],
@@ -209,7 +209,7 @@ export function renderHome(origin) {
     card("/build-with-mcp", "plug", "ساخت با MCP دیدار", "مسیر پیشنهادی ساخت", true) +
     card("/tutorial-first-app", "layers", "ساخت اولین پلاگین", "راهنمای قدم‌به‌قدم با کد کامل") +
     card("/developer-hub", "doc", "Developer Hub", "ثبت، وضعیت‌ها، به‌روزرسانی و حذف") +
-    card("/authentication", "lock", "نصب و احراز هویت", "نصب، Runtime Token و scopeها") +
+    card("/installation-authorization", "lock", "نصب و احراز هویت", "نصب، Runtime Token و scopeها") +
     card("/app-extensions", "window", "اکستنشن‌ها", "Links، JSON و Custom UI") +
     card("/api-concepts", "code", "مرجع API", "همه‌ی endpointها، درخواست و پاسخ") +
     `</div></div>`;

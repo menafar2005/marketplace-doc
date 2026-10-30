@@ -22,7 +22,7 @@ description: دامنه‌ها، احراز هویت، هدرها، شناسه �
 | نصب و توکن | بدون هدر `Authorization`. `ClientId` / `ClientSecret` (تکمیل نصب) یا `clientId` / `clientSecret` (Runtime Token) در بدنه. فقط از backend. |
 | داده‌ی دیدار | هدر `Authorization: Bearer <Runtime Token>` |
 
-مارکت‌پلیس نصب، scope و context را از Runtime Token درمی‌آورد. فرستادن `BizDomainId` یا کلید API دیدار لازم نیست. [مرور احراز هویت](/authentication)
+مارکت‌پلیس نصب، scope و context را از Runtime Token درمی‌آورد. فرستادن `BizDomainId` یا کلید API دیدار لازم نیست. [Runtime Token](/runtime-token)
 
 ## هدرها {#headers}
 

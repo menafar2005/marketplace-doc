@@ -17,7 +17,7 @@ const baseHeaders = (extra = {}) => ({
 const MOVED = {
   introduction: "getting-started", concepts: "about-the-marketplace", "how-it-works": "about-the-marketplace#how-it-works",
   anatomy: "plugin-anatomy", glossary: "about-the-marketplace#glossary",
-  "create-app": "registering-an-app", "creating-an-app": "tutorial-first-app", "app-registration": "registering-an-app", "go-live": "publishing",
+  "create-app": "registering-an-app", "creating-an-app": "tutorial-first-app", authentication: "runtime-token", "app-installation-flows": "installation-authorization", "app-registration": "registering-an-app", "go-live": "publishing",
   installation: "installation-authorization", launch: "runtime-token", runtime: "runtime-token",
   "quick-start": "tutorial-first-app", "crm-data": "tutorial-first-app",
   extensions: "app-extensions", "settings-page": "app-settings", "manage-app": "developer-hub", "security-errors": "errors",
