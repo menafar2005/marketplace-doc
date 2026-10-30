@@ -169,7 +169,7 @@ test("marketplace install and token endpoints are in the API reference", async (
 });
 
 test("old page slugs redirect to their new home", async () => {
-  for (const [from, to] of [["/creating-an-app", "/tutorial-first-app"], ["/go-live", "/publishing"], ["/quick-start", "/tutorial-first-app"], ["/introduction", "/getting-started"], ["/launch", "/runtime-token"], ["/security-errors.md", "/errors.md"], ["/glossary", "/about-the-marketplace#glossary"], ["/extensions", "/app-extensions"]]) {
+  for (const [from, to] of [["/creating-an-app", "/tutorial-first-app"], ["/authentication", "/runtime-token"], ["/app-installation-flows", "/installation-authorization"], ["/go-live", "/publishing"], ["/quick-start", "/tutorial-first-app"], ["/introduction", "/getting-started"], ["/launch", "/runtime-token"], ["/security-errors.md", "/errors.md"], ["/glossary", "/about-the-marketplace#glossary"], ["/extensions", "/app-extensions"]]) {
     const r = await get(from);
     assert.equal(r.status, 301, from);
     assert.equal(r.headers.get("location"), to, from);
@@ -178,7 +178,7 @@ test("old page slugs redirect to their new home", async () => {
 
 test("every page in the sidebar exists and every page is in the sidebar", async () => {
   const html = await (await get("/getting-started")).text();
-  for (const s of ["getting-started", "plugin-anatomy", "test-environment", "build-with-mcp", "about-the-marketplace", "publishing", "app-installation-flows", "developer-hub", "registering-an-app", "client-id-and-client-secret", "app-extensions", "link-actions", "json-modals", "json-panels", "custom-ui-extensions", "custom-modals", "custom-panels", "app-settings", "authentication", "installation-authorization", "runtime-token", "scopes", "state-parameter", "tutorial-first-app", "security"]) {
+  for (const s of ["getting-started", "plugin-anatomy", "test-environment", "build-with-mcp", "about-the-marketplace", "publishing", "developer-hub", "registering-an-app", "client-id-and-client-secret", "app-extensions", "link-actions", "json-modals", "json-panels", "custom-ui-extensions", "custom-modals", "custom-panels", "app-settings", "installation-authorization", "runtime-token", "scopes", "state-parameter", "tutorial-first-app", "security"]) {
     assert.match(html, new RegExp(`href="/${s}"`), s);
   }
   const api = await (await get("/api-concepts")).text();

@@ -41,4 +41,4 @@ Callback URL پلاگین تو یک آدرس عمومی است؛ هر کسی م�
 ## بعد از این بخوان {#read-next}
 
 - [تکمیل نصب](/installation-authorization)
-- [جریان نصب از دید ادمین](/app-installation-flows)
+- [Runtime Token](/runtime-token)

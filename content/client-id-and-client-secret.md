@@ -58,6 +58,5 @@ Client secret را مثل رمز پایگاه داده نگه دار: در مت�
 
 ## بعد از این بخوان {#read-next}
 
-- [مرور احراز هویت](/authentication)
 - [تکمیل نصب](/installation-authorization)
 - [Runtime Token](/runtime-token)
