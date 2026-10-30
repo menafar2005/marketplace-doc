@@ -2,25 +2,33 @@
 title: تکمیل نصب
 section: start
 order: 31
-lead: نصب در پنج قدم کامل می‌شود؛ ادمین را به صفحه‌ی نصب می‌فرستی، او تأیید می‌کند، دیدار به Callback URL تو برمی‌گردد، سرور تو نصب را کامل می‌کند و نتیجه را ذخیره می‌کند.
-description: قدم‌به‌قدم تکمیل نصب اپ دیدار؛ لینک نصب، تأیید ادمین، callback با code و state، درخواست CompleteInstallation، فیلدهای پاسخ و ذخیره‌ی نتیجه.
+lead: نصب وقتی تمام می‌شود که سرور تو آن را کامل کند، نه وقتی ادمین دکمه‌ی تأیید را می‌زند. این صفحه توضیح می‌دهد بعد از تأیید ادمین چه درخواستی به مسیر نصب پلاگین تو می‌رسد، سرور تو با آن چه کند، در جواب چه می‌گیرد و چه چیزی را باید ذخیره کند؛ و همه‌ی این‌ها را با تمپلیت کد به چهار زبان نشان می‌دهد.
+description: قدم‌به‌قدم تکمیل نصب پلاگین دیدار؛ لینک نصب، تأیید ادمین، callback با code و state، درخواست CompleteInstallation، فیلدهای پاسخ، ذخیره‌ی نتیجه و تمپلیت کد Node.js، Python، PHP و C#.
 ---
+
+## تکمیل نصب چیست؟ {#what}
+
+وقتی ادمین یک کسب‌وکار پلاگین تو را تأیید می‌کند، دیدار هنوز نصب را ثبت نهایی نکرده است. دیدار مرورگر ادمین را به **Callback URL** پلاگین برمی‌گرداند و یک `code` نصب در آدرس می‌گذارد. این کد یعنی «ادمین تأیید کرد»، ولی خودش نصب نیست. سرور تو باید این کد را همراه **Client ID** و **Client secret** پلاگین به دیدار بفرستد. فقط در این صورت دیدار مطمئن می‌شود که طرف مقابل واقعاً همان پلاگینی است که ادمین تأییدش کرده، و نصب را کامل می‌کند.
+
+این طراحی دو فایده دارد. اول اینکه هیچ‌کس نمی‌تواند خودش را جای پلاگین تو جا بزند؛ کسی که Client secret را ندارد نمی‌تواند نصبی را کامل کند. دوم اینکه این قدم تنها لحظه‌ای است که پلاگین تو باخبر می‌شود کسب‌وکار تازه‌ای نصبش کرده؛ در جواب، دیدار می‌گوید نصب روی کدام BizDomain انجام شد و کدام دسترسی‌ها تأیید شدند.
+
+در [ساختار پلاگین](/plugin-anatomy) این همان **مسیر نصب** است. تکمیل نصب برای هر کسب‌وکار فقط یک‌بار اتفاق می‌افتد.
 
 ![Installation flowchart: install link, Allow & Install, Callback URL, state check, CompleteInstallation, store, account, setup](/images/flows/installation-flow.png "کل جریان در یک نگاه؛ شماره‌ها همان قدم‌های این صفحه است")
 
-## قدم ۱: فرستادن ادمین به صفحه‌ی نصب {#step-1}
+## قدم ۱: ادمین لینک نصب را باز می‌کند {#step-1}
 
-ادمین **لینک نصب** اپ را باز می‌کند. این لینک را از Developer Hub با **Share install link** برمی‌داری. [اشتراک اپ](/registering-an-app#install-link)
+همه‌چیز با **لینک نصب** شروع می‌شود؛ آدرسی که از Developer Hub برمی‌داری (**Share install link**) و به ادمین کسب‌وکارها می‌دهی. [لینک نصب](/publishing#install-link)
 
-اگر ادمین را از سایت خودت به لینک نصب می‌فرستی، پیش از آن یک مقدار [state](/state-parameter) بساز و در session نگه دار.
+اگر ادمین را از سایت خودت به لینک نصب می‌فرستی (مثلاً با یک دکمه‌ی «نصب در دیدار»)، پیش از آن یک مقدار تصادفی به اسم [state](/state-parameter) بساز و در session همان کاربر نگه دار. در قدم ۳ همین مقدار برمی‌گردد و به تو اطمینان می‌دهد که callback واقعاً ادامه‌ی جریانی است که خودت شروع کرده‌ای.
 
-## قدم ۲: ادمین اپ را تأیید می‌کند {#step-2}
+## قدم ۲: ادمین پلاگین را تأیید می‌کند {#step-2}
 
-دیدار نام اپ و سازنده، BizDomain، دسترسی‌ها و کاربرانی را که به اپ دسترسی خواهند داشت نشان می‌دهد. ادمین **تأیید دسترسی به اطلاعات و نصب** را می‌زند. [جریان نصب اپ](/app-installation-flows)
+دیدار صفحه‌ی تأیید نصب را به ادمین نشان می‌دهد: نام پلاگین و سازنده‌اش، BizDomainی که پلاگین رویش نصب می‌شود، دسترسی‌هایی که پلاگین خواسته، و کاربرانی که به پلاگین دسترسی خواهند داشت. ادمین **تأیید دسترسی به اطلاعات و نصب** را می‌زند. این صفحه کاملاً در اختیار دیدار است و پلاگین تو کاری در آن ندارد. [جریان نصب از دید ادمین](/app-installation-flows)
 
-## قدم ۳: بازگشت به Callback URL {#step-3}
+## قدم ۳: دیدار به Callback URL برمی‌گردد {#step-3}
 
-دیدار مرورگر ادمین را به Callback URL اپ برمی‌گرداند:
+بعد از تأیید، دیدار مرورگر ادمین را به Callback URL پلاگین هدایت می‌کند. این یک درخواست معمولی مرورگر است، پس هر چیزی که سرور تو برگرداند همان صفحه‌ای است که ادمین می‌بیند:
 
 ```http title="GET"
 https://your-app.example.com/didar/callback?code=INSTALLATION_CODE&state=STATE
@@ -28,12 +36,12 @@ https://your-app.example.com/didar/callback?code=INSTALLATION_CODE&state=STATE
 
 | پارامتر query | توضیح |
 | --- | --- |
-| `code` | کد نصب؛ در قدم ۴ استفاده می‌شود. |
-| `state` | اگر ساخته باشی، همان مقدار برمی‌گردد. پیش از ادامه با مقدار session مقایسه کن. |
+| `code` | کد نصب؛ در قدم ۴ آن را به دیدار می‌فرستی. |
+| `state` | اگر در قدم ۱ ساخته باشی، همان مقدار برمی‌گردد. پیش از ادامه با مقدار session مقایسه کن و اگر برابر نبود، درخواست را رد کن. |
 
-## قدم ۴: تکمیل نصب {#step-4}
+## قدم ۴: سرور تو نصب را کامل می‌کند {#step-4}
 
-سرور تو `code` را همراه credentials اپ به دیدار می‌فرستد. این درخواست server-to-server است و به ورود کاربر دیدار نیاز ندارد.
+حالا سرور تو `code` را همراه credentialهای پلاگین به دیدار می‌فرستد. این درخواست مستقیم از سرور تو به دیدار (server-to-server) می‌رود و به ورود هیچ کاربری نیاز ندارد. چون Client secret در بدنه‌ی آن است، **فقط از backend** فرستاده می‌شود.
 
 ```http title="POST"
 https://app.didar.me/api/MarketplaceInstall/CompleteInstallation
@@ -46,8 +54,8 @@ https://app.didar.me/api/MarketplaceInstall/CompleteInstallation
 | پارامتر بدنه | توضیح |
 | --- | --- |
 | `Code` | مقدار `code` از قدم ۳. |
-| `ClientId` | Client ID اپ. |
-| `ClientSecret` | Client secret اپ. |
+| `ClientId` | Client ID پلاگین. |
+| `ClientSecret` | Client secret پلاگین. |
 
 ```bash title="cURL"
 curl --location 'https://app.didar.me/api/MarketplaceInstall/CompleteInstallation' \
@@ -58,6 +66,8 @@ curl --location 'https://app.didar.me/api/MarketplaceInstall/CompleteInstallatio
   "ClientSecret": "YOUR_CLIENT_SECRET"
 }'
 ```
+
+اگر همه‌چیز درست باشد، دیدار نتیجه‌ی نصب را برمی‌گرداند:
 
 ```json title="200 OK"
 {
@@ -81,32 +91,46 @@ curl --location 'https://app.didar.me/api/MarketplaceInstall/CompleteInstallatio
 | --- | --- |
 | `Response.Succeeded` | موفق بودن تکمیل نصب. |
 | `Response.Data.InstallationId` | شناسه‌ی این نصب. |
-| `Response.Data.AppPublicId` | شناسه‌ی عمومی اپ؛ در صفحه‌ی تنظیمات همان `runtimeId` است. |
-| `Response.Data.BizDomainId` | کسب‌وکاری که اپ رویش نصب شد. |
+| `Response.Data.AppPublicId` | شناسه‌ی عمومی پلاگین؛ در صفحه‌ی تنظیمات همان `runtimeId` است. |
+| `Response.Data.BizDomainId` | کسب‌وکاری که پلاگین رویش نصب شد. |
 | `Response.Data.ApiKey` | کلید نصب؛ فقط رمزگذاری‌شده نگه‌داری شود. |
 | `Response.Data.Scopes` | scopeهایی که ادمین تأیید کرد. |
 | `Response.Data.InstalledAt` | زمان نصب (UTC). |
 | `Response.Meta.TraceId` | شناسه‌ی پیگیری برای پشتیبانی. |
 
 > [!NOTE]
-> قالب این پاسخ با بقیه‌ی APIهای مارکت‌پلیس فرق دارد: PascalCase است و نتیجه داخل `Response` قرار دارد.
+> قالب این endpoint با بقیه‌ی APIهای مارکت‌پلیس فرق دارد، چون روی خود دیدار (`app.didar.me`) است: نام فیلدها PascalCase است و نتیجه داخل `Response` قرار دارد. اگر کتابخانه‌ی HTTP تو نام‌ها را خودکار camelCase می‌کند (مثل تنظیمات پیش‌فرض `System.Net.Http.Json` در .NET)، این رفتار را برای این درخواست خاموش کن.
 
 > [!WARNING]
-> اگر `INVALID_CLIENT_CREDENTIALS` گرفتی، Client ID و Client secret را با Developer Hub مقایسه کن؛ شاید secret را Refresh کرده‌ای.
+> اگر `INVALID_CLIENT_CREDENTIALS` گرفتی، Client ID و Client secret را با Developer Hub مقایسه کن؛ شاید secret را Refresh کرده‌ای و سرور هنوز مقدار قدیمی را دارد.
 
-## قدم ۵: ذخیره‌ی نتیجه {#step-5}
+## قدم ۵: نتیجه را ذخیره کن {#step-5}
+
+یک پلاگین روی کسب‌وکارهای زیادی نصب می‌شود و باید بداند کدام‌ها هستند و هر کدام چه چیزی را مجاز کرده‌اند. نتیجه‌ی هر نصب را در دیتابیس خودت نگه دار:
 
 | داده | چرا |
 | --- | --- |
-| `BizDomainId` و `InstallationId` | کلید اصلی هر نصب. یک اپ می‌تواند روی چند BizDomain نصب باشد. |
-| `Scopes` | بدانی در این کسب‌وکار کدام قابلیت‌ها مجازند. |
-| `ApiKey` | فقط رمزگذاری‌شده در secret storage. |
+| `BizDomainId` و `InstallationId` | کلید اصلی هر نصب. یک پلاگین می‌تواند روی چند BizDomain نصب باشد. |
+| `Scopes` | بدانی در این کسب‌وکار کدام قابلیت‌ها مجازند و قابلیت غیرمجاز را به کاربر نشان ندهی. |
+| `ApiKey` | فقط رمزگذاری‌شده در secret storage. درخواست‌های داده با این کلید فرستاده نمی‌شوند. |
 | زمان نصب و وضعیت فعال/لغوشده | مدیریت چرخه‌ی عمر نصب. |
 
-سپس ادمین را به قدم بعدی در اپ خودت ببر. [سناریوهای بعد از تأیید](/app-installation-flows#allow-and-install)
+بعد از ذخیره، ادمین را به قدم بعدی ببر. اگر پلاگین تو حساب کاربری دارد، این‌جا جای ساختن حساب یا ورود و وصل کردن آن به همین BizDomain است؛ اگر ندارد، یک صفحه‌ی ساده‌ی «نصب کامل شد، به دیدار برگرد» کافی است. در هر حال، چه نصب موفق باشد چه نه، به ادمین پیام روشن نشان بده. [سناریوهای بعد از تأیید](/app-installation-flows#allow-and-install)
+
+## تمپلیت کد {#template}
+
+این تمپلیت کل مسیر نصب را پیاده می‌کند: چک کردن `code` و `state`، فرستادن `CompleteInstallation`، ذخیره‌ی نتیجه و نشان دادن پیام به ادمین. آدرس آن (`/didar/callback`) را در Developer Hub در فیلد Callback URL ثبت کن. متغیرهای محیطی `DIDAR_CLIENT_ID` و `DIDAR_CLIENT_SECRET` را از تب OAuth & access scopes برمی‌داری.
+
+<!--TEMPLATE:install-->
+
+تمپلیت از یک لایه‌ی ذخیره‌سازی ساده استفاده می‌کند که فقط برای توسعه است. در محیط واقعی آن را با دیتابیس خودت عوض کن و `ApiKey` را با یک کلید واقعی رمزگذاری کن:
+
+<!--TEMPLATE:store-->
+
+همه‌ی تمپلیت‌های این داک بخشی از یک پروژه‌ی نمونه‌اند و از همین نام‌ها استفاده می‌کنند؛ فایلی که همه‌ی مسیرها را کنار هم می‌گذارد در [ساختار پلاگین](/plugin-anatomy#in-code) آمده است.
 
 ## بعد از این بخوان {#read-next}
 
-- [Runtime Token](/runtime-token)
+- [پارامتر state](/state-parameter): جلوگیری از callback جعلی.
+- [Runtime Token](/runtime-token): قدم بعدی، وقتی کاربر از پلاگین استفاده می‌کند.
 - [مرجع API: تکمیل نصب](/api-auth#complete-installation)
-- [پارامتر state](/state-parameter)

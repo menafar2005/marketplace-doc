@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { createMarked, extractToc, plainText, renderMarkdown } from "./lib/markdown.mjs";
 import { groupMarkdown, groupHtml, groupToc } from "./lib/api-pages.mjs";
 import { groups, baseUrl } from "../spec/endpoints.mjs";
+import { templateMarkdown } from "./lib/templates.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const platform = JSON.parse(readFileSync(join(root, "spec/platform.json"), "utf8"));
@@ -49,6 +50,7 @@ for (const file of readdirSync(contentDir).filter((f) => f.endsWith(".md")).sort
   const { meta, body } = parseFrontmatter(readFileSync(join(contentDir, file), "utf8"), file);
   let md = body;
   for (const [marker, value] of Object.entries(injections)) md = md.replace(marker, value);
+  md = md.replace(/<!--TEMPLATE:([\w-]+)-->/g, (_, name) => templateMarkdown(root, name));
   pages.push({
     slug,
     type: slug === "build-with-mcp" ? "mcp" : "guide",

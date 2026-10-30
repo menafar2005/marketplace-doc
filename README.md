@@ -15,7 +15,8 @@
 
 ```
 content/*.md          صفحه‌های راهنما و مرجع (frontmatter: title, section, order, lead)
-public/images/        اسکرین‌شات‌های اکستنشن‌ها و فلوچارت‌ها (Static Assets در Cloudflare)
+templates/<lang>/     تمپلیت‌های کد صفحه‌ها؛ یک پروژه‌ی نمونه‌ی کامل به Node.js، Python، PHP و C#
+public/images/        تصویر ساختار پلاگین، اسکرین‌شات‌های اکستنشن‌ها و فلوچارت‌ها (Static Assets در Cloudflare)
 spec/endpoints.mjs    مشخصات همه‌ی endpointها (نصب، توکن، پروکسی)؛ صفحه‌های API و ابزار get_api_spec از همین ساخته می‌شوند
 spec/platform.json    scopeها، locationها، خطاها (منبع list_scopes، list_extensions، list_error_codes)
 scripts/build.mjs     content + spec  →  src/generated/content.js
@@ -33,8 +34,12 @@ src/                  Worker: سایت، MCP، جستجو، scaffold و validate
 
 ساختار و شیوه‌ی توضیح بخش راهنما از داک توسعه‌دهنده‌ی Pipedrive الگو گرفته شده؛ محتوا فقط رفتار واقعی مارکت‌پلیس دیدار است.
 
-- **راهنما:** شروع (شروع کار، ساخت اپ، محیط تست، MCP) ← مارکت‌پلیس (درباره، جریان نصب، Developer Hub، ثبت اپ، Client ID و secret) ← اکستنشن‌ها (مرور، Links، JSON modal، JSON panel، Custom UI، Custom modal، Custom panel، App settings) ← احراز هویت (مرور، تکمیل نصب، Runtime Token، Scopeها، state) ← آموزش‌ها و مقاله‌ها.
-- **الگوی صفحه‌ی هر قابلیت:** چیست؟ ← کجای دیدار دیده می‌شود ← افزودن در Developer Hub (جدول فیلد) ← تبادل داده ← هنوز مستند نشده ← بعد از این بخوان.
+- **راهنما:** معرفی (معرفی، ساختار پلاگین، مارکت‌پلیس چطور کار می‌کند) ← شروع ساخت (ساخت اولین پلاگین، MCP، محیط تست) ← Developer Hub (Developer Hub، ثبت پلاگین، Client ID و secret) ← نصب و احراز هویت (مرور، جریان نصب، تکمیل نصب، state، Runtime Token، Scopeها) ← اکستنشن‌ها (مرور، Links، JSON modal، JSON panel، Custom UI، Custom modal، Custom panel، App settings) ← انتشار و امنیت.
+- **مدل ذهنی:** سه صفحه‌ی معرفی تصویر کلی را می‌دهند و هر بخش به صفحه‌ی جزئیاتش لینک دارد. «ساخت اولین پلاگین» قدم‌به‌قدم است و شماره‌ی قدم‌هایش همان شماره‌های تصویر ساختار پلاگین است.
+- **لحن:** هر صفحه اول توضیح می‌دهد موضوع چیست، چرا وجود دارد و کی لازمش داری، بعد سراغ فیلدها و درخواست‌ها می‌رود (الگو: داک Pipedrive). اصطلاح «پلاگین» همه‌جا به یک معنی است (در Developer Hub: App).
+- **الگوی صفحه‌ی هر قابلیت:** چیست؟ ← کجای دیدار دیده می‌شود ← چطور کار می‌کند ← افزودن در Developer Hub (جدول فیلد) ← تمپلیت کد ← هنوز مستند نشده ← بعد از این بخوان.
+- **تمپلیت‌ها:** نشانگر `<!--TEMPLATE:name-->` در صفحه موقع build با یک بلوک کد چهارزبانه از `templates/` عوض می‌شود (فهرست در `scripts/lib/templates.mjs`). همه‌ی تمپلیت‌ها یک پروژه‌اند و از نام‌های مشترک استفاده می‌کنند؛ CI همه را در هر چهار زبان کامپایل یا lint می‌کند.
+- **تصویر ساختار پلاگین:** `public/images/anatomy/plugin-anatomy.png` از `scripts/anatomy.html` ساخته می‌شود: `node scripts/render-anatomy.cjs FONT_DIR` (پوشه‌ای با فایل‌های Vazirmatn-*.ttf؛ Playwright لازم است).
 - **مرجع API:** مفاهیم پایه (درباره، درخواست‌ها، پاسخ‌ها، کدهای وضعیت) ← نصب و اجرا ← داده‌ی دیدار.
 - **تصویرها:** اسکرین‌شات‌های `public/images/extensions` از صفحه‌ی extensions فایل Figma «avangard» ساخته شده‌اند؛ فقط اکستنشن واقعی است و بقیه‌ی صفحه skeleton شده. برای ساخت دوباره: `python3 scripts/extension-skeleton.py SRC.png OUT.png "x0,y0,x1,y1" [--crop …] [--dim]` (`--dim` برای صفحه‌هایی که اکستنشن modal است) و سپس تبدیل به WebP.
 - **فلوچارت‌ها:** تصویرهای `public/images/flows` (انگلیسی، به سبک فلوچارت‌های Pipedrive) با `python3 scripts/flowcharts.py DIR` و `node scripts/render-flowcharts.cjs DIR public/images/flows` از نو ساخته می‌شوند (Playwright لازم است).
