@@ -53,7 +53,7 @@ credentials پلاگین هیچ‌وقت مستقیم برای خواندن دا
 
 ![Extension launch flowchart: launchCode, runtime token, context checks, data API, response](/images/flows/runtime-flow.png)
 
-1. **[محیط تست](/test-environment) را آماده کن:** ادمین یک BizDomain باش.
+1. **[محیط تست](/test-environment) را آماده کن:** یک شرکت آزمایشی ۱۴روزه بساز که در آن ادمینی.
 2. **[پلاگین را ثبت کن](/registering-an-app):** Client ID و Client secret بگیر و scopeها را انتخاب کن.
 3. **[نصب را کامل کن](/installation-authorization):** `code` نصب را با `CompleteInstallation` تبدیل کن.
 4. **[launchCode را تبدیل کن](/runtime-token):** در هر اجرا `launchCode` را با `/api/v1/runtime/token` به Runtime Token تبدیل کن.
