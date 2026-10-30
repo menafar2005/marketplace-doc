@@ -1,0 +1,162 @@
+<!doctype html>
+<!--
+  Plugin anatomy image for the docs (public/images/anatomy/plugin-anatomy.png).
+  Not a flow: it draws one plugin as an object and labels its parts.
+  Render: node scripts/render-anatomy.cjs FONT_DIR   (FONT_DIR has Vazirmatn-*.ttf; Playwright needed)
+-->
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: Vz; src: url("FONT_DIR/Vazirmatn-Regular.ttf"); font-weight: 400; }
+  @font-face { font-family: Vz; src: url("FONT_DIR/Vazirmatn-Medium.ttf"); font-weight: 500; }
+  @font-face { font-family: Vz; src: url("FONT_DIR/Vazirmatn-SemiBold.ttf"); font-weight: 600; }
+  @font-face { font-family: Vz; src: url("FONT_DIR/Vazirmatn-Bold.ttf"); font-weight: 700; }
+  :root {
+    --ink: #111827; --muted: #4b5563; --line: #d1d5db;
+    --violet: #6d4fd8; --violet-bg: #f1edff; --violet-edge: #c9bcf7;
+    --green: #1f9d4c; --green-bg: #e9f8ef; --green-edge: #a8e0bd;
+    --blue: #2f6fd1; --blue-bg: #eaf2ff; --blue-edge: #b3cdf5;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Vz, sans-serif; color: var(--ink); background: #fff; }
+  #art { width: 1240px; padding: 36px 40px 40px; background: #fff; }
+  .en { font-family: Vz, sans-serif; direction: ltr; unicode-bidi: isolate; }
+  code { font-family: "DejaVu Sans Mono", monospace; font-size: 13px; direction: ltr; unicode-bidi: isolate; background: rgba(17,24,39,.06); padding: 1px 6px; border-radius: 5px; }
+
+  /* Didar socket on top */
+  .didar { position: relative; margin: 0 auto; width: 880px; height: 64px; border: 2px solid var(--ink); border-bottom: none; border-radius: 16px 16px 0 0;
+           display: flex; align-items: center; justify-content: center; gap: 12px; background: #f9fafb; }
+  .didar b { font-size: 21px; }
+  .didar span { color: var(--muted); font-size: 15px; }
+  .pins { display: flex; justify-content: center; gap: 120px; height: 26px; }
+  .pin { width: 34px; height: 26px; border: 2px solid var(--ink); border-top: none; border-radius: 0 0 8px 8px; background: #fff; }
+
+  /* the plugin object */
+  .plugin { border: 3px solid var(--ink); border-radius: 26px; padding: 22px 22px 22px; background: #fff; box-shadow: 0 10px 0 rgba(17,24,39,.08); }
+  .plugin-head { display: flex; align-items: baseline; gap: 12px; margin: 0 6px 16px; }
+  .plugin-head b { font-size: 26px; }
+  .plugin-head span { color: var(--muted); font-size: 16px; }
+
+  .layer { border-radius: 18px; padding: 16px 18px 18px; border: 2px solid; margin-top: 14px; }
+  .layer:first-of-type { margin-top: 0; }
+  .l-ext { background: var(--violet-bg); border-color: var(--violet-edge); }
+  .l-id  { background: var(--green-bg);  border-color: var(--green-edge); }
+  .l-srv { background: var(--blue-bg);   border-color: var(--blue-edge); }
+  .lt { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .num { width: 30px; height: 30px; border-radius: 50%; color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 17px; flex: none; }
+  .l-ext .num { background: var(--violet); } .l-id .num { background: var(--green); } .l-srv .num { background: var(--blue); }
+  .lt b { font-size: 20px; }
+  .lt span { color: var(--muted); font-size: 15px; }
+
+  .row { display: flex; gap: 12px; }
+  .tile { flex: 1; background: #fff; border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 10px 9px; text-align: center; }
+  .tile .nm { font-weight: 600; font-size: 15px; margin-top: 6px; }
+  .tile .ds { color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+  .glyph { height: 46px; margin: 0 auto; width: 74px; position: relative; border: 1.5px solid #9ca3af; border-radius: 6px; background: #fafafa; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 9px; }
+  .chip { background: #fff; border: 1.5px solid var(--green-edge); border-radius: 999px; padding: 6px 14px; font-size: 15px; font-weight: 500; }
+  .chip small { color: var(--muted); font-weight: 400; font-size: 13px; }
+  .chip.secret { border-style: dashed; border-color: #c2410c; }
+
+  .srv { display: flex; gap: 12px; }
+  .ep { flex: 1; background: #fff; border: 1.5px solid var(--blue-edge); border-radius: 14px; padding: 12px 14px; }
+  .ep .h { display: flex; align-items: center; gap: 8px; }
+  .ep .h .num { width: 26px; height: 26px; font-size: 15px; }
+  .ep .h b { font-size: 17px; }
+  .ep p { font-size: 14px; color: var(--muted); line-height: 1.75; margin-top: 6px; }
+  .db { width: 150px; flex: none; background: #fff; border: 1.5px solid var(--blue-edge); border-radius: 14px; padding: 12px; text-align: center; }
+  .cyl { width: 54px; height: 54px; margin: 2px auto 6px; position: relative; }
+  .db b { font-size: 15px; display: block; }
+  .db span { font-size: 12.5px; color: var(--muted); line-height: 1.5; display: block; }
+
+  .foot { display: flex; justify-content: space-between; margin-top: 18px; color: var(--muted); font-size: 14px; padding: 0 8px; }
+  .key { display: flex; gap: 20px; }
+  .key i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-left: 6px; vertical-align: -1px; }
+</style>
+</head>
+<body>
+<div id="art">
+  <div class="didar"><b>دیدار</b><span>صفحه‌های معامله، پرونده، شخص و شرکت · تنظیمات</span></div>
+  <div class="pins"><div class="pin"></div><div class="pin"></div><div class="pin"></div><div class="pin"></div></div>
+
+  <div class="plugin">
+    <div class="plugin-head"><b>پلاگین تو</b><span>یک وب‌اپ روی سرور خودت که با سه لایه به دیدار وصل می‌شود</span></div>
+
+    <!-- layer 1: extensions (what users see) -->
+    <div class="layer l-ext">
+      <div class="lt"><div class="num">۵</div><b>اکستنشن‌ها</b><span>چیزی که کاربر داخل دیدار می‌بیند و اجرا می‌کند</span></div>
+      <div class="row">
+        <div class="tile">
+          <svg class="glyph" viewBox="0 0 74 46"><rect x="20" y="7" width="40" height="32" rx="4" fill="#fff" stroke="#9ca3af"/><rect x="25" y="13" width="30" height="5" rx="2" fill="#e5e7eb"/><rect x="25" y="21" width="30" height="5" rx="2" fill="#6d4fd8"/><path d="M60 24 l7 0 m-3 -3 l3 3 l-3 3" stroke="#6d4fd8" stroke-width="2" fill="none"/><rect x="25" y="29" width="30" height="5" rx="2" fill="#e5e7eb"/></svg>
+          <div class="nm en">Links</div><div class="ds">گزینه‌ی منو که صفحه‌ی سایت تو را باز می‌کند</div>
+        </div>
+        <div class="tile">
+          <svg class="glyph" viewBox="0 0 74 46"><rect x="14" y="5" width="46" height="36" rx="4" fill="#fff" stroke="#9ca3af"/><rect x="19" y="11" width="22" height="4" rx="2" fill="#374151"/><rect x="19" y="19" width="36" height="5" rx="2" fill="none" stroke="#9ca3af"/><rect x="19" y="27" width="36" height="5" rx="2" fill="none" stroke="#9ca3af"/><rect x="41" y="34" width="14" height="5" rx="2" fill="#6d4fd8"/></svg>
+          <div class="nm en">JSON modal</div><div class="ds">فرمی که دیدار از روی JSON تو می‌سازد</div>
+        </div>
+        <div class="tile">
+          <svg class="glyph" viewBox="0 0 74 46"><rect x="6" y="5" width="40" height="36" rx="3" fill="#f3f4f6"/><rect x="50" y="5" width="18" height="36" rx="3" fill="#fff" stroke="#6d4fd8"/><rect x="53" y="10" width="12" height="3" rx="1.5" fill="#6d4fd8"/><rect x="53" y="17" width="12" height="3" rx="1.5" fill="#d1d5db"/><rect x="53" y="23" width="9" height="3" rx="1.5" fill="#d1d5db"/></svg>
+          <div class="nm en">JSON panel</div><div class="ds">پنل کنار رکورد با اجزای آماده‌ی دیدار</div>
+        </div>
+        <div class="tile">
+          <svg class="glyph" viewBox="0 0 74 46"><rect x="14" y="5" width="46" height="36" rx="4" fill="#fff" stroke="#9ca3af"/><rect x="19" y="11" width="36" height="25" rx="2" fill="#f1edff" stroke="#6d4fd8" stroke-dasharray="3 2"/><text x="37" y="27" font-size="9" text-anchor="middle" fill="#6d4fd8" font-family="DejaVu Sans Mono">&lt;/&gt;</text></svg>
+          <div class="nm en">Custom modal</div><div class="ds">صفحه‌ی خودت در iframe داخل modal</div>
+        </div>
+        <div class="tile">
+          <svg class="glyph" viewBox="0 0 74 46"><rect x="6" y="5" width="40" height="36" rx="3" fill="#f3f4f6"/><rect x="50" y="5" width="18" height="36" rx="3" fill="#f1edff" stroke="#6d4fd8" stroke-dasharray="3 2"/><text x="59" y="26" font-size="7" text-anchor="middle" fill="#6d4fd8" font-family="DejaVu Sans Mono">&lt;/&gt;</text></svg>
+          <div class="nm en">Custom panel</div><div class="ds">صفحه‌ی خودت در iframe کنار رکورد</div>
+        </div>
+        <div class="tile">
+          <svg class="glyph" viewBox="0 0 74 46"><g transform="translate(37 23)" fill="none" stroke="#6d4fd8" stroke-width="3"><circle r="7"/><path d="M0 -14 v5 M0 9 v5 M-14 0 h5 M9 0 h5 M-10 -10 l3.5 3.5 M6.5 6.5 l3.5 3.5 M10 -10 l-3.5 3.5 M-6.5 6.5 l-3.5 3.5"/></g></svg>
+          <div class="nm en">App settings</div><div class="ds">صفحه‌ی تنظیمات پلاگین برای هر کسب‌وکار</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- layer 2: identity in Developer Hub -->
+    <div class="layer l-id">
+      <div class="lt"><div class="num">۱</div><b>شناسنامه در Developer Hub</b><span>یک‌بار ثبت می‌کنی؛ دیدار با این‌ها پلاگین تو را می‌شناسد</span></div>
+      <div class="chips">
+        <div class="chip"><span class="en">App name</span></div>
+        <div class="chip"><span class="en">Callback URL</span> <small>آدرس بازگشت نصب</small></div>
+        <div class="chip"><span class="en">Scopes</span> <small>دسترسی به داده</small></div>
+        <div class="chip"><span class="en">Client ID</span></div>
+        <div class="chip secret"><span class="en">Client secret</span> <small>فقط روی سرور</small></div>
+        <div class="chip"><small>تعریف</small> اکستنشن‌ها</div>
+        <div class="chip">لینک نصب</div>
+      </div>
+    </div>
+
+    <!-- layer 3: your server -->
+    <div class="layer l-srv">
+      <div class="lt"><div class="num" style="background:#374151">⌂</div><b>سرور پلاگین</b><span>کدی که تو می‌نویسی و روی HTTPS اجرا می‌کنی</span></div>
+      <div class="srv">
+        <div class="ep">
+          <div class="h"><div class="num">۲</div><b>مسیر نصب</b></div>
+          <p><code>/didar/callback</code><br>دیدار بعد از تأیید ادمین <code>code</code> را اینجا می‌فرستد؛ نصب را کامل می‌کنی.</p>
+        </div>
+        <div class="ep">
+          <div class="h"><div class="num">۳</div><b>مسیر اجرا</b></div>
+          <p><code>/didar/launch</code><br>هر بار که کاربر اکستنشن را باز می‌کند، <code>launchCode</code> را به Runtime Token تبدیل می‌کنی.</p>
+        </div>
+        <div class="ep">
+          <div class="h"><div class="num">۴</div><b>منطق و داده</b></div>
+          <p>کار اصلی پلاگین تو. با همان Runtime Token داده‌ی دیدار را از API مارکت‌پلیس می‌خوانی و می‌نویسی.</p>
+        </div>
+        <div class="db">
+          <svg class="cyl" viewBox="0 0 54 54"><ellipse cx="27" cy="10" rx="20" ry="7" fill="#eaf2ff" stroke="#2f6fd1" stroke-width="2"/><path d="M7 10 v30 a20 7 0 0 0 40 0 v-30" fill="#eaf2ff" stroke="#2f6fd1" stroke-width="2"/><path d="M7 25 a20 7 0 0 0 40 0" fill="none" stroke="#2f6fd1" stroke-width="2"/></svg>
+          <b>نصب‌ها</b><span>هر کسب‌وکار با <span class="en">BizDomainId</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>شماره‌ها همان قدم‌های «ساخت اولین پلاگین» است.</span>
+    <span class="key"><span><i style="background:#6d4fd8"></i>در دیدار دیده می‌شود</span><span><i style="background:#1f9d4c"></i>در Developer Hub ثبت می‌شود</span><span><i style="background:#2f6fd1"></i>روی سرور تو اجرا می‌شود</span></span>
+  </div>
+</div>
+</body>
+</html>

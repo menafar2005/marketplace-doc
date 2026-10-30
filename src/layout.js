@@ -35,11 +35,12 @@ const TABS = [
 ];
 const NAV = {
   guide: [
-    { title: "شروع", items: ["getting-started", "creating-an-app", "test-environment", "build-with-mcp"] },
-    { title: "مارکت‌پلیس", items: ["about-the-marketplace", "app-installation-flows", "developer-hub", "registering-an-app", "client-id-and-client-secret"] },
+    { title: "معرفی", items: ["getting-started", "plugin-anatomy", "about-the-marketplace"] },
+    { title: "شروع ساخت", items: ["tutorial-first-app", "build-with-mcp", "test-environment"] },
+    { title: "Developer Hub", items: ["developer-hub", "registering-an-app", "client-id-and-client-secret"] },
+    { title: "نصب و احراز هویت", items: ["authentication", "app-installation-flows", "installation-authorization", "state-parameter", "runtime-token", "scopes"] },
     { title: "اکستنشن‌ها", items: ["app-extensions", "link-actions", "json-modals", "json-panels", "custom-ui-extensions", "custom-modals", "custom-panels", "app-settings"] },
-    { title: "احراز هویت", items: ["authentication", "installation-authorization", "runtime-token", "scopes", "state-parameter"] },
-    { title: "آموزش‌ها و مقاله‌ها", items: ["tutorial-first-app", "security"] },
+    { title: "انتشار و امنیت", items: ["publishing", "security"] },
   ],
   api: [
     { title: "مفاهیم پایه", items: ["api-concepts", "api-requests", "api-responses", "errors"] },
@@ -199,17 +200,17 @@ export function renderHome(origin) {
     codeTabs(mcpItems(origin).map(({ hint, ...r }) => r)) +
     `<a class="solid-btn lg" href="/build-with-mcp">اتصال در ۵ دقیقه ←</a></div>` +
     `<h2 id="steps">از صفر شروع می‌کنی؟ این سه قدم</h2><p>به همین ترتیب جلو برو؛ هر قدم پیش‌نیاز قدم بعدی است.</p><ol class="steps">` +
-    `<li class="step"><span class="n">۱</span><h3>بفهم</h3><p>مارکت‌پلیس چیست، اپ چطور با دیدار کار می‌کند و کجای دیدار دیده می‌شود.</p><a href="/about-the-marketplace">درباره‌ی مارکت‌پلیس ←</a></li>` +
-    `<li class="step"><span class="n">۲</span><h3>نقشه را ببین</h3><p>پنج قدم از محیط تست تا Live کردن اپ و دادن لینک نصب.</p><a href="/creating-an-app">ساخت اپ ←</a></li>` +
-    `<li class="step"><span class="n">۳</span><h3>بساز</h3><p>یک اپ کامل با کد، از ثبت در Developer Hub تا ثبت یادداشت روی معامله.</p><a href="/tutorial-first-app">آموزش ساخت اولین اپ ←</a></li></ol>` +
+    `<li class="step"><span class="n">۱</span><h3>تصویر کلی را بگیر</h3><p>پلاگین دیدار چیست، با آن چه می‌شود ساخت و این داک چطور چیده شده.</p><a href="/getting-started">معرفی ←</a></li>` +
+    `<li class="step"><span class="n">۲</span><h3>ساختار را بشناس</h3><p>پلاگین از چه بخش‌هایی ساخته می‌شود و هر بخش کی و کجا اجرا می‌شود.</p><a href="/plugin-anatomy">ساختار پلاگین ←</a></li>` +
+    `<li class="step"><span class="n">۳</span><h3>بساز</h3><p>با MCP دیدار، یا قدم‌به‌قدم با کد کامل از ثبت تا نصب و اجرا.</p><a href="/tutorial-first-app">ساخت اولین پلاگین ←</a></li></ol>` +
     `<h2 id="all">همه بخش‌ها</h2><div class="cards">` +
-    card("/about-the-marketplace", "info", "درباره‌ی مارکت‌پلیس", "مارکت‌پلیس چیست و اپ چطور کار می‌کند") +
-    card("/creating-an-app", "grid", "ساخت اپ", "نوع اپ و پنج قدم تا انتشار") +
-    card("/build-with-mcp", "plug", "ساخت اپ با MCP دیدار", "مسیر پیش‌فرض ساخت", true) +
-    card("/developer-hub", "doc", "Developer Hub", "ثبت، وضعیت‌ها، به‌روزرسانی و حذف اپ") +
+    card("/getting-started", "info", "معرفی", "دیدار، مارکت‌پلیس و پلاگین") +
+    card("/plugin-anatomy", "grid", "ساختار پلاگین", "بخش‌های یک پلاگین در یک تصویر") +
+    card("/build-with-mcp", "plug", "ساخت با MCP دیدار", "مسیر پیشنهادی ساخت", true) +
+    card("/tutorial-first-app", "layers", "ساخت اولین پلاگین", "راهنمای قدم‌به‌قدم با کد کامل") +
+    card("/developer-hub", "doc", "Developer Hub", "ثبت، وضعیت‌ها، به‌روزرسانی و حذف") +
+    card("/authentication", "lock", "نصب و احراز هویت", "نصب، Runtime Token و scopeها") +
     card("/app-extensions", "window", "اکستنشن‌ها", "Links، JSON و Custom UI") +
-    card("/authentication", "lock", "احراز هویت", "نصب، Runtime Token و scopeها") +
-    card("/tutorial-first-app", "layers", "آموزش ساخت اولین اپ", "یک اپ کامل با کد") +
     card("/api-concepts", "code", "مرجع API", "همه‌ی endpointها، درخواست و پاسخ") +
     `</div></div>`;
   return shell({

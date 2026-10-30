@@ -169,7 +169,7 @@ test("marketplace install and token endpoints are in the API reference", async (
 });
 
 test("old page slugs redirect to their new home", async () => {
-  for (const [from, to] of [["/quick-start", "/tutorial-first-app"], ["/introduction", "/getting-started"], ["/launch", "/runtime-token"], ["/security-errors.md", "/errors.md"], ["/glossary", "/about-the-marketplace#glossary"], ["/extensions", "/app-extensions"]]) {
+  for (const [from, to] of [["/creating-an-app", "/tutorial-first-app"], ["/go-live", "/publishing"], ["/quick-start", "/tutorial-first-app"], ["/introduction", "/getting-started"], ["/launch", "/runtime-token"], ["/security-errors.md", "/errors.md"], ["/glossary", "/about-the-marketplace#glossary"], ["/extensions", "/app-extensions"]]) {
     const r = await get(from);
     assert.equal(r.status, 301, from);
     assert.equal(r.headers.get("location"), to, from);
@@ -178,7 +178,7 @@ test("old page slugs redirect to their new home", async () => {
 
 test("every page in the sidebar exists and every page is in the sidebar", async () => {
   const html = await (await get("/getting-started")).text();
-  for (const s of ["getting-started", "creating-an-app", "test-environment", "build-with-mcp", "about-the-marketplace", "app-installation-flows", "developer-hub", "registering-an-app", "client-id-and-client-secret", "app-extensions", "link-actions", "json-modals", "json-panels", "custom-ui-extensions", "custom-modals", "custom-panels", "app-settings", "authentication", "installation-authorization", "runtime-token", "scopes", "state-parameter", "tutorial-first-app", "security"]) {
+  for (const s of ["getting-started", "plugin-anatomy", "test-environment", "build-with-mcp", "about-the-marketplace", "publishing", "app-installation-flows", "developer-hub", "registering-an-app", "client-id-and-client-secret", "app-extensions", "link-actions", "json-modals", "json-panels", "custom-ui-extensions", "custom-modals", "custom-panels", "app-settings", "authentication", "installation-authorization", "runtime-token", "scopes", "state-parameter", "tutorial-first-app", "security"]) {
     assert.match(html, new RegExp(`href="/${s}"`), s);
   }
   const api = await (await get("/api-concepts")).text();
@@ -202,7 +202,31 @@ test("screenshots and flowcharts referenced in pages exist in public/", async ()
     }
   }
   assert.ok([...seen].filter((s) => s.startsWith("/images/flows/")).length === 4, [...seen].join(", "));
+  assert.ok(seen.has("/images/anatomy/plugin-anatomy.png"), "plugin anatomy image is used");
   assert.ok([...seen].filter((s) => s.startsWith("/images/extensions/")).length === 7, [...seen].join(", "));
   const html = await (await get("/installation-authorization")).text();
   assert.match(html, /<img src="\/images\/flows\/installation-flow\.png"/);
+});
+
+test("code templates are injected as four-language tabs and every template file is used", async () => {
+  const { readdirSync } = await import("node:fs");
+  const { TEMPLATES, LANGS } = await import("./lib/templates.mjs");
+  const used = new Set();
+  for (const p of pages) {
+    assert.doesNotMatch(p.md, /<!--TEMPLATE:/, `${p.slug} has an unresolved template marker`);
+    for (const m of p.md.matchAll(/group="tpl-([\w-]+)"/g)) used.add(m[1]);
+  }
+  for (const name of Object.keys(TEMPLATES)) assert.ok(used.has(name), `template ${name} is not on any page`);
+  for (const { key } of LANGS) {
+    const listed = new Set(Object.values(TEMPLATES).map((t) => t[key]));
+    for (const f of readdirSync(join(root, "templates", key)).filter((f) => !f.startsWith("_") && !f.startsWith("."))) assert.ok(listed.has(f), `templates/${key}/${f} is not in the manifest`);
+  }
+  const html = await (await get("/runtime-token")).text();
+  for (const l of ["Node.js", "Python", "PHP", "C#"]) assert.match(html, new RegExp(`class="cb-tab"[^>]*data-label="${l}"`), l);
+});
+
+test("node templates parse", async () => {
+  const { readdirSync } = await import("node:fs");
+  const dir = join(root, "templates", "node");
+  for (const f of readdirSync(dir)) execSync(`node --check ${JSON.stringify(join(dir, f))}`, { stdio: "pipe" });
 });

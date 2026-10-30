@@ -24,8 +24,30 @@ jobs:
       - run: npm ci
       - run: npm test
 
+  # تمپلیت‌های کد داک (templates/) باید در هر چهار زبان قابل اجرا بمانند
+  templates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Python
+        run: python -m py_compile templates/python/*.py
+      - name: PHP
+        run: for f in templates/php/*.php; do php -l "$f"; done
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: C#
+        run: |
+          dotnet new web -o "$RUNNER_TEMP/tpl" --force
+          rm "$RUNNER_TEMP/tpl/Program.cs"
+          cp templates/csharp/*.cs "$RUNNER_TEMP/tpl/"
+          dotnet build "$RUNNER_TEMP/tpl"
+
   deploy:
-    needs: test
+    needs: [test, templates]
     # production همیشه از روی main ساخته می‌شود؛ هیچ شاخه‌ی دیگری (حتی با اجرای دستی) deploy نمی‌کند
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest

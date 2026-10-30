@@ -1,48 +1,50 @@
 ---
-title: ثبت اپ
+title: ثبت پلاگین
 section: start
 order: 13
-lead: اپ را در Developer Hub ثبت می‌کنی، آن را روی BizDomain خودت نصب و تست می‌کنی و در پایان Live می‌کنی تا با لینک نصب به کسب‌وکارهای دیگر برسد. این صفحه همه‌ی فیلدهای فرم ثبت اپ را توضیح می‌دهد.
-description: ثبت اپ در Developer Hub دیدار؛ فیلدهای Basic info، OAuth & access scopes و App extensions، تست اپ Draft، Change to live و لینک نصب.
+lead: ثبت پلاگین یعنی ساختن شناسنامه‌ی آن در Developer Hub؛ نامش، آدرس نصبش، دسترسی‌هایش و اکستنشن‌هایش. این صفحه فرم ثبت پلاگین را تب‌به‌تب و فیلدبه‌فیلد توضیح می‌دهد: هر فیلد چیست، چه مقداری می‌پذیرد و روی رفتار پلاگین چه اثری دارد.
+description: ثبت پلاگین در Developer Hub دیدار؛ فیلدهای Basic info، OAuth & access scopes و App extensions، ذخیره‌ی یکجا، پیام‌های خطای فرم و نصب و تست پلاگین Draft.
 ---
 
-## Developer Hub را پیدا کن {#find}
+## ثبت پلاگین چیست؟ {#what}
 
-با حساب ادمین BizDomain وارد دیدار شو و به `https://app.didar.me/developerhub` برو. [Developer Hub](/developer-hub)
+پیش از اینکه دیدار بتواند پلاگین تو را نصب کند یا صدا بزند، باید آن را بشناسد. ثبت پلاگین یعنی همین معرفی: در فرم Developer Hub مشخص می‌کنی پلاگین چه نامی دارد، دیدار بعد از نصب کجا برگردد، پلاگین به چه داده‌هایی نیاز دارد و کجای دیدار ظاهر شود. حاصل ثبت، پلاگینی در وضعیت **Draft** است که Client ID و Client secret دارد و می‌توانی روی BizDomain خودت تستش کنی.
 
-## اپ جدید بساز {#create}
+برای رسیدن به فرم، با حساب ادمین BizDomain وارد دیدار شو، به `https://app.didar.me/developerhub` برو و در My apps روی **Create an app** بزن. [Developer Hub](/developer-hub)
 
-در My apps روی **Create an app** بزن. فرم ثبت اپ باز می‌شود. اپ‌هایی که قبلاً ساخته‌ای هم در همین فهرست هستند.
+## فرم ثبت پلاگین {#form}
 
-## فرم ثبت اپ {#form}
+فرم سه تب دارد: **Basic info**، **OAuth & access scopes** و **App extensions**. پیش از اولین Save فقط Basic info فعال است، چون Client ID و secret و اکستنشن‌ها به پلاگینی وابسته‌اند که هنوز ساخته نشده. بالای صفحه دکمه‌های **Save** و **Cancel** هستند و بعد از ساخت پلاگین، **Change to live** هم اضافه می‌شود.
 
-فرم سه تب دارد: **Basic info**، **OAuth & access scopes** و **App extensions**. پیش از اولین Save فقط Basic info فعال است. بالای صفحه دکمه‌های **Save** و **Cancel** هستند و بعد از ساخت اپ، **Change to live** هم اضافه می‌شود.
+> [!NOTE]
+> ذخیره در این فرم یکجاست: Save داخل مودال اکستنشن‌ها فقط اکستنشن را موقتاً به فهرست اضافه می‌کند. تا Save اصلی بالای صفحه را نزنی، هیچ تغییری در هیچ تبی ذخیره نمی‌شود.
 
 ### Basic info {#basic-info}
 
+اطلاعات پایه‌ی پلاگین؛ تنها چیزی که برای ساختن پلاگین لازم است.
+
 | فیلد | توضیح |
 | --- | --- |
-| App name **(الزامی)** | نامی که ادمین هنگام نصب و کاربران در دیدار می‌بینند. خالی یا فقط فاصله پذیرفته نمی‌شود. |
-| Callback URL **(الزامی)** | آدرسی روی سرور تو که دیدار بعد از تأیید نصب، `code` نصب را به آن می‌فرستد. باید URL معتبر باشد، مثلاً `https://your-app.example.com/didar/callback`. [تکمیل نصب](/installation-authorization) |
-| App type | فعلاً همیشه `Private` و غیرقابل‌تغییر است. |
+| App name **(الزامی)** | نامی که ادمین در صفحه‌ی تأیید نصب و کاربران در دیدار می‌بینند. خالی یا فقط فاصله پذیرفته نمی‌شود. نامی بگذار که ادمین با دیدنش بفهمد پلاگین چه کاری می‌کند. |
+| Callback URL **(الزامی)** | آدرسی روی سرور تو که دیدار بعد از تأیید نصب، `code` نصب را به آن می‌فرستد؛ همان [مسیر نصب](/plugin-anatomy#install-route). باید URL معتبر باشد، مثلاً `https://your-app.example.com/didar/callback`. [تکمیل نصب](/installation-authorization) |
+| App type | فعلاً همیشه `Private` و غیرقابل‌تغییر است. [انتشار](/publishing#what) |
 
-با Save، اپ با وضعیت **Draft** ساخته می‌شود و صفحه‌ی ویرایش آن باز می‌شود.
+با Save، پلاگین با وضعیت **Draft** ساخته می‌شود و صفحه‌ی ویرایش آن باز می‌شود.
 
 ### OAuth & access scopes {#scopes}
 
+دسترسی‌های پلاگین و credentialهای آن. این تب تعیین می‌کند ادمین هنگام نصب چه فهرستی از دسترسی‌ها را ببیند.
+
 | فیلد | توضیح |
 | --- | --- |
-| Access scopes **(الزامی)** | دسترسی‌های اپ. **Access to basic information** همیشه روشن است. برای Deals، Activities، Contacts و Cases تاگل را روشن کن و **Read only** (پیش‌فرض) یا **Full access** را انتخاب کن. [Scopeها و دسترسی‌ها](/scopes) |
-| Client ID | شناسه‌ی عمومی اپ. فقط‌خواندنی و قابل کپی. |
-| Client secret | رمز اپ. پیش‌فرض پنهان است؛ قابل نمایش، کپی و **Refresh**. [Client ID و Client secret](/client-id-and-client-secret) |
-| Share app | لینک نصب اپ را نشان می‌دهد. [اشتراک اپ](#share) |
+| Access scopes **(الزامی)** | دسترسی‌های پلاگین. **Access to basic information** همیشه روشن است. برای Deals، Activities، Contacts و Cases تاگل را روشن کن و **Read only** (پیش‌فرض) یا **Full access** را انتخاب کن. فقط چیزی را بخواه که لازم داری. [Scopeها و دسترسی‌ها](/scopes) |
+| Client ID | شناسه‌ی عمومی پلاگین. فقط‌خواندنی و قابل کپی. |
+| Client secret | رمز پلاگین. پیش‌فرض پنهان است؛ قابل نمایش، کپی و **Refresh**. [Client ID و Client secret](/client-id-and-client-secret) |
+| Share app | لینک نصب پلاگین را نشان می‌دهد. [لینک نصب](/publishing#install-link) |
 
 ### App extensions {#extensions}
 
-اکستنشن‌ها قابلیت اپ را داخل UI دیدار می‌آورند. شش کارت می‌بینی؛ با **Add** هرکدام، مودال همان نوع باز می‌شود. اکستنشن‌های اضافه‌شده در **My added extensions** فهرست می‌شوند و منوی ⋯ هرکدام **Edit extension** و **Delete** دارد. [مرور اکستنشن‌ها](/app-extensions)
-
-> [!NOTE]
-> Save داخل مودال فقط اکستنشن را موقتاً به فهرست اضافه می‌کند. تا Save اصلی صفحه را نزنی، چیزی ذخیره نمی‌شود.
+جاهایی که پلاگین در دیدار ظاهر می‌شود. شش کارت می‌بینی، یکی برای هر نوع اکستنشن؛ با **Add** هرکدام، مودال همان نوع باز می‌شود. اکستنشن‌های اضافه‌شده در **My added extensions** فهرست می‌شوند و منوی ⋯ هرکدام **Edit extension** و **Delete** دارد. اگر نمی‌دانی کدام نوع را انتخاب کنی: [کدام اکستنشن؟](/app-extensions#choose)
 
 #### Links {#links}
 
@@ -62,7 +64,7 @@ description: ثبت اپ در Developer Hub دیدار؛ فیلدهای Basic in
 | --- | --- |
 | Action name **(الزامی)** | حداکثر ۳۰ کاراکتر. |
 | Action description | اختیاری؛ حداکثر ۱۵۰ کاراکتر. |
-| API endpoint **(الزامی)** | endpoint اپ تو که submit فرم به آن می‌رسد. |
+| API endpoint **(الزامی)** | endpoint پلاگین تو که ثبت فرم به آن می‌رسد. |
 | JWT secret **(الزامی)** | [توضیح](/custom-ui-extensions#jwt-secret) |
 | JSON schema **(الزامی)** | فایل JSON معتبر که فرم را تعریف می‌کند. [ساختار schema](/json-modals#schema) |
 | Locations **(الزامی)** | حداقل یک Location. |
@@ -75,7 +77,7 @@ description: ثبت اپ در Developer Hub دیدار؛ فیلدهای Basic in
 | --- | --- |
 | Panel name **(الزامی)** | حداکثر ۳۰ کاراکتر. |
 | Panel description | اختیاری؛ حداکثر ۱۵۰ کاراکتر. |
-| API endpoint **(الزامی)** | endpoint اپ تو. |
+| API endpoint **(الزامی)** | endpoint پلاگین تو. |
 | JWT secret **(الزامی)** | [توضیح](/custom-ui-extensions#jwt-secret) |
 | JSON data structure **(الزامی)** | فایل JSON معتبر که ساختار پنل را تعریف می‌کند. |
 | Panel locations **(الزامی)** | حداقل یکی از Deal details، Person details، Organization details. |
@@ -116,9 +118,11 @@ description: ثبت اپ در Developer Hub دیدار؛ فیلدهای Basic in
 | Iframe URL | برای Custom UI الزامی؛ فقط HTTPS. |
 | JWT secret | برای Custom UI الزامی. |
 
-هر اپ فقط یک App settings دارد. [جزئیات App settings](/app-settings)
+هر پلاگین فقط یک App settings دارد. [جزئیات App settings](/app-settings)
 
 ### پیام‌های خطای فرم {#validation}
+
+اگر Save خطا داد، یکی از این پیام‌ها نشان داده می‌شود و تغییرات در صفحه می‌مانند تا اصلاحشان کنی:
 
 | وقتی | پیام |
 | --- | --- |
@@ -130,39 +134,18 @@ description: ثبت اپ در Developer Hub دیدار؛ فیلدهای Basic in
 | JWT secret خالی است | `Enter a JWT secret.` |
 | فایل JSON نامعتبر است | `This file isn’t valid JSON. Please upload a valid JSON file.` |
 
-## اپ Draft را نصب و تست کن {#test}
+## پلاگین Draft را نصب و تست کن {#test}
 
-پیش از Live کردن، اپ را روی BizDomain خودت نصب و تست کن:
+بعد از ثبت، پلاگین را روی BizDomain خودت نصب و تست کن:
 
 1. لینک نصب را با **Share app** (یا Share install link در My apps) بردار.
 2. آن را در مرورگری که با حساب ادمین خودت وارد دیدار شده‌ای باز کن و نصب را تأیید کن.
 3. اکستنشن‌ها را از داخل صفحه‌های دیدار اجرا کن.
 
-[چک‌لیست تست](/test-environment#checklist)
-
-## اپ را به اشتراک بگذار {#share}
-
-### اپ را Live کن {#live}
-
-بالای صفحه‌ی ویرایش، **Change to live** را بزن و تأیید کن. وضعیت اپ از Draft به Live تغییر می‌کند.
-
-> [!WARNING]
-> - اپ Live دیگر به Draft برنمی‌گردد.
-> - از این به بعد هر تغییری که ذخیره کنی، فوراً برای همه‌ی کاربران اپ اعمال می‌شود.
-
-### لینک نصب را بردار {#install-link}
-
-در My apps از منوی ⋯ گزینه‌ی **Share install link**، یا در تب OAuth & access scopes دکمه‌ی **Share app** را بزن و لینک را کپی کن. هر کسی این لینک را داشته باشد به مسیر نصب هدایت می‌شود؛ نصب نهایی را ادمین همان کسب‌وکار تأیید می‌کند.
-
-## وضعیت اپ {#status}
-
-| وضعیت | چه کسی می‌تواند نصب کند |
-| --- | --- |
-| Draft | برای تست روی BizDomain خودت؛ لینک هنوز برای کسب‌وکارهای دیگر قابل اشتراک نیست. |
-| Live | هر کسب‌وکاری در دیدار که لینک نصب را داشته باشد. |
+[چک‌لیست تست](/test-environment#checklist) · وقتی همه‌چیز درست بود: [انتشار و نگهداری](/publishing)
 
 ## بعد از این بخوان {#read-next}
 
-- [جریان نصب اپ](/app-installation-flows)
-- [تکمیل نصب](/installation-authorization)
+- [Client ID و Client secret](/client-id-and-client-secret)
+- [جریان نصب از دید ادمین](/app-installation-flows)
 - [مرور اکستنشن‌ها](/app-extensions)

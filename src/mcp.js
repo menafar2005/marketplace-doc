@@ -14,11 +14,11 @@ const json = (v) => text(JSON.stringify(v, null, 2));
 const slugOf = (s) => String(s || "").trim().replace(/^https?:\/\/[^/]+/, "").replace(/^\/+|\.md$|#.*$/g, "");
 
 const ANATOMY = [
-  { part: 1, name: "ساخت اپ در Developer Hub", what: "نام، Callback URL، scopeها و اکستنشن‌ها؛ خروجی: Client ID و Client secret. اپ Draft است تا Change to live.", rules: ["فقط ادمین BizDomain به https://app.didar.me/developerhub دسترسی دارد", "Client secret فقط در backend / secret store", "Callback URL و آدرس اکستنشن‌ها HTTPS"], page: "registering-an-app" },
-  { part: 2, name: "نصب", what: "ادمین با لینک نصب، اپ را روی BizDomain خودش تأیید می‌کند؛ Callback URL اپ code را با CompleteInstallation کامل می‌کند", rules: ["state یک‌بارمصرف بساز و در callback تطبیق بده", "نتیجه را با BizDomainId ذخیره کن", "ApiKey فقط رمزگذاری‌شده"], page: "installation-authorization" },
-  { part: 3, name: "اجرا (launch)", what: "دیدار با ?launchCode= آدرس اکستنشن را صدا می‌زند؛ backend کد را با /api/v1/runtime/token به Runtime Token و Runtime Context تبدیل می‌کند", rules: ["launchCode یک‌بارمصرف است؛ ذخیره یا log نکن", "فقط به context برگشتی اعتماد کن", "payload را در backend validate کن"], page: "runtime-token" },
-  { part: 4, name: "داده با API پروکسی", what: "خواندن و نوشتن معامله، پرونده، شخص، شرکت، فعالیت و یادداشت از marketplace.didar.me با Bearer Runtime Token", rules: ["فقط در محدوده‌ی scope و entityIds همان اجرا", "بدنه دقیقاً مثل API دیدار؛ casing را حفظ کن", "Runtime Token را برای اجرای بعدی reuse نکن"], page: "api-concepts" },
-  { part: 5, name: "رابط کاربری (اکستنشن‌ها)", what: "Links، JSON modal، JSON panel، Custom modal، Custom panel و App settings در Locationهای دیدار", rules: ["CORS فقط برای origin دقیق دیدار", "Iframe URL فقط HTTPS", "ظرفیت: ۳ اکستنشن منو در هر Location، ۱ پنل در هر صفحه‌ی جزئیات"], page: "app-extensions" },
+  { part: 1, name: "شناسنامه در Developer Hub", what: "نام، Callback URL، scopeها و اکستنشن‌ها؛ خروجی: Client ID و Client secret. پلاگین Draft است تا Change to live.", rules: ["فقط ادمین BizDomain به https://app.didar.me/developerhub دسترسی دارد", "Client secret فقط در backend / secret store", "Callback URL و آدرس اکستنشن‌ها HTTPS"], page: "registering-an-app" },
+  { part: 2, name: "مسیر نصب (Callback URL)", what: "ادمین با لینک نصب، پلاگین را روی BizDomain خودش تأیید می‌کند؛ Callback URL پلاگین code را با CompleteInstallation کامل می‌کند", rules: ["state یک‌بارمصرف بساز و در callback تطبیق بده", "نتیجه را با BizDomainId ذخیره کن", "ApiKey فقط رمزگذاری‌شده"], page: "installation-authorization" },
+  { part: 3, name: "مسیر اجرا (launch)", what: "دیدار با ?launchCode= آدرس اکستنشن را صدا می‌زند؛ backend کد را با /api/v1/runtime/token به Runtime Token و Runtime Context تبدیل می‌کند", rules: ["launchCode یک‌بارمصرف است؛ ذخیره یا log نکن", "فقط به context برگشتی اعتماد کن", "payload را در backend validate کن"], page: "runtime-token" },
+  { part: 4, name: "منطق و داده (API پروکسی)", what: "خواندن و نوشتن معامله، پرونده، شخص، شرکت، فعالیت و یادداشت از marketplace.didar.me با Bearer Runtime Token", rules: ["فقط در محدوده‌ی scope و entityIds همان اجرا", "بدنه دقیقاً مثل API دیدار؛ casing را حفظ کن", "Runtime Token را برای اجرای بعدی reuse نکن"], page: "api-concepts" },
+  { part: 5, name: "اکستنشن‌ها", what: "Links، JSON modal، JSON panel، Custom modal، Custom panel و App settings در Locationهای دیدار", rules: ["CORS فقط برای origin دقیق دیدار", "Iframe URL فقط HTTPS", "ظرفیت: ۳ اکستنشن منو در هر Location، ۱ پنل در هر صفحه‌ی جزئیات"], page: "app-extensions" },
 ];
 
 const TOOLS = [
@@ -49,9 +49,9 @@ const TOOLS = [
   },
   {
     name: "get_plugin_anatomy",
-    description: "بخش‌های یک اپ/پلاگین دیدار به ترتیب ساخت (Developer Hub، نصب، اجرا، داده، اکستنشن‌ها)، قواعد کلیدی هرکدام و صفحه‌ی مرجع.",
+    description: "بخش‌های یک پلاگین دیدار به ترتیب ساخت (Developer Hub، نصب، اجرا، داده، اکستنشن‌ها)، قواعد کلیدی هرکدام و صفحه‌ی مرجع.",
     inputSchema: { type: "object", properties: {} },
-    run: (_a, o) => json({ summary: bySlug.get("about-the-marketplace").lead, parts: ANATOMY.map((p) => ({ ...p, url: `${o}/${p.page}` })), docs: `${o}/about-the-marketplace#how-it-works` }),
+    run: (_a, o) => json({ summary: bySlug.get("plugin-anatomy").lead, parts: ANATOMY.map((p) => ({ ...p, url: `${o}/${p.page}` })), docs: `${o}/plugin-anatomy`, templates: `${o}/plugin-anatomy#in-code`, lifecycle: `${o}/about-the-marketplace#how-it-works` }),
   },
   {
     name: "get_api_spec",

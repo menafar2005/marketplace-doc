@@ -16,8 +16,8 @@ const baseHeaders = (extra = {}) => ({
 // slugهای قدیمی ← صفحه‌ی جدید (لینک‌های بیرونی نشکنند)
 const MOVED = {
   introduction: "getting-started", concepts: "about-the-marketplace", "how-it-works": "about-the-marketplace#how-it-works",
-  anatomy: "about-the-marketplace#how-it-works", glossary: "about-the-marketplace#glossary",
-  "create-app": "registering-an-app", "app-registration": "registering-an-app", "go-live": "registering-an-app#share",
+  anatomy: "plugin-anatomy", glossary: "about-the-marketplace#glossary",
+  "create-app": "registering-an-app", "creating-an-app": "tutorial-first-app", "app-registration": "registering-an-app", "go-live": "publishing",
   installation: "installation-authorization", launch: "runtime-token", runtime: "runtime-token",
   "quick-start": "tutorial-first-app", "crm-data": "tutorial-first-app",
   extensions: "app-extensions", "settings-page": "app-settings", "manage-app": "developer-hub", "security-errors": "errors",
