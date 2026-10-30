@@ -54,16 +54,6 @@ AI کد را سریع می‌نویسد، ولی تو کسی هستی که با�
 
 > با MCP دیدار یک پلاگین بساز که در جزئیات معامله یک فرم JSON نشان بدهد و با ثبت آن یک یادداشت روی همان معامله ثبت کند. اول بگو کدام اکستنشن، scopeها و endpointها لازم است و لینک صفحه‌ی هرکدام را بده. بعد کد را با Node.js بنویس و پیش از تحویل، تنظیمات را با validate_plugin چک کن.
 
-## خروجی AI را چطور بررسی کنم؟ {#review}
-
-پیش از اینکه کد را روی BizDomain خودت نصب کنی، این چند نکته را در آن پیدا کن. اگر جواب هر کدام را نمی‌دانی، همان سؤال را از ابزار بپرس و لینک صفحه‌ی مرجع را بخواه:
-
-- **Client secret کجاست؟** فقط در متغیر محیطی سرور، نه در کد frontend یا فایلی که در git می‌رود. [Client ID و Client secret](/client-id-and-client-secret#storing)
-- **launchCode کجا تبدیل می‌شود؟** فقط در backend. [Runtime Token](/runtime-token#step-2)
-- **شناسه‌ی رکورد از کجا می‌آید؟** فقط از `context.entityIds`، نه از URL یا فرم.
-- **Runtime Token به مرورگر می‌رسد؟** نباید برسد. [الگوی Custom UI](/custom-ui-extensions#security)
-- **scopeها حداقلی‌اند؟** هر scope باید دلیل داشته باشد. [Scopeها](/scopes#choosing)
-- **CORS فقط برای `https://app.didar.me` باز است؟** نه `*`. [CORS](/json-modals#cors)
 
 ## بعد از این بخوان {#read-next}
 
