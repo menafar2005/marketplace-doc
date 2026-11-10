@@ -98,7 +98,7 @@ curl --location 'https://marketplace.didar.me/api/v1/runtime/token' \
 | `data.context.location` | محل اجرا ([جدول Locationها](/app-extensions#locations))؛ در تنظیمات `null`. |
 | `data.context.entityType` | `deal`، `case`، `person` یا `company`؛ در تنظیمات `null`. |
 | `data.context.entityIds` | رکوردهایی که این اجرا اجازه‌ی کار روی آن‌ها را دارد؛ در صفحه‌های لیست ممکن است چند شناسه باشد. |
-| `data.context.payload` | مقادیر فرم JSON modal با همان keyهای schema. |
+| `data.context.payload` | مقادیر فرم JSON modal با همان keyهای schema. در قرارداد جدید اکستنشن JSON، مقادیر فرم در `values` بدنه‌ی `extension.submit` هم می‌آیند ([endpoint اکستنشن JSON](/api-app-endpoints#json-submit)). |
 
 > [!WARNING]
 > **مرز اعتماد.** تنها context معتبر همین پاسخ است. شناسه‌ی رکورد را فقط از `context.entityIds` بگیر، نه از query یا frontend، و `payload` را مثل هر ورودی کاربر دوباره validate کن.

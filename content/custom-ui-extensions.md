@@ -30,7 +30,7 @@ description: اکستنشن‌های Custom UI دیدار (Custom modal، Custom
 صفحه‌ی پلاگین تو باید روی اینترنت با **HTTPS** در دسترس باشد؛ Developer Hub برای Iframe URL فقط آدرس HTTPS می‌پذیرد. frontend و backend آن را با هر تکنولوژی‌ای که بخواهی می‌سازی.
 
 1. کاربر اکستنشن را باز می‌کند (یا صفحه‌ی جزئیاتی را که پنل در آن است).
-2. دیدار Iframe URL تو را با `?launchCode=…` داخل iframe باز می‌کند.
+2. دیدار Iframe URL تو را با `?launchCode=…` و [پارامترهای `didar_*`](/api-app-endpoints#url-params) (مثل `didar_locale` برای زبان کاربر) داخل iframe باز می‌کند. iframe با sandbox محدود اجرا می‌شود.
 3. backend تو `launchCode` را به [Runtime Token](/runtime-token) تبدیل می‌کند.
 4. صفحه‌ی تو با داده‌ی همان رکوردها (`context.entityIds`) نمایش داده می‌شود.
 
@@ -52,6 +52,24 @@ GET https://your-app.example.com/didar/panel?launchCode=ONE_TIME_CODE
 > [!NOTE]
 > **cookie داخل iframe.** صفحه‌ی تو داخل iframe روی دامنه‌ای غیر از دیدار باز می‌شود، پس مرورگر cookie آن را third-party حساب می‌کند. cookie session باید `SameSite=None` و `Secure` باشد تا مرورگر آن را داخل iframe بفرستد. بعضی مرورگرها cookieهای third-party را محدود می‌کنند؛ اگر صفحه‌ات بدون cookie هم باید کار کند، شناسه‌ی session را به‌جای cookie در فرم یا هدر درخواست‌های بعدی بفرست.
 
+### ارتباط با دیدار از داخل iframe: Marketplace SDK {#sdk}
+
+صفحه‌ی تو داخل iframe به window اصلی دیدار دسترسی ندارد. برای اینکه از داخل آن toast دیدار نشان بدهی، با confirm استاندارد دیدار از کاربر تأیید بگیری یا modal جاری را ببندی، از [Marketplace SDK](/marketplace-sdk) استفاده کن:
+
+```ts title="TypeScript"
+import {createDidarMarketplaceSdk} from '@didar/marketplace-sdk';
+
+const didar = createDidarMarketplaceSdk({
+  appId: 'sample-app',
+  targetOrigin: 'https://app.didar.me'
+});
+
+await didar.toast.success('Saved', 'The form was submitted successfully');
+await didar.popup.close(true);
+```
+
+SDK فقط UI دیدار را کنترل می‌کند؛ کار با داده‌ی دیدار همچنان از backend تو و با Runtime Token انجام می‌شود.
+
 ### تم روشن و تیره {#theme}
 
 دیدار تم روشن و تیره دارد و صفحه‌ی تو داخل هر دو دیده می‌شود. مطمئن شو UI تو در هر دو حالت خوانا است؛ ساده‌ترین شروع `color-scheme: light dark` در CSS است. تم دیدار را می‌توانی از پروفایل بالای صفحه عوض کنی و هر دو را تست کنی.
@@ -71,10 +89,11 @@ session این تمپلیت در حافظه‌ی همان سرور است؛ اگ
 ## هنوز مستند نشده {#open}
 
 > [!WARNING]
-> این موارد هنوز در منبع فنی نیامده‌اند و در این داک حدس زده نمی‌شوند: دیدار JWT secret هر اکستنشن را دقیقاً کجا و چطور استفاده می‌کند، SDK مربوط به Custom UI (از جمله اجرای Custom modal بدون Entry point)، و اندازه‌ی مجاز iframe در modal و پنل.
+> این موارد هنوز در منبع فنی نیامده‌اند و در این داک حدس زده نمی‌شوند: دیدار JWT secret هر اکستنشن را دقیقاً کجا و چطور استفاده می‌کند، اجرای Custom modal بدون Entry point از طریق [Marketplace SDK](/marketplace-sdk)، و اندازه‌ی مجاز iframe در modal و پنل.
 
 ## بعد از این بخوان {#read-next}
 
+- [Marketplace SDK](/marketplace-sdk)
 - [Custom modal](/custom-modals)
 - [Custom panel](/custom-panels)
 - [App settings](/app-settings)

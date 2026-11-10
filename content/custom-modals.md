@@ -16,7 +16,7 @@ Custom modal برای کارهایی مناسب است که UI سفارشی می
 
 - در منوی عملیات Locationهایی که به‌عنوان **Entry point** انتخاب می‌کنی؛ همان Locationهای [Links](/link-actions#visibility).
 - ظرفیت هر Location منو بین Links، JSON modal و Custom modal مشترک است (حداکثر ۳). [ظرفیت‌ها](/app-extensions#limits)
-- **Entry point اختیاری است.** اگر هیچ Entry pointی انتخاب نکنی، modal در منوها دیده نمی‌شود و فقط از طریق SDK اجرا می‌شود. در فهرست My added extensions، اکستنشنی که از طریق SDK قابل اجراست برچسب **SDK** دارد، کنار برچسب Entry pointهایش.
+- **Entry point اختیاری است.** اگر هیچ Entry pointی انتخاب نکنی، modal در منوها دیده نمی‌شود و فقط از طریق [SDK](/marketplace-sdk) اجرا می‌شود. در فهرست My added extensions، اکستنشنی که از طریق SDK قابل اجراست برچسب **SDK** دارد، کنار برچسب Entry pointهایش.
 
 وقتی modal از صفحه‌ی لیست اجرا می‌شود، `context.entityIds` همه‌ی ردیف‌هایی است که کاربر انتخاب کرده؛ پس صفحه‌ی تو باید برای کار روی چند رکورد آماده باشد.
 
@@ -44,7 +44,7 @@ Custom modal و Custom panel یک تمپلیت مشترک دارند، چون ه
 ## هنوز مستند نشده {#open}
 
 > [!WARNING]
-> SDK اجرای Custom modal و نحوه‌ی استفاده از ID آن هنوز در منبع فنی نیامده است.
+> [Marketplace SDK](/marketplace-sdk) منتشر شده است و با `popup.open` می‌تواند popupهایی را باز کند که selector آن‌ها برای اپ تو مجاز شده باشد، ولی رابطه‌ی ID این modal با آن selector هنوز در منبع فنی نیامده است. بستن modal از داخل خودش با `didar.popup.close` مستند است.
 
 ## بعد از این بخوان {#read-next}
 

@@ -39,7 +39,7 @@ const NAV = {
     { title: "شروع ساخت", items: ["tutorial-first-app", "build-with-mcp", "test-environment"] },
     { title: "Developer Hub", items: ["developer-hub", "registering-an-app", "client-id-and-client-secret"] },
     { title: "نصب و احراز هویت", items: ["installation-authorization", "state-parameter", "runtime-token", "scopes"] },
-    { title: "اکستنشن‌ها", items: ["app-extensions", "link-actions", "json-modals", "json-panels", "custom-ui-extensions", "custom-modals", "custom-panels", "app-settings"] },
+    { title: "اکستنشن‌ها", items: ["app-extensions", "link-actions", "json-modals", "json-panels", "json-extension-schema", "custom-ui-extensions", "custom-modals", "custom-panels", "marketplace-sdk", "app-settings"] },
     { title: "انتشار و امنیت", items: ["publishing", "security"] },
   ],
   api: [
@@ -211,6 +211,7 @@ export function renderHome(origin) {
     card("/developer-hub", "doc", "Developer Hub", "ثبت، وضعیت‌ها، به‌روزرسانی و حذف") +
     card("/installation-authorization", "lock", "نصب و احراز هویت", "نصب، Runtime Token و scopeها") +
     card("/app-extensions", "window", "اکستنشن‌ها", "Links، JSON و Custom UI") +
+    card("/marketplace-sdk", "code", "Marketplace SDK", "ارتباط صفحه‌ی iframe با دیدار") +
     card("/api-concepts", "code", "مرجع API", "همه‌ی endpointها، درخواست و پاسخ") +
     `</div></div>`;
   return shell({

@@ -93,7 +93,7 @@ description: ثبت پلاگین در Developer Hub دیدار؛ فیلدهای 
 | Iframe URL **(الزامی)** | فقط HTTPS. |
 | JWT secret **(الزامی)** | [توضیح](/custom-ui-extensions#jwt-secret) |
 | ID | دیدار می‌سازد؛ فقط‌خواندنی و قابل کپی. |
-| Entry points | اختیاری؛ Locationهای منوی عملیات. بدون Entry point، modal فقط از طریق SDK اجرا می‌شود. |
+| Entry points | اختیاری؛ Locationهای منوی عملیات. بدون Entry point، modal فقط از طریق [SDK](/marketplace-sdk) اجرا می‌شود. |
 
 [جزئیات Custom modal](/custom-modals)
 

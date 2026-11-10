@@ -23,7 +23,7 @@ description: نگهداری secretها، مرز اعتماد Runtime Context، C
 ## به چه چیزی اعتماد کنی؟ {#trust}
 
 - تنها context معتبر، پاسخ [`/api/v1/runtime/token`](/api-auth#runtime-token) است. شناسه‌ای که از query، فرم یا frontend می‌آید context امنیتی نیست.
-- `payload` فرم JSON ورودی کاربر است: الزامی بودن، نوع، طول و قالب را در backend دوباره چک کن و HTML ورودی را sanitize کن.
+- `values` فرم JSON (و `payload` در Runtime Context) ورودی کاربر است: الزامی بودن، نوع، طول و قالب را در backend دوباره چک کن و HTML ورودی را sanitize کن.
 - در صفحه‌ی تنظیمات، `BizDomainId` را از query نپذیر؛ آن را با همان token از [`biz-domain/info`](/app-settings#key) بگیر.
 - در Custom UI، token را به مرورگر نفرست؛ آن را در [session کوتاه سمت سرور](/custom-ui-extensions#security) نگه دار و cookie آن را `HttpOnly`، `Secure` و `SameSite=None` کن.
 
@@ -43,7 +43,7 @@ description: نگهداری secretها، مرز اعتماد Runtime Context، C
 - [ ] Callback URL و همه‌ی آدرس‌های اکستنشن روی HTTPS هستند.
 - [ ] Client secret، JWT secretها و `ApiKey` در secret manager نگه‌داری می‌شوند.
 - [ ] هیچ secret، launchCode یا JWTی در log و analytics ثبت نمی‌شود.
-- [ ] `payload` در backend validate و HTML ورودی sanitize می‌شود.
+- [ ] `values` فرم JSON در backend validate و HTML ورودی sanitize می‌شود.
 - [ ] `state` جریان نصب یک‌بارمصرف است و با session تطبیق داده می‌شود.
 - [ ] CORS فقط originهای دقیق دیدار را می‌پذیرد، نه `*`.
 - [ ] در 401/410 اجرای تازه شروع می‌شود و token قدیمی reuse نمی‌شود.

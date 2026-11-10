@@ -1,5 +1,6 @@
 // JsonModalRoutes.cs: endpoint اکستنشن JSON modal. این آدرس را در فیلد API endpoint ثبت کن.
-// فرم form.json یک جزء textarea با key = "noteText" دارد؛ مقدارش در context.payload.noteText می‌رسد.
+// دیدار این endpoint را با POST و بدنه‌ی JSON صدا می‌زند: event برابر extension.load (باز شدن فرم، اگر loadOnOpen روشن باشد)
+// یا extension.submit (ثبت فرم). فرم form.json یک جزء textarea با key = "noteText" دارد؛ مقدارش در values.noteText می‌رسد.
 using System.Text.Json.Nodes;
 
 public static class JsonModalRoutes
@@ -7,17 +8,17 @@ public static class JsonModalRoutes
     const string Endpoint = "/didar/note-form";
     const string NoteType = "00000000-0000-0000-0000-000000000000"; // یادداشت: GUID خالی
 
-    // submit فرم با fetch مرورگر از داخل دیدار می‌آید، پس CORS فقط برای origin دقیق دیدار
+    // درخواست با fetch مرورگر از داخل دیدار می‌آید (POST با بدنه‌ی JSON)، پس CORS فقط برای origin دقیق دیدار
     static void AllowDidar(HttpResponse res)
     {
         res.Headers["Access-Control-Allow-Origin"] = DidarClient.DidarOrigin;
         res.Headers["Vary"] = "Origin";
-        res.Headers["Access-Control-Allow-Methods"] = "GET, OPTIONS";
+        res.Headers["Access-Control-Allow-Methods"] = "POST, OPTIONS";
         res.Headers["Access-Control-Allow-Headers"] = "Content-Type";
     }
 
-    static IResult Reply(bool succeeded, string message, object? data = null) =>
-        Results.Json(data is null ? (object)new { succeeded, message } : new { succeeded, message, data });
+    static IResult Fail(string message, object? errors = null) =>
+        Results.Json(errors is null ? (object)new { ok = false, message } : new { ok = false, message, errors });
 
     public static void MapJsonModal(this WebApplication app)
     {
@@ -27,16 +28,24 @@ public static class JsonModalRoutes
             return Results.NoContent();
         });
 
-        app.MapGet(Endpoint, async (string? launchCode, HttpResponse res, DidarClient didar, ILogger<DidarClient> log) =>
+        app.MapPost(Endpoint, async (string? launchCode, JsonObject? body, HttpResponse res, DidarClient didar, ILogger<DidarClient> log) =>
         {
             AllowDidar(res);
-            var run = await didar.ExchangeLaunchCodeAsync(launchCode);
-            if (run is null) return Reply(false, "این اجرا معتبر نیست؛ فرم را دوباره باز کن.");
-            if ((string?)run.Context["entityType"] != "deal") return Reply(false, "این فرم فقط روی معامله کار می‌کند.");
+            var ev = (string?)body?["event"];
 
-            // payload ورودی کاربر است: الزامی بودن، نوع و طول را دوباره چک کن
-            var noteText = run.Context["payload"]?["noteText"] is JsonValue v && v.TryGetValue<string>(out var s) ? s.Trim() : "";
-            if (noteText.Length is 0 or > 2000) return Reply(false, "متن یادداشت باید بین ۱ تا ۲۰۰۰ کاراکتر باشد.");
+            // باز شدن فرم: مقدارهای اولیه‌ی فیلدها را با همان keyها برگردان
+            if (ev == "extension.load") return Results.Json(new { ok = true, data = new { values = new { noteText = "" } } });
+            if (ev != "extension.submit") return Fail("درخواست ناشناخته است.");
+
+            // values ورودی کاربر است: الزامی بودن، نوع و طول را دوباره چک کن؛ خطا کنار همان فیلد نمایش داده می‌شود
+            var noteText = body?["values"]?["noteText"] is JsonValue v && v.TryGetValue<string>(out var s) ? s.Trim() : "";
+            if (noteText.Length is 0 or > 2000)
+                return Fail("بعضی از مقادیر معتبر نیستند.", new { noteText = "متن یادداشت باید بین ۱ تا ۲۰۰۰ کاراکتر باشد." });
+
+            // رکوردها را فقط از Runtime Context بخوان، نه از context بدنه که مرورگر فرستاده
+            var run = await didar.ExchangeLaunchCodeAsync(launchCode);
+            if (run is null) return Fail("این اجرا معتبر نیست؛ فرم را دوباره باز کن.");
+            if ((string?)run.Context["entityType"] != "deal") return Fail("این فرم فقط روی معامله کار می‌کند.");
 
             // روی همه‌ی معامله‌های این اجرا (در لیست ممکن است چند معامله انتخاب شده باشد)
             var ids = run.Context["entityIds"]!.AsArray();
@@ -51,9 +60,9 @@ public static class JsonModalRoutes
             catch (DidarException e)
             {
                 log.LogError("note create failed: {Status} {Code} trace={Trace}", e.Status, e.Code, e.TraceId);
-                return Reply(false, "ثبت یادداشت ناموفق بود.");
+                return Fail("ثبت یادداشت ناموفق بود.");
             }
-            return Reply(true, $"یادداشت روی {ids.Count} معامله ثبت شد.", new { count = ids.Count });
+            return Results.Json(new { ok = true, message = $"یادداشت روی {ids.Count} معامله ثبت شد.", close = true });
         });
     }
 }

@@ -33,6 +33,9 @@ MCP فقط از محتوای همین داک جواب می‌دهد تا با د
 | `list_scopes` | scopeها و دسترسی هرکدام |
 | `list_extensions` | نوع محتوا، surface و locationهای اکستنشن |
 | `list_error_codes` | HTTP statusها و کدهای خطا |
+| `get_json_extension_schema` | ساختار JSON اکستنشن نسخه‌ی ۱: فایل JSON Schema، نمونه‌ی کامل و قرارداد `extension.load` و `extension.submit` |
+| `validate_json_extension` | چک فایل `form.json` یا `panel.json` با قواعد ساختار JSON اکستنشن، با مسیر دقیق هر خطا |
+| `get_sdk_reference` | مرجع Marketplace SDK برای صفحه‌های iframe: متدها، permissionها، actionها و قرارداد پیام |
 | `scaffold_plugin` | اسکلت backend پلاگین (نصب، launch، تبادل token، فراخوانی API) |
 | `validate_plugin` | چک تنظیمات پلاگین در برابر قواعد داک، پیش از نصب |
 
@@ -52,7 +55,7 @@ AI کد را سریع می‌نویسد، ولی تو کسی هستی که با�
 
 **prompt نمونه**
 
-> با MCP دیدار یک پلاگین بساز که در جزئیات معامله یک فرم JSON نشان بدهد و با ثبت آن یک یادداشت روی همان معامله ثبت کند. اول بگو کدام اکستنشن، scopeها و endpointها لازم است و لینک صفحه‌ی هرکدام را بده. بعد کد را با Node.js بنویس و پیش از تحویل، تنظیمات را با validate_plugin چک کن.
+> با MCP دیدار یک پلاگین بساز که در جزئیات معامله یک فرم JSON نشان بدهد و با ثبت آن یک یادداشت روی همان معامله ثبت کند. اول بگو کدام اکستنشن، scopeها و endpointها لازم است و لینک صفحه‌ی هرکدام را بده. بعد کد را با Node.js بنویس، فایل فرم را با validate_json_extension و پیش از تحویل تنظیمات را با validate_plugin چک کن.
 
 
 ## بعد از این بخوان {#read-next}

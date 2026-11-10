@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://developer.didar.me/schemas/marketplace-json-extension-v1.json",
+  "title": "Didar Marketplace JSON Extension v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "layout", "sections"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "layout": { "enum": ["form", "details"] },
+    "title": { "$ref": "#/$defs/nonEmptyLocalizedText" },
+    "description": { "$ref": "#/$defs/localizedText" },
+    "loadOnOpen": { "type": "boolean" },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": { "$ref": "#/$defs/section" }
+    },
+    "submit": { "$ref": "#/$defs/submit" }
+  },
+  "$defs": {
+    "localizedText": {
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "fa": { "type": "string" },
+            "en": { "type": "string" },
+            "ar": { "type": "string" }
+          }
+        }
+      ]
+    },
+    "nonEmptyLocalizedText": {
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "fa": { "type": "string" },
+            "en": { "type": "string" },
+            "ar": { "type": "string" }
+          },
+          "anyOf": [
+            { "required": ["fa"], "properties": { "fa": { "minLength": 1 } } },
+            { "required": ["en"], "properties": { "en": { "minLength": 1 } } },
+            { "required": ["ar"], "properties": { "ar": { "minLength": 1 } } }
+          ]
+        }
+      ]
+    },
+    "section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "items"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "title": { "$ref": "#/$defs/nonEmptyLocalizedText" },
+        "description": { "$ref": "#/$defs/localizedText" },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "items": { "$ref": "#/$defs/item" }
+        }
+      }
+    },
+    "submit": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": { "$ref": "#/$defs/nonEmptyLocalizedText" },
+        "closeOnSuccess": { "type": "boolean" },
+        "successMessage": { "$ref": "#/$defs/localizedText" }
+      }
+    },
+    "option": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "value"],
+      "properties": {
+        "label": { "$ref": "#/$defs/nonEmptyLocalizedText" },
+        "value": { "type": ["string", "number", "boolean"] }
+      }
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "enum": [
+            "text", "textarea", "number", "date", "select", "radio", "checkbox",
+            "value", "link", "message", "divider"
+          ]
+        },
+        "key": { "type": "string", "minLength": 1 },
+        "label": { "$ref": "#/$defs/localizedText" },
+        "text": { "$ref": "#/$defs/localizedText" },
+        "url": { "type": "string", "pattern": "^https?://" },
+        "placeholder": { "$ref": "#/$defs/localizedText" },
+        "helpText": { "$ref": "#/$defs/localizedText" },
+        "required": { "type": "boolean" },
+        "readOnly": { "type": "boolean" },
+        "defaultValue": {},
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "minLength": { "type": "integer", "minimum": 0 },
+        "maxLength": { "type": "integer", "minimum": 0 },
+        "options": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/option" }
+        },
+        "variant": { "enum": ["info", "success", "warning", "error"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "enum": ["text", "textarea", "number", "date", "select", "radio", "checkbox", "value"] } } },
+          "then": { "required": ["key"] }
+        },
+        {
+          "if": { "properties": { "type": { "enum": ["select", "radio"] } } },
+          "then": { "required": ["options"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "message" } } },
+          "then": {
+            "required": ["text"],
+            "properties": { "text": { "$ref": "#/$defs/nonEmptyLocalizedText" } }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "link" } } },
+          "then": { "required": ["url"] }
+        }
+      ]
+    }
+  }
+}

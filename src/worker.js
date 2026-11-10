@@ -1,4 +1,4 @@
-import { pages, meta } from "./generated/content.js";
+import { pages, meta, spec } from "./generated/content.js";
 import { renderPage, renderHome, renderNotFound, FAVICON, bySlug } from "./layout.js";
 import { css } from "./styles.js";
 import { clientJs } from "./client.js";
@@ -51,6 +51,13 @@ export default {
     if (path === "/llms-full.txt") return page(llmsFull(origin), "text/plain; charset=utf-8");
     if (path === "/version" || path === "/healthz") {
       return page(JSON.stringify({ ok: true, ...meta }), "application/json; charset=utf-8", "no-store");
+    }
+    // قرارداد ماشین‌خوان اکستنشن JSON نسخه‌ی ۱ و نمونه‌ی کامل آن
+    if (path === "/schemas/didar-json-extension.schema.json") {
+      return page(JSON.stringify(spec.jsonExtension.schema, null, 2), "application/schema+json; charset=utf-8");
+    }
+    if (path === "/schemas/didar-json-extension.sample.json") {
+      return page(JSON.stringify(spec.jsonExtension.sample, null, 2), "application/json; charset=utf-8");
     }
     if (path === "/search") {
       const limit = Math.min(20, Number(url.searchParams.get("limit")) || 8);
