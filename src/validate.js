@@ -46,7 +46,7 @@ export function validatePlugin(cfg, origin) {
       err("surfaceType", `${at}.surfaceType باید Modal/Sidebar/ActionLink (1/2/3) باشد.`, "app-extensions");
     }
     const loc = LOCATIONS.get(ex.location);
-    if (!loc) err("location", `${at}.location باید عددی بین 1 تا 8 باشد.`, "app-extensions");
+    if (!loc) err("location", `${at}.location باید عددی بین 1 تا 6 باشد.`, "app-extensions");
     if (loc && ex.entityType && ex.entityType !== loc.entityType) {
       err("entityType", `${at}: location ${ex.location} (${loc.name}) با entityType «${loc.entityType}» می‌آید، نه «${ex.entityType}».`, "app-extensions");
     }

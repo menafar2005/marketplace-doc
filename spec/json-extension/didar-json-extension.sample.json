@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 1,
+  "layout": "form",
+  "title": {
+    "fa": "فرم درخواست مشاوره",
+    "en": "Consultation Request",
+    "ar": "طلب استشارة"
+  },
+  "description": {
+    "fa": "اطلاعات زیر را تکمیل کنید تا درخواست شما ثبت شود.",
+    "en": "Complete the following information to submit your request.",
+    "ar": "أكمل المعلومات التالية لإرسال طلبك."
+  },
+  "loadOnOpen": false,
+  "sections": [
+    {
+      "id": "customer-information",
+      "title": {
+        "fa": "اطلاعات مشتری",
+        "en": "Customer information",
+        "ar": "معلومات العميل"
+      },
+      "items": [
+        {
+          "type": "message",
+          "text": {
+            "fa": "فیلدهای ستاره‌دار الزامی هستند.",
+            "en": "Fields marked with an asterisk are required.",
+            "ar": "الحقول المميزة بنجمة مطلوبة."
+          },
+          "variant": "info"
+        },
+        {
+          "type": "text",
+          "key": "fullName",
+          "label": {
+            "fa": "نام و نام خانوادگی",
+            "en": "Full name",
+            "ar": "الاسم الكامل"
+          },
+          "placeholder": {
+            "fa": "مثلاً حسام احمدی",
+            "en": "For example, John Smith",
+            "ar": "مثلاً أحمد محمد"
+          },
+          "required": true,
+          "minLength": 3,
+          "maxLength": 80
+        },
+        {
+          "type": "text",
+          "key": "phone",
+          "label": {
+            "fa": "شماره تماس",
+            "en": "Phone number",
+            "ar": "رقم الهاتف"
+          },
+          "placeholder": "09123456789",
+          "required": true,
+          "minLength": 10,
+          "maxLength": 15
+        },
+        {
+          "type": "select",
+          "key": "requestType",
+          "label": {
+            "fa": "نوع درخواست",
+            "en": "Request type",
+            "ar": "نوع الطلب"
+          },
+          "placeholder": {
+            "fa": "انتخاب کنید",
+            "en": "Select an option",
+            "ar": "اختر خياراً"
+          },
+          "required": true,
+          "options": [
+            {
+              "label": {
+                "fa": "مشاوره فروش",
+                "en": "Sales consultation",
+                "ar": "استشارة المبيعات"
+              },
+              "value": "sales"
+            },
+            {
+              "label": {
+                "fa": "پشتیبانی فنی",
+                "en": "Technical support",
+                "ar": "الدعم الفني"
+              },
+              "value": "support"
+            }
+          ]
+        },
+        {
+          "type": "radio",
+          "key": "priority",
+          "label": {
+            "fa": "اولویت",
+            "en": "Priority",
+            "ar": "الأولوية"
+          },
+          "defaultValue": "normal",
+          "options": [
+            {
+              "label": {
+                "fa": "عادی",
+                "en": "Normal",
+                "ar": "عادي"
+              },
+              "value": "normal"
+            },
+            {
+              "label": {
+                "fa": "فوری",
+                "en": "Urgent",
+                "ar": "عاجل"
+              },
+              "value": "urgent"
+            }
+          ]
+        },
+        {
+          "type": "number",
+          "key": "estimatedBudget",
+          "label": {
+            "fa": "بودجه تقریبی",
+            "en": "Estimated budget",
+            "ar": "الميزانية التقديرية"
+          },
+          "helpText": {
+            "fa": "مبلغ را به تومان وارد کنید.",
+            "en": "Enter the amount in toman.",
+            "ar": "أدخل المبلغ بالتومان."
+          },
+          "min": 0,
+          "max": 1000000000
+        },
+        {
+          "type": "date",
+          "key": "preferredDate",
+          "label": {
+            "fa": "تاریخ پیشنهادی تماس",
+            "en": "Preferred contact date",
+            "ar": "تاريخ الاتصال المفضل"
+          }
+        },
+        {
+          "type": "textarea",
+          "key": "description",
+          "label": {
+            "fa": "توضیحات",
+            "en": "Description",
+            "ar": "الوصف"
+          },
+          "placeholder": {
+            "fa": "درخواست خود را کوتاه توضیح دهید.",
+            "en": "Briefly describe your request.",
+            "ar": "صف طلبك باختصار."
+          },
+          "maxLength": 500
+        },
+        {
+          "type": "checkbox",
+          "key": "acceptTerms",
+          "label": {
+            "fa": "شرایط ثبت درخواست را می‌پذیرم.",
+            "en": "I accept the request submission terms.",
+            "ar": "أوافق على شروط إرسال الطلب."
+          },
+          "required": true,
+          "defaultValue": false
+        }
+      ]
+    },
+    {
+      "id": "additional-information",
+      "title": {
+        "fa": "اطلاعات تکمیلی",
+        "en": "Additional information",
+        "ar": "معلومات إضافية"
+      },
+      "items": [
+        {
+          "type": "value",
+          "key": "requestStatus",
+          "label": {
+            "fa": "وضعیت اولیه",
+            "en": "Initial status",
+            "ar": "الحالة الأولية"
+          },
+          "defaultValue": "New"
+        },
+        {
+          "type": "divider"
+        },
+        {
+          "type": "link",
+          "label": {
+            "fa": "مشاهده وب‌سایت دیدار",
+            "en": "Visit Didar website",
+            "ar": "زيارة موقع ديدار"
+          },
+          "url": "https://didar.me"
+        }
+      ]
+    }
+  ],
+  "submit": {
+    "label": {
+      "fa": "ثبت درخواست",
+      "en": "Submit request",
+      "ar": "إرسال الطلب"
+    },
+    "closeOnSuccess": true,
+    "successMessage": {
+      "fa": "درخواست با موفقیت ثبت شد.",
+      "en": "The request was submitted successfully.",
+      "ar": "تم إرسال الطلب بنجاح."
+    }
+  }
+}

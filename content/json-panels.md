@@ -2,8 +2,8 @@
 title: JSON panel
 section: start
 order: 23
-lead: JSON panel داده‌ی پلاگین تو را با اجزای آماده‌ی دیدار، در ستون کناری صفحه‌ی جزئیات نشان می‌دهد. کاربر برای دیدنش کاری انجام نمی‌دهد؛ با باز کردن صفحه‌ی جزئیات، پنل را کنار رکورد می‌بیند. این صفحه توضیح می‌دهد JSON panel چیست، کجا دیده می‌شود و چطور اضافه می‌شود، و صادقانه می‌گوید کدام بخش قراردادش هنوز منتشر نشده است.
-description: اکستنشن JSON panel در دیدار؛ کاربرد، جای نمایش، ظرفیت، افزودن در Developer Hub، تفاوت با Custom panel و موارد هنوز مستندنشده.
+lead: JSON panel داده‌ی پلاگین تو را با اجزای آماده‌ی دیدار، در ستون کناری صفحه‌ی جزئیات نشان می‌دهد. کاربر برای دیدنش کاری انجام نمی‌دهد؛ با باز کردن صفحه‌ی جزئیات، پنل را کنار رکورد می‌بیند. این صفحه توضیح می‌دهد JSON panel چیست، ساختار JSON و داده‌اش چطور تعریف می‌شود، کجا دیده می‌شود و چطور اضافه می‌شود.
+description: اکستنشن JSON panel در دیدار؛ کاربرد، جای نمایش، ساختار JSON با layout details، گرفتن داده با extension.load، ظرفیت، افزودن در Developer Hub و تفاوت با Custom panel.
 ---
 
 ## JSON panel چیست؟ {#what}
@@ -27,7 +27,8 @@ JSON panel یک پنل در ستون کناری صفحه‌ی جزئیات اس�
 | UI را چه کسی می‌سازد | دیدار، از روی فایل JSON تو | تو، با HTML و CSS و JavaScript داخل iframe |
 | مناسب برای | نمایش ساده‌ی داده با ظاهر یکدست | نمایش آزاد و تعامل پیچیده |
 | آدرسی که ثبت می‌کنی | API endpoint | Iframe URL (فقط HTTPS) |
-| وضعیت قرارداد در این داک | بخشی هنوز منتشر نشده ([پایین](#open)) | کامل، با تمپلیت کد |
+| ساختار | [ساختار JSON اکستنشن](/json-extension-schema)، معمولاً با `layout` برابر `details` | صفحه‌ی HTML خودت |
+| داده‌ی پنل | دیدار با `extension.load` از endpoint تو می‌گیرد | صفحه‌ی تو خودش می‌گیرد |
 
 ## در UI دیدار کجاست؟ {#visibility}
 
@@ -39,6 +40,66 @@ JSON panel یک پنل در ستون کناری صفحه‌ی جزئیات اس�
 
 ![پنل کمیسیون در صفحه‌ی جزئیات معامله](/images/extensions/panel-commission.webp "نمونه‌ی دیگر: محاسبه روی داده‌ی همان معامله")
 
+## ساختار پنل {#structure}
+
+پنل با همان [ساختار JSON اکستنشن](/json-extension-schema) تعریف می‌شود که JSON modal دارد. برای پنلی که فقط اطلاعات نشان می‌دهد، `layout` را `details` بگذار و از آیتم‌های نمایشی استفاده کن: `value` برای مقداری که از سرور تو می‌آید، `link` برای لینک امن، `message` برای پیام و `divider` برای جداکننده. `loadOnOpen` را `true` بگذار تا دیدار هنگام نمایش پنل داده‌اش را از endpoint تو بگیرد.
+
+```json title="panel.json"
+{
+  "schemaVersion": 1,
+  "layout": "details",
+  "title": "اطلاعات سرویس",
+  "loadOnOpen": true,
+  "sections": [
+    {
+      "id": "service",
+      "items": [
+        { "type": "value", "key": "plan", "label": "پلن" },
+        { "type": "value", "key": "status", "label": "وضعیت" },
+        { "type": "divider" },
+        {
+          "type": "link",
+          "label": "مشاهده در اپلیکیشن",
+          "url": "https://example.com/customer"
+        }
+      ]
+    }
+  ]
+}
+```
+
+## داده‌ی پنل از کجا می‌آید؟ {#data}
+
+وقتی پنل نمایش داده می‌شود و `loadOnOpen` روشن است، دیدار endpoint تو را با `POST` و رویداد `extension.load` صدا می‌زند. `context.entityId` شناسه‌ی شخص، شرکت یا معامله‌ای است که صفحه‌ی جزئیاتش باز است:
+
+```json title="درخواست extension.load"
+{
+  "event": "extension.load",
+  "runtimeId": "9de20339-d819-481a-a90c-79f66692413d",
+  "context": {
+    "location": 4,
+    "locale": "fa",
+    "entityId": "person-id"
+  }
+}
+```
+
+endpoint تو مقدار هر آیتم `value` را با همان `key` در `data.values` برمی‌گرداند:
+
+```json title="پاسخ"
+{
+  "ok": true,
+  "data": {
+    "values": {
+      "plan": "حرفه‌ای",
+      "status": "فعال"
+    }
+  }
+}
+```
+
+این درخواست هم مثل JSON modal با fetch مرورگر فرستاده می‌شود، پس endpoint باید HTTPS باشد و [CORS](/json-modals#cors) را برای مبدأهای رسمی دیدار باز کند. قرارداد کامل: [extension.load](/api-app-endpoints#json-load)
+
 ## JSON panel را چطور اضافه کنم؟ {#add}
 
 در Developer Hub، تب **App extensions**، کارت **JSON panel** را انتخاب کن و **Add** بزن.
@@ -49,15 +110,16 @@ JSON panel یک پنل در ستون کناری صفحه‌ی جزئیات اس�
 | Panel description | اختیاری؛ حداکثر ۱۵۰ کاراکتر. |
 | API endpoint **(الزامی)** | endpoint پلاگین تو؛ URL معتبر و HTTPS. |
 | JWT secret **(الزامی)** | [توضیح](/custom-ui-extensions#jwt-secret) |
-| JSON data structure **(الزامی)** | فایل `.json` معتبر که ساختار پنل را تعریف می‌کند. |
+| JSON data structure **(الزامی)** | فایل `.json` معتبر با [ساختار JSON اکستنشن](/json-extension-schema) که ساختار پنل را تعریف می‌کند. |
 | Panel locations **(الزامی)** | حداقل یکی از Deal details، Person details، Organization details. در صفحه‌ای که پلاگین Custom panel دارد، JSON panel اضافه نمی‌شود. |
 
 ## هنوز مستند نشده {#open}
 
 > [!WARNING]
-> قرارداد فنی JSON panel هنوز در منبع فنی نیامده و در این داک حدس زده نمی‌شود: قالب «JSON data structure»، اینکه دیدار کی و با چه پارامترهایی API endpoint را برای گرفتن داده‌ی پنل صدا می‌زند، و قالب پاسخی که endpoint باید برگرداند. برای همین این صفحه تمپلیت کد ندارد. تا وقتی این قرارداد منتشر نشده، برای نمایش داده‌ی سفارشی در صفحه‌ی جزئیات از [Custom panel](/custom-panels) استفاده کن که قراردادش کامل است.
+> مثل [JSON modal](/json-modals#open)، قرارداد `extension.load` نمی‌گوید endpoint پنل چطور به Runtime Token می‌رسد؛ اگر برای ساختن داده‌ی پنل به API دیدار نیاز داری، این بخش را با تیم فنی تأیید کن.
 
 ## بعد از این بخوان {#read-next}
 
+- [ساختار JSON اکستنشن](/json-extension-schema)
 - [Custom panel](/custom-panels)
 - [مرور اکستنشن‌ها](/app-extensions)

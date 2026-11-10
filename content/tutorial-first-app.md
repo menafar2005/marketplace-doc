@@ -124,11 +124,21 @@ app.get("/didar/callback", async (req, res) => {
 
 حالا پلاگین نصب می‌شود. قدم بعدی این است که وقتی کاربر از آن استفاده می‌کند، سرور تو بفهمد چه کسی، کجا و روی کدام رکورد آن را اجرا کرده، و اجازه‌ی کار با داده را بگیرد.
 
-هر بار که کاربر فرم «ایجاد جلسه» را ثبت می‌کند، دیدار آدرسی را که برای اکستنشن ثبت کرده‌ای صدا می‌زند و یک `launchCode` در query می‌گذارد:
+هر بار که کاربر فرم «ایجاد جلسه» را ثبت می‌کند، دیدار آدرسی را که برای اکستنشن ثبت کرده‌ای با `POST` صدا می‌زند. بدنه‌ی JSON رویداد `extension.submit` و مقادیر فرم (`values`) را دارد، و یک `launchCode` در query است:
 
 ```http title="درخواستی که از دیدار می‌رسد"
-GET https://YOUR_HOST/didar/launch?launchCode=ONE_TIME_CODE
+POST https://YOUR_HOST/didar/launch?launchCode=ONE_TIME_CODE
+Content-Type: application/json
+
+{
+  "event": "extension.submit",
+  "runtimeId": "9de20339-d819-481a-a90c-79f66692413d",
+  "context": { "location": 2, "locale": "fa", "entityId": "704e1533-cb4b-42d7-895d-ef71ff32ba5b" },
+  "values": { "inviterEmail": "sales@example.com", "meetingDescription": "جلسه معرفی محصول" }
+}
 ```
+
+قالب بدنه و پاسخ را [قرارداد endpoint اکستنشن JSON](/api-app-endpoints#json-extension) تعیین می‌کند. قرارداد منتشرشده‌ی تیم فنی نمی‌گوید `launchCode` در این درخواست کجا می‌آید؛ این آموزش فرض می‌کند مثل بقیه‌ی اکستنشن‌ها در query است ([هنوز مستند نشده](/json-modals#open)).
 
 این کد عمداً بی‌ارزش است: یک‌بارمصرف است، زود منقضی می‌شود و بدون Client secret به هیچ کاری نمی‌آید. سرور تو آن را همراه credentialها به مارکت‌پلیس می‌فرستد و در جواب **Runtime Token** و **Runtime Context** این اجرا را می‌گیرد. این کد را به `server.js` اضافه کن:
 
@@ -159,7 +169,7 @@ function allowDidar(res) {
   res.set({
     "Access-Control-Allow-Origin": DIDAR_ORIGIN,
     Vary: "Origin",
-    "Access-Control-Allow-Methods": "GET, OPTIONS",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
   });
 }
@@ -169,23 +179,26 @@ app.options("/didar/launch", (req, res) => {
   res.sendStatus(204);
 });
 
-app.get("/didar/launch", async (req, res) => {
+app.post("/didar/launch", express.json(), async (req, res) => {
   allowDidar(res);
+  if (req.body?.event !== "extension.submit") {
+    return res.json({ ok: false, message: "درخواست ناشناخته است." });
+  }
 
   const run = await exchangeLaunchCode(req.query.launchCode);
   if (!run) {
-    return res.json({ succeeded: false, message: "این اجرا معتبر نیست؛ فرم را دوباره باز کن." });
+    return res.json({ ok: false, message: "این اجرا معتبر نیست؛ فرم را دوباره باز کن." });
   }
   const { accessToken, context } = run;
 
-  // فقط به context اعتماد کن: کاربر روی کدام رکورد است و فرم چه مقادیری دارد
+  // فقط به Runtime Context اعتماد کن: کاربر روی کدام رکورد است (نه به context بدنه که مرورگر فرستاده)
   if (context.entityType !== "deal" || context.entityIds.length !== 1) {
-    return res.json({ succeeded: false, message: "این فرم فقط روی یک معامله کار می‌کند." });
+    return res.json({ ok: false, message: "این فرم فقط روی یک معامله کار می‌کند." });
   }
   const dealId = context.entityIds[0];
 
   // قدم ۴ اینجا اضافه می‌شود
-  res.json({ succeeded: true, message: `اجرا روی معامله‌ی ${dealId} رسید.` });
+  res.json({ ok: true, message: `اجرا روی معامله‌ی ${dealId} رسید.` });
 });
 
 app.listen(3000, () => console.log("Meet روی پورت 3000"));
@@ -204,15 +217,15 @@ app.listen(3000, () => console.log("Meet روی پورت 3000"));
 
 تا اینجا پلاگین می‌داند کاربر روی کدام معامله است و توکنی دارد که اجازه‌ی کار روی همان معامله را می‌دهد. حالا نوبت کار اصلی است: ساختن جلسه و ثبت لینکش در دیدار.
 
-مقادیری که کاربر در فرم وارد کرده در `context.payload` هستند، با همان keyهایی که در قدم ۵ برای فرم تعریف می‌کنی. این مقادیر ورودی کاربرند، پس پیش از استفاده دوباره چکشان کن، حتی اگر فرم دیدار هم آن‌ها را چک کرده باشد. بعد جلسه را بساز و با Runtime Token یک یادداشت روی معامله ثبت کن.
+مقادیری که کاربر در فرم وارد کرده در `values` بدنه‌ی درخواست هستند، با همان keyهایی که در قدم ۵ برای فرم تعریف می‌کنی. این مقادیر ورودی کاربرند، پس پیش از استفاده دوباره چکشان کن، حتی اگر فرم دیدار هم آن‌ها را چک کرده باشد؛ اگر مقداری نامعتبر بود، خطایش را در `errors` با همان key برگردان تا دیدار آن را کنار همان فیلد نشان بدهد. بعد جلسه را بساز و با Runtime Token یک یادداشت روی معامله ثبت کن.
 
 خط `// قدم ۴ اینجا اضافه می‌شود` و `res.json` بعدش را با این کد عوض کن:
 
 ```js title="server.js: منطق و داده"
   // ۱. ورودی فرم را دوباره validate کن
-  const { inviterEmail, meetingDescription } = context.payload;
+  const { inviterEmail, meetingDescription } = req.body.values ?? {};
   if (!inviterEmail || inviterEmail.length > 320 || !inviterEmail.includes("@")) {
-    return res.json({ succeeded: false, message: "ایمیل دعوت‌کننده معتبر نیست." });
+    return res.json({ ok: false, message: "بعضی از مقادیر معتبر نیستند.", errors: { inviterEmail: "ایمیل دعوت‌کننده معتبر نیست." } });
   }
 
   // ۲. کار اصلی پلاگین
@@ -234,11 +247,11 @@ app.listen(3000, () => console.log("Meet روی پورت 3000"));
   const note = await r.json();
   if (!r.ok || !note.succeeded) {
     console.error("note create failed", note.error?.code, note.meta?.traceId);
-    return res.json({ succeeded: false, message: "جلسه ساخته شد ولی ثبت یادداشت ناموفق بود." });
+    return res.json({ ok: false, message: "جلسه ساخته شد ولی ثبت یادداشت ناموفق بود." });
   }
 
   // ۴. پیام نهایی که دیدار به کاربر نشان می‌دهد
-  res.json({ succeeded: true, message: "جلسه ساخته شد و لینکش در یادداشت‌های معامله ثبت شد.", data: { url: meetingUrl } });
+  res.json({ ok: true, message: "جلسه ساخته شد و لینکش در یادداشت‌های معامله ثبت شد.", close: true });
 });
 
 // جای این تابع، سرویس جلسه‌ی واقعی خودت را صدا بزن
@@ -251,7 +264,7 @@ async function createMeeting(inviterEmail, description) {
 
 - **یادداشت با مدل `Activity` ساخته می‌شود**؛ `ActivityTypeId` برای یادداشت GUID خالی است، `IsDone` باید `true` باشد و متن در `ResultNote` می‌رود. نام فیلدها به حروف بزرگ و کوچک حساس‌اند. [API ساخت یادداشت](/api-activities#note-create)
 - **`DealId` باید همان معامله‌ی context باشد.** اگر شناسه‌ی معامله‌ی دیگری بفرستی، مارکت‌پلیس با `403` و کد `RUNTIME_ENTITY_ACCESS_DENIED` رد می‌کند.
-- **جواب endpoint به فرم JSON یک قرارداد ثابت دارد**: `succeeded` الزامی است و `message` همان متنی است که کاربر در دیدار می‌بیند. [قرارداد پاسخ JSON modal](/api-app-endpoints#json-response)
+- **جواب endpoint به فرم JSON یک قرارداد ثابت دارد**: `ok` الزامی است، `message` همان متنی است که کاربر در دیدار می‌بیند، `errors` خطای هر فیلد را با key همان فیلد می‌گوید و `close` modal را می‌بندد. [قرارداد پاسخ JSON modal](/api-app-endpoints#json-response)
 
 حالا سرور را اجرا کن تا دیدار بتواند صدایش بزند:
 
@@ -263,7 +276,7 @@ node --env-file=.env server.js
 
 سرور آماده است، ولی کاربر هنوز هیچ‌جای دیدار چیزی از پلاگین نمی‌بیند. اکستنشن همان چیزی است که پلاگین را داخل دیدار می‌آورد. برای Meet از **JSON modal** استفاده می‌کنیم: فرمی که ظاهرش را دیدار می‌سازد و تو فقط تعریفش را می‌دهی. این یعنی برای این پلاگین هیچ HTML و CSSی نمی‌نویسی.
 
-تعریف فرم یک فایل JSON است. هر جزء فرم یک `key` دارد و مقدارش با همان key در `context.payload` به سرور تو می‌رسد؛ برای همین keyهای این فایل باید با کد قدم ۴ یکی باشند:
+تعریف فرم یک فایل JSON با [ساختار JSON اکستنشن](/json-extension-schema) است. هر جزء فرم یک `key` دارد و مقدارش با همان key در `values` به سرور تو می‌رسد؛ برای همین keyهای این فایل باید با کد قدم ۴ یکی باشند. متن‌ها می‌توانند رشته‌ی ساده یا شیء سه‌زبانه (`fa`، `en`، `ar`) باشند:
 
 ```json title="form.json"
 {
@@ -388,7 +401,7 @@ function allowDidar(res) {
   res.set({
     "Access-Control-Allow-Origin": DIDAR_ORIGIN,
     Vary: "Origin",
-    "Access-Control-Allow-Methods": "GET, OPTIONS",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
   });
 }
@@ -398,20 +411,21 @@ app.options("/didar/launch", (req, res) => {
   res.sendStatus(204);
 });
 
-app.get("/didar/launch", async (req, res) => {
+app.post("/didar/launch", express.json(), async (req, res) => {
   allowDidar(res);
+  if (req.body?.event !== "extension.submit") return res.json({ ok: false, message: "درخواست ناشناخته است." });
   const run = await exchangeLaunchCode(req.query.launchCode);
-  if (!run) return res.json({ succeeded: false, message: "این اجرا معتبر نیست؛ فرم را دوباره باز کن." });
+  if (!run) return res.json({ ok: false, message: "این اجرا معتبر نیست؛ فرم را دوباره باز کن." });
   const { accessToken, context } = run;
   if (context.entityType !== "deal" || context.entityIds.length !== 1) {
-    return res.json({ succeeded: false, message: "این فرم فقط روی یک معامله کار می‌کند." });
+    return res.json({ ok: false, message: "این فرم فقط روی یک معامله کار می‌کند." });
   }
   const dealId = context.entityIds[0];
 
   // ۴. منطق و داده
-  const { inviterEmail, meetingDescription } = context.payload;
+  const { inviterEmail, meetingDescription } = req.body.values ?? {};
   if (!inviterEmail || inviterEmail.length > 320 || !inviterEmail.includes("@")) {
-    return res.json({ succeeded: false, message: "ایمیل دعوت‌کننده معتبر نیست." });
+    return res.json({ ok: false, message: "بعضی از مقادیر معتبر نیستند.", errors: { inviterEmail: "ایمیل دعوت‌کننده معتبر نیست." } });
   }
   const meetingUrl = await createMeeting(inviterEmail, meetingDescription);
   const r = await fetch("https://marketplace.didar.me/api/v1/notes", {
@@ -424,9 +438,9 @@ app.get("/didar/launch", async (req, res) => {
   const note = await r.json();
   if (!r.ok || !note.succeeded) {
     console.error("note create failed", note.error?.code, note.meta?.traceId);
-    return res.json({ succeeded: false, message: "جلسه ساخته شد ولی ثبت یادداشت ناموفق بود." });
+    return res.json({ ok: false, message: "جلسه ساخته شد ولی ثبت یادداشت ناموفق بود." });
   }
-  res.json({ succeeded: true, message: "جلسه ساخته شد و لینکش در یادداشت‌های معامله ثبت شد.", data: { url: meetingUrl } });
+  res.json({ ok: true, message: "جلسه ساخته شد و لینکش در یادداشت‌های معامله ثبت شد.", close: true });
 });
 
 async function createMeeting(inviterEmail, description) {

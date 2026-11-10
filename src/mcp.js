@@ -4,6 +4,7 @@ import { pages, spec, meta } from "./generated/content.js";
 import { searchDocs } from "./search.js";
 import { scaffoldPlugin } from "./scaffold.js";
 import { validatePlugin } from "./validate.js";
+import { validateJsonExtension } from "./json-extension.js";
 
 const SUPPORTED = ["2025-06-18", "2025-03-26", "2024-11-05"];
 const bySlug = new Map(pages.map((p) => [p.slug, p]));
@@ -18,7 +19,7 @@ const ANATOMY = [
   { part: 2, name: "مسیر نصب (Callback URL)", what: "ادمین با لینک نصب، پلاگین را روی BizDomain خودش تأیید می‌کند؛ Callback URL پلاگین code را با CompleteInstallation کامل می‌کند", rules: ["state یک‌بارمصرف بساز و در callback تطبیق بده", "نتیجه را با BizDomainId ذخیره کن", "ApiKey فقط رمزگذاری‌شده"], page: "installation-authorization" },
   { part: 3, name: "مسیر اجرا (launch)", what: "دیدار با ?launchCode= آدرس اکستنشن را صدا می‌زند؛ backend کد را با /api/v1/runtime/token به Runtime Token و Runtime Context تبدیل می‌کند", rules: ["launchCode یک‌بارمصرف است؛ ذخیره یا log نکن", "فقط به context برگشتی اعتماد کن", "payload را در backend validate کن"], page: "runtime-token" },
   { part: 4, name: "منطق و داده (API پروکسی)", what: "خواندن و نوشتن معامله، پرونده، شخص، شرکت، فعالیت و یادداشت از marketplace.didar.me با Bearer Runtime Token", rules: ["فقط در محدوده‌ی scope و entityIds همان اجرا", "بدنه دقیقاً مثل API دیدار؛ casing را حفظ کن", "Runtime Token را برای اجرای بعدی reuse نکن"], page: "api-concepts" },
-  { part: 5, name: "اکستنشن‌ها", what: "Links، JSON modal، JSON panel، Custom modal، Custom panel و App settings در Locationهای دیدار", rules: ["CORS فقط برای origin دقیق دیدار", "Iframe URL فقط HTTPS", "ظرفیت: ۳ اکستنشن منو در هر Location، ۱ پنل در هر صفحه‌ی جزئیات"], page: "app-extensions" },
+  { part: 5, name: "اکستنشن‌ها", what: "Links، JSON modal، JSON panel، Custom modal، Custom panel و App settings در Locationهای دیدار", rules: ["CORS فقط برای origin دقیق دیدار", "Iframe URL فقط HTTPS", "ظرفیت: ۳ اکستنشن منو در هر Location، ۱ پنل در هر صفحه‌ی جزئیات", "اکستنشن JSON با ساختار JSON نسخه‌ی ۱ (schemaVersion 1) تعریف می‌شود و endpointش extension.load و extension.submit را با پاسخ ok/message/errors/close جواب می‌دهد", "صفحه‌ی iframe برای toast، confirm و بستن popup از Marketplace SDK استفاده می‌کند"], page: "app-extensions" },
 ];
 
 const TOOLS = [
@@ -100,7 +101,46 @@ const TOOLS = [
     name: "list_extensions",
     description: "نوع محتوا، surface و locationهای اکستنشن، و انواع صفحه‌ی تنظیمات.",
     inputSchema: { type: "object", properties: {} },
-    run: (_a, o) => json({ developerHubTypes: spec.platform.developerHubExtensionTypes, capacity: spec.platform.extensionCapacity, contentTypes: spec.platform.extensionContentTypes, surfaceTypes: spec.platform.extensionSurfaceTypes, locations: spec.platform.extensionLocations, settingsPageTypes: spec.platform.settingsPageTypes, runtimeContextFields: spec.platform.runtimeContextFields, docs: [`${o}/app-extensions`, `${o}/app-settings`, `${o}/runtime-token`] }),
+    run: (_a, o) => json({ developerHubTypes: spec.platform.developerHubExtensionTypes, capacity: spec.platform.extensionCapacity, contentTypes: spec.platform.extensionContentTypes, surfaceTypes: spec.platform.extensionSurfaceTypes, locations: spec.platform.extensionLocations, settingsPageTypes: spec.platform.settingsPageTypes, runtimeContextFields: spec.platform.runtimeContextFields, urlParams: spec.platform.extensionUrlParams, jsonExtensionEvents: spec.platform.jsonExtensionEvents, docs: [`${o}/app-extensions`, `${o}/app-settings`, `${o}/runtime-token`, `${o}/api-app-endpoints#url-params`, `${o}/api-app-endpoints#json-extension`] }),
+  },
+  {
+    name: "get_json_extension_schema",
+    description:
+      "مرجع ساختار اکستنشن JSON دیدار نسخه‌ی ۱ (برای JSON modal و JSON panel): فایل JSON Schema ماشین‌خوان، نمونه‌ی کامل رسمی، قواعد و قرارداد endpoint (extension.load و extension.submit). پیش از نوشتن form.json یا panel.json بخوان.",
+    inputSchema: { type: "object", properties: { include: { type: "string", enum: ["all", "schema", "sample", "rules"], default: "all" } } },
+    run: (a, o) => {
+      const rules = {
+        rootRequired: ["schemaVersion (برابر 1)", "layout (form یا details)", "sections (۱ تا ۲۰)"],
+        sections: "هر بخش id یکتا و ۱ تا ۵۰ آیتم دارد",
+        keys: "key هر فیلد در کل ساختار یکتاست؛ مقدار هر فیلد با همین key در values (submit) و data.values (load) جابه‌جا می‌شود",
+        inputTypes: ["text", "textarea", "number", "date", "select", "radio", "checkbox"],
+        displayTypes: ["value", "link", "message", "divider"],
+        conditional: ["key برای ورودی‌ها و value الزامی است", "options برای select و radio الزامی است", "url برای link الزامی و فقط http/https", "text برای message الزامی و غیرخالی"],
+        localizedText: "هر متن: رشته‌ی ساده یا شیء با کلیدهای fa/en/ar؛ fallback: فارسی، انگلیسی، عربی",
+        noUnknownProperties: "هیچ سطحی ویژگی تعریف‌نشده نمی‌پذیرد",
+        endpoint: spec.platform.jsonExtensionEvents,
+      };
+      const out = { docs: `${o}/json-extension-schema`, schemaUrl: `${o}/schemas/didar-json-extension.schema.json`, sampleUrl: `${o}/schemas/didar-json-extension.sample.json` };
+      const inc = a.include || "all";
+      if (inc === "all" || inc === "rules") out.rules = rules;
+      if (inc === "all" || inc === "schema") out.schema = spec.jsonExtension.schema;
+      if (inc === "all" || inc === "sample") out.sample = spec.jsonExtension.sample;
+      return json(out);
+    },
+  },
+  {
+    name: "validate_json_extension",
+    description:
+      "یک فایل اکستنشن JSON (form.json یا panel.json) را با قواعد «ساختار اکستنشن جیسون دیدار نسخه‌ی ۱» چک می‌کند و خطاها را با مسیر دقیق برمی‌گرداند. پیش از آپلود در Developer Hub بزن.",
+    inputSchema: { type: "object", properties: { extension: { type: "object", description: "خود سند JSON اکستنشن" } }, required: ["extension"] },
+    run: (a, o) => json(validateJsonExtension(a.extension, o)),
+  },
+  {
+    name: "get_sdk_reference",
+    description:
+      "مرجع Marketplace SDK (@didar/marketplace-sdk) برای صفحه‌های iframe: نصب، تنظیمات client، متدها، permissionها، actionها، قرارداد postMessage و خطاها. SDK فقط برای Custom UI است؛ اکستنشن JSON و Links به آن نیاز ندارند.",
+    inputSchema: { type: "object", properties: {} },
+    run: (_a, o) => json({ ...spec.platform.sdk, install: "npm install @didar/marketplace-sdk", docs: `${o}/marketplace-sdk`, note: "selectorهای popup را حدس نزن؛ باید از تیم دیدار برای اپ تو فعال شوند. در production targetOrigin دقیق بگذار، نه *." }),
   },
   {
     name: "list_error_codes",

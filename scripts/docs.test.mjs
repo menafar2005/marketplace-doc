@@ -230,3 +230,75 @@ test("node templates parse", async () => {
   const dir = join(root, "templates", "node");
   for (const f of readdirSync(dir)) execSync(`node --check ${JSON.stringify(join(dir, f))}`, { stdio: "pipe" });
 });
+
+test("SDK and JSON extension schema pages render and the schema files are served", async () => {
+  for (const slug of ["marketplace-sdk", "json-extension-schema"]) {
+    const r = await get("/" + slug);
+    assert.equal(r.status, 200, slug);
+  }
+  const sdk = await (await get("/marketplace-sdk")).text();
+  for (const s of ["createDidarMarketplaceSdk", "confirm:show", "didar-marketplace-host", "@didar/marketplace-sdk"]) assert.ok(sdk.includes(s), s);
+  const schema = await get("/schemas/didar-json-extension.schema.json");
+  assert.equal(schema.status, 200);
+  const body = await schema.json();
+  assert.equal(body.title, "Didar Marketplace JSON Extension v1");
+  const sample = await (await get("/schemas/didar-json-extension.sample.json")).json();
+  assert.equal(sample.schemaVersion, 1);
+});
+
+test("JSON extension pages use the new contract (no succeeded/payload, POST CORS)", async () => {
+  for (const slug of ["json-modals", "json-panels", "api-app-endpoints", "tutorial-first-app"]) {
+    const md = pages.find((p) => p.slug === slug).md;
+    assert.ok(!/"succeeded": (true|false),\s*\n\s*"message"/.test(md), `${slug} still uses the old {succeeded, message} form response`);
+    assert.ok(!md.includes('"Access-Control-Allow-Methods": "GET, OPTIONS"') && !md.includes("Access-Control-Allow-Methods: GET, OPTIONS"), `${slug} CORS`);
+  }
+  const ep = pages.find((p) => p.slug === "api-app-endpoints").md;
+  for (const s of ["extension.load", "extension.submit", "didar_runtime_id", "allSelected"]) assert.ok(ep.includes(s), s);
+});
+
+test("extension locations follow the tech team's six locations", () => {
+  assert.deepEqual(spec.platform.extensionLocations.map((l) => l.value), [1, 2, 3, 4, 5, 6]);
+  const ext = pages.find((p) => p.slug === "app-extensions").md;
+  assert.ok(!/Case (list|details)/.test(ext));
+});
+
+test("validate_json_extension accepts the official samples and rejects broken ones", async () => {
+  const { readFileSync } = await import("node:fs");
+  const sample = JSON.parse(readFileSync(join(root, "spec/json-extension/didar-json-extension.sample.json"), "utf8"));
+  const ok = JSON.parse((await call("validate_json_extension", { extension: sample })).content[0].text);
+  assert.equal(ok.valid, true, JSON.stringify(ok.errors));
+  // every json code block on the modal/panel/schema pages that looks like a full extension must be valid
+  for (const slug of ["json-modals", "json-panels", "json-extension-schema", "tutorial-first-app"]) {
+    const md = pages.find((p) => p.slug === slug).md;
+    for (const m of md.matchAll(/```json[^\n]*\n([\s\S]*?)```/g)) {
+      let doc;
+      try { doc = JSON.parse(m[1]); } catch { continue; }
+      if (doc && doc.schemaVersion !== undefined && !doc.$schema) {
+        const r = JSON.parse((await call("validate_json_extension", { extension: doc })).content[0].text);
+        assert.equal(r.valid, true, `${slug}: ${JSON.stringify(r.errors)}`);
+      }
+    }
+  }
+  const bad = JSON.parse((await call("validate_json_extension", { extension: {
+    schemaVersion: 2, layout: "grid", extra: 1,
+    sections: [{ id: "a", items: [
+      { type: "select", key: "x" },
+      { type: "text", key: "x" },
+      { type: "link", url: "javascript:alert(1)" },
+      { type: "message" },
+      { type: "text", key: "t", label: { de: "x" } },
+    ] }, { id: "a", items: [] }],
+  } })).content[0].text);
+  assert.equal(bad.valid, false);
+  const msgs = bad.errors.map((e) => e.path).join(" ");
+  for (const p of ["$.schemaVersion", "$.layout", "$.extra", ".options", "items[1].key", ".url", ".text", "label.de", "$.sections[1].id"]) assert.ok(msgs.includes(p), p);
+});
+
+test("MCP exposes the SDK reference and the JSON extension schema", async () => {
+  const sdk = JSON.parse((await call("get_sdk_reference")).content[0].text);
+  assert.equal(sdk.package, "@didar/marketplace-sdk");
+  assert.ok(sdk.permissions.some((p) => p.permission === "confirm:show"));
+  const sch = JSON.parse((await call("get_json_extension_schema", { include: "rules" })).content[0].text);
+  assert.ok(sch.rules.inputTypes.includes("radio"));
+  assert.ok(sch.schemaUrl.endsWith("/schemas/didar-json-extension.schema.json"));
+});

@@ -246,18 +246,6 @@
       "name": "جزئیات شرکت",
       "entityType": "company",
       "developerHubName": "Organization details"
-    },
-    {
-      "value": 7,
-      "name": "لیست پرونده‌ها",
-      "entityType": "case",
-      "developerHubName": "Case list"
-    },
-    {
-      "value": 8,
-      "name": "جزئیات پرونده",
-      "entityType": "case",
-      "developerHubName": "Case details"
     }
   ],
   "settingsPageTypes": [
@@ -393,5 +381,200 @@
       "field": "payload",
       "desc": "مقادیر فرم JSON که بر اساس keyهای schema جمع‌آوری شده‌اند"
     }
-  ]
+  ],
+  "extensionUrlParams": [
+    {
+      "name": "didar_runtime_id",
+      "desc": "شناسه‌ی نمونه‌ی اکستنشن (RuntimeId)"
+    },
+    {
+      "name": "didar_location",
+      "desc": "محل اجرا؛ همان مقدار Location"
+    },
+    {
+      "name": "didar_locale",
+      "desc": "زبان فعال دیدار: fa، en یا ar"
+    },
+    {
+      "name": "didar_entity_id",
+      "desc": "در صفحه‌ی جزئیات: شناسه‌ی رکورد"
+    },
+    {
+      "name": "didar_entity_ids",
+      "desc": "در اجرای گروهی روی لیست: شناسه‌ی رکوردهای انتخاب‌شده"
+    },
+    {
+      "name": "didar_all_selected",
+      "desc": "در اجرای گروهی: کاربر همه‌ی نتایج را انتخاب کرده است"
+    }
+  ],
+  "jsonExtensionEvents": [
+    {
+      "event": "extension.load",
+      "when": "باز شدن فرم یا نمایش پنل، اگر loadOnOpen برابر true باشد",
+      "response": "{ ok: true, data: { values: { <key>: <value> } } }"
+    },
+    {
+      "event": "extension.submit",
+      "when": "ثبت فرم",
+      "response": "{ ok, message, errors?: { <key>: <پیام خطا> }, close? }"
+    }
+  ],
+  "sdk": {
+    "package": "@didar/marketplace-sdk",
+    "factory": "createDidarMarketplaceSdk({ appId, targetOrigin, timeoutMs?, confirmTimeoutMs?, parentWindow? })",
+    "browserGlobal": "DidarMarketplaceSdk.create(...)",
+    "defaults": {
+      "timeoutMs": 10000,
+      "confirmTimeoutMs": 120000
+    },
+    "messageSource": "didar-marketplace-sdk",
+    "responseSource": "didar-marketplace-host",
+    "protocolVersion": 1,
+    "toastTypes": [
+      "error",
+      "exception",
+      "warning",
+      "success",
+      "message",
+      "info"
+    ],
+    "toastOptions": [
+      "timeOut",
+      "closeButton",
+      "progressBar",
+      "enableHtml"
+    ],
+    "permissions": [
+      {
+        "permission": "toast:show",
+        "actions": [
+          "toast.show",
+          "toast.error",
+          "toast.warning",
+          "toast.success",
+          "toast.message",
+          "toast.info"
+        ],
+        "use": "نمایش toast"
+      },
+      {
+        "permission": "toast:clear",
+        "actions": [
+          "toast.clear"
+        ],
+        "use": "پاک کردن toast"
+      },
+      {
+        "permission": "popup:open",
+        "actions": [
+          "popup.open"
+        ],
+        "use": "باز کردن popup؛ selector هم باید برای اپ مجاز باشد"
+      },
+      {
+        "permission": "popup:close",
+        "actions": [
+          "popup.close"
+        ],
+        "use": "بستن popup فعلی"
+      },
+      {
+        "permission": "popup:closeAll",
+        "actions": [
+          "popup.closeAll"
+        ],
+        "use": "بستن همه‌ی popupها"
+      },
+      {
+        "permission": "popup:centerize",
+        "actions": [
+          "popup.centerize"
+        ],
+        "use": "وسط‌چین کردن popup"
+      },
+      {
+        "permission": "popup:isOpen",
+        "actions": [
+          "popup.isOpen"
+        ],
+        "use": "بررسی باز بودن popup؛ selector هم باید برای اپ مجاز باشد"
+      },
+      {
+        "permission": "confirm:show",
+        "actions": [
+          "confirm.show"
+        ],
+        "use": "نمایش confirm message داخلی دیدار"
+      }
+    ],
+    "methods": [
+      {
+        "method": "toast.success | toast.error | toast.warning | toast.message | toast.info",
+        "signature": "(title, body?, options?) => Promise<void>"
+      },
+      {
+        "method": "toast.show",
+        "signature": "(type, title, body?, options?) => Promise<void>"
+      },
+      {
+        "method": "toast.clear",
+        "signature": "(toastId?) => Promise<void>"
+      },
+      {
+        "method": "popup.open",
+        "signature": "(selector, { payload?, width?, height?, preventEscape? }?) => Promise<void>"
+      },
+      {
+        "method": "popup.close",
+        "signature": "(result?) => Promise<void>"
+      },
+      {
+        "method": "popup.closeAll",
+        "signature": "() => Promise<void>"
+      },
+      {
+        "method": "popup.centerize",
+        "signature": "(width?, height?) => Promise<void>"
+      },
+      {
+        "method": "popup.isOpen",
+        "signature": "(selector) => Promise<boolean>"
+      },
+      {
+        "method": "confirm.show",
+        "signature": "(message | { message?, description?, yes?, no?, checkbox? }) => Promise<{ confirmed, checkbox? }>"
+      },
+      {
+        "method": "request",
+        "signature": "(action, payload?) => Promise<response payload>"
+      }
+    ],
+    "errors": [
+      {
+        "error": "Didar marketplace access denied",
+        "meaning": "اپ مجاز نیست یا backend دسترسی را رد کرده است"
+      },
+      {
+        "error": "Didar marketplace origin denied",
+        "meaning": "دامنه‌ی اپ در فهرست originهای مجاز نیست"
+      },
+      {
+        "error": "Didar marketplace app denied",
+        "meaning": "مقدار appId معتبر نیست"
+      },
+      {
+        "error": "Didar marketplace permission denied: <permission>",
+        "meaning": "اپ permission لازم را ندارد"
+      },
+      {
+        "error": "Didar marketplace popup selector denied",
+        "meaning": "selector ارسالی برای اپ مجاز نیست"
+      },
+      {
+        "error": "Didar marketplace request timed out",
+        "meaning": "دیدار در زمان مشخص پاسخ نداده است"
+      }
+    ]
+  }
 }

@@ -92,17 +92,28 @@ export async function proxy(accessToken, method, path, body) {
 
 function serverJs(extension) {
   const launch = {
-    json: `    // JSON extension: خروجی باید { succeeded, message, data } باشد (toast دیدار)
-    const { context, accessToken } = await exchangeLaunchCode(req.query.launchCode);
-    if (context.target !== "extension") return res.status(400).json({ succeeded: false, message: "target نامعتبر" });
-    const payload = context.payload ?? {}; // untrusted: دوباره validate کن
-    const dealId = context.entityIds?.[0]; // فقط از context، نه از query
+    json: `    // JSON extension: دیدار با POST و بدنه‌ی { event, runtimeId, context, values } صدا می‌زند
+    // پاسخ: { ok, message, errors?, close? } و برای extension.load: { ok: true, data: { values } }
+    const { event, values } = req.body ?? {};
+    if (event === "extension.load") return res.json({ ok: true, data: { values: {} } }); // مقدار اولیه با key فیلدها
+    if (event !== "extension.submit") return res.json({ ok: false, message: "درخواست ناشناخته است." });
+    // values ورودی کاربر است: دوباره validate کن و خطای هر فیلد را با key همان فیلد برگردان
+    // if (!values?.subject) return res.json({ ok: false, message: "بعضی از مقادیر معتبر نیستند.", errors: { subject: "الزامی است." } });
+    const { context, accessToken } = await exchangeLaunchCode(req.query.launchCode); // [فرض: launchCode در query؛ با تیم فنی تأیید شود]
+    if (context.target !== "extension") return res.json({ ok: false, message: "اجرای نامعتبر." });
+    const dealId = context.entityIds?.[0]; // فقط از Runtime Context، نه از context بدنه
     // نمونه: const deal = await proxy(accessToken, "GET", \`/api/v1/deals/\${dealId}\`);
-    res.json({ succeeded: true, message: "انجام شد.", data: { dealId, received: Object.keys(payload) } });`,
+    res.json({ ok: true, message: "انجام شد.", close: true });`,
     iframe: `    const { context } = await exchangeLaunchCode(req.query.launchCode);
     if (context.target !== "extension") return res.status(400).send("bad target");
     // پس از exchange یک session کوتاه برای UI خودت بساز؛ Runtime Token را در localStorage نگذار
-    res.type("html").send("<!doctype html><meta charset=utf-8><h1>اپ شما</h1>");`,
+    // برای toast، confirm و بستن popup دیدار از داخل iframe از Marketplace SDK (@didar/marketplace-sdk) استفاده کن
+    res.type("html").send(\`<!doctype html><meta charset=utf-8><h1>اپ شما</h1>
+<script src="https://cdn.didar.me/marketplace-sdk/v1/didar-marketplace-sdk.min.js"></script>
+<script>
+  // [appId از دیدار؛ آدرس CDN پس از انتشار رسمی اعلام می‌شود]
+  const didar = DidarMarketplaceSdk.create({ appId: "[APP_ID]", targetOrigin: "https://app.didar.me" });
+</script>\`);`,
     link: `    const { context } = await exchangeLaunchCode(req.query.launchCode);
     if (context.target !== "extension") return res.status(400).send("bad target");
     res.type("html").send("<!doctype html><meta charset=utf-8><h1>اپ شما</h1>");`,
@@ -122,7 +133,7 @@ const allowed = (process.env.ALLOWED_ORIGINS || "https://app.didar.me").split(",
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (origin && allowed.includes(origin)) {
-    res.set({ "Access-Control-Allow-Origin": origin, Vary: "Origin", "Access-Control-Allow-Methods": "GET, OPTIONS", "Access-Control-Allow-Headers": "Content-Type" });
+    res.set({ "Access-Control-Allow-Origin": origin, Vary: "Origin", "Access-Control-Allow-Methods": "${extension === "json" ? "POST" : "GET"}, OPTIONS", "Access-Control-Allow-Headers": "Content-Type" });
   }
   if (req.method === "OPTIONS") return res.sendStatus(204);
   next();
@@ -154,13 +165,13 @@ async function saveInstallation(_install) {
 }
 
 // ---- ۴/۵. اجرای اکستنشن ----
-app.get("/api/launch", async (req, res) => {
+app.${extension === "json" ? "post" : "get"}("/api/launch", async (req, res) => {
   try {
 ${launch}
   } catch (e) {
     // 401/410: کاربر باید اکستنشن را دوباره اجرا کند؛ token قدیمی reuse نمی‌شود
     console.error("launch failed", e.status, e.message, e.traceId);
-    res.status(e.status || 502).json({ succeeded: false, message: "اجرای اپ ناموفق بود." });
+    res.status(e.status || 502).json(${extension === "json" ? '{ ok: false, message: "اجرای اپ ناموفق بود." }' : '{ error: "اجرای اپ ناموفق بود." }'});
   }
 });
 

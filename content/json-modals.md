@@ -3,7 +3,7 @@ title: JSON modal
 section: start
 order: 22
 lead: JSON modal فرمی است که دیدار از روی یک فایل JSON می‌سازد. کاربر آن را از منوی عملیات باز می‌کند، پر می‌کند و ثبت می‌کند؛ پلاگین تو کار را انجام می‌دهد و نتیجه را برمی‌گرداند و دیدار پیامش را نشان می‌دهد. تو برای این فرم هیچ HTML و CSSی نمی‌نویسی. این صفحه ساختار فرم، تبادل داده هنگام ثبت، قرارداد پاسخ و تمپلیت کدش را توضیح می‌دهد.
-description: اکستنشن JSON modal در دیدار؛ کاربرد، جای نمایش، ساختار schema فرم، افزودن در Developer Hub، تبادل داده هنگام submit، قرارداد پاسخ، CORS و تمپلیت کد Node.js، Python، PHP و C#.
+description: اکستنشن JSON modal در دیدار؛ کاربرد، جای نمایش، ساختار schema فرم (نسخه‌ی ۱)، افزودن در Developer Hub، رویدادهای extension.load و extension.submit، قرارداد پاسخ ok/message/errors/close، CORS و تمپلیت کد Node.js، Python، PHP و C#.
 ---
 
 ## JSON modal چیست؟ {#what}
@@ -31,23 +31,23 @@ JSON modal برای کارهایی مناسب است که با یک فرم سا�
 
 ## ساختار فرم (schema) {#schema}
 
-فرم با یک فایل JSON تعریف می‌شود که در Developer Hub آپلود می‌کنی. همه‌ی متن‌هایی که کاربر می‌بیند دوزبانه‌اند (`fa` و `en`)، چون دیدار آن‌ها را به زبان کاربر نشان می‌دهد.
+فرم با یک فایل JSON تعریف می‌شود که در Developer Hub آپلود می‌کنی؛ برای فرم، `layout` برابر `form` است. مرجع کامل این ساختار (همه‌ی فیلدها، انواع آیتم، محدودیت‌ها و فایل JSON Schema ماشین‌خوان) در صفحه‌ی [ساختار JSON اکستنشن](/json-extension-schema) است. خلاصه‌اش:
 
 | کلید | توضیح |
 | --- | --- |
-| `schemaVersion` | نسخه‌ی قالب schema؛ در نمونه `1`. |
-| `layout` | نوع چیدمان؛ در نمونه `form`. |
+| `schemaVersion` | **الزامی.** نسخه‌ی قالب؛ در نسخه‌ی فعلی `1`. |
+| `layout` | **الزامی.** برای فرم قابل ثبت `form`. |
 | `title`، `description` | عنوان و توضیح بالای فرم. |
-| `loadOnOpen` | در نمونه `false`. |
-| `sections[]` | بخش‌های فرم؛ هرکدام `id`، `title` و `items[]` دارد. |
-| `sections[].items[]` | اجزای فرم. هر جزء `type`، `key` و `label` دارد و می‌تواند `required`، `maxLength` و `defaultValue` داشته باشد. |
+| `loadOnOpen` | اگر `true` باشد، دیدار هنگام باز شدن فرم مقدارهای اولیه را از endpoint تو می‌گیرد ([extension.load](/api-app-endpoints#json-load)). |
+| `sections[]` | **الزامی.** ۱ تا ۲۰ بخش؛ هرکدام `id` یکتا و ۱ تا ۵۰ آیتم در `items[]` دارد. |
+| `sections[].items[]` | اجزای فرم. ورودی‌ها: `text`، `textarea`، `number`، `date`، `select`، `radio`، `checkbox`. نمایشی‌ها: `value`، `link`، `message`، `divider`. |
 | `submit` | دکمه‌ی ثبت: `label`، `closeOnSuccess` و `successMessage`. |
 
-نوع اجزایی که در نمونه‌ی رسمی آمده‌اند: `text`، `textarea` و `checkbox`.
+همه‌ی متن‌هایی که کاربر می‌بیند می‌توانند رشته‌ی ساده یا شیء سه‌زبانه (`fa`، `en`، `ar`) باشند؛ دیدار آن‌ها را به زبان فعال کاربر نشان می‌دهد و اگر ترجمه‌ی آن زبان نباشد، به‌ترتیب از فارسی، انگلیسی و عربی استفاده می‌کند. [متن‌های سه‌زبانه](/json-extension-schema#localized-text)
 
-مهم‌ترین کلید هر جزء **`key`** است. وقتی کاربر فرم را ثبت می‌کند، مقدار هر جزء با همان `key` در `context.payload` به پلاگین تو می‌رسد. پس keyها را مثل نام فیلدهای یک API انتخاب کن: یکتا، ثابت و بدون فاصله، چون کد backend تو به آن‌ها وابسته است.
+مهم‌ترین کلید هر جزء ورودی **`key`** است. وقتی کاربر فرم را ثبت می‌کند، مقدار هر جزء با همان `key` در `values` بدنه‌ی درخواست به پلاگین تو می‌رسد، و خطایی که برای همان `key` برگردانی کنار همان فیلد نمایش داده می‌شود. پس keyها را مثل نام فیلدهای یک API انتخاب کن: در کل فرم یکتا، ثابت و بدون فاصله، چون کد backend تو به آن‌ها وابسته است.
 
-این نمونه‌ی رسمی فرمی برای ساختن جلسه است:
+این نمونه فرمی برای ساختن جلسه است:
 
 ```json title="form.json"
 {
@@ -104,13 +104,15 @@ JSON modal برای کارهایی مناسب است که با یک فرم سا�
 }
 ```
 
+نمونه‌ی کامل‌تر با همه‌ی انواع آیتم (`select`، `radio`، `number`، `date`، `message`، `value`، `link` و `divider`): [نمونه‌ی کامل](/json-extension-schema#full-example)
+
 ## قدم‌های ساخت {#create}
 
 1. **کاربرد را مشخص کن.** کاربر از کدام صفحه و روی چه رکوردی این فرم را باز می‌کند؟ جواب این سؤال Locationها و `entityType`ی را که backend باید انتظار داشته باشد مشخص می‌کند.
 2. **اجزای فرم را انتخاب کن** و برای هرکدام یک `key` یکتا بگذار.
-3. **schema را بنویس** و مطمئن شو JSON معتبر است؛ Developer Hub فایل نامعتبر را نمی‌پذیرد.
-4. **endpoint را بساز** که `launchCode` را به token تبدیل کند، `payload` را validate کند، کار را انجام دهد و پاسخ JSON برگرداند.
-5. **CORS را برای origin دیدار باز کن.**
+3. **schema را بنویس** و پیش از آپلود با [فایل JSON Schema](/json-extension-schema#machine-readable) چکش کن؛ Developer Hub فایل نامعتبر را نمی‌پذیرد و دیدار ساختار نامعتبر را رندر نمی‌کند.
+4. **endpoint را بساز** که درخواست `POST` با بدنه‌ی JSON بپذیرد: برای `extension.submit` مقدارهای `values` را validate کند، کار را انجام دهد و پاسخ JSON برگرداند؛ اگر `loadOnOpen` روشن است، `extension.load` را هم جواب بدهد.
+5. **CORS را برای origin دیدار باز کن** (برای `POST`).
 6. **اکستنشن را در Developer Hub اضافه کن.**
 
 ### افزودن در Developer Hub {#add}
@@ -126,69 +128,87 @@ JSON modal برای کارهایی مناسب است که با یک فرم سا�
 | JSON schema **(الزامی)** | فایل `.json` معتبر. فایل نامعتبر پذیرفته نمی‌شود. |
 | Locations **(الزامی)** | حداقل یک Location؛ حداکثر ۳ اکستنشن منو در هر Location. |
 
-## وقتی کاربر فرم را ثبت می‌کند {#submit}
+## وقتی فرم باز و ثبت می‌شود {#submit}
 
-1. کاربر فرم را پر می‌کند و دکمه‌ی ثبت را می‌زند.
-2. دیدار API endpoint تو را با یک `launchCode` تازه صدا می‌زند. این درخواست با **fetch مرورگر** فرستاده می‌شود، نه از سرور دیدار؛ برای همین CORS لازم است.
-3. سرور تو کد را به [Runtime Token](/runtime-token) تبدیل می‌کند. مقادیر فرم در `context.payload` و رکوردها در `context.entityIds` هستند:
+دیدار endpoint تو را با `POST` و بدنه‌ی JSON صدا می‌زند. این درخواست با **fetch مرورگر** از داخل دیدار فرستاده می‌شود، نه از سرور دیدار؛ برای همین [CORS](#cors) لازم است. فیلد `event` می‌گوید درخواست برای چیست:
 
-```json title="context.payload"
+| `event` | کی | چه برگردانی |
+| --- | --- | --- |
+| `extension.load` | هنگام باز شدن فرم، فقط اگر `loadOnOpen` برابر `true` باشد | مقدارهای اولیه‌ی فیلدها در `data.values` |
+| `extension.submit` | وقتی کاربر دکمه‌ی ثبت را می‌زند | نتیجه‌ی ثبت: `ok`، `message`، و در خطا `errors` |
+
+```json title="بدنه‌ی extension.submit"
 {
-  "customerEmail": "customer@example.com",
-  "inviterEmail": "sales@example.com",
-  "meetingDescription": "جلسه معرفی محصول",
-  "isUsePersonEmail": false
+  "event": "extension.submit",
+  "runtimeId": "9de20339-d819-481a-a90c-79f66692413d",
+  "context": {
+    "location": 2,
+    "locale": "fa",
+    "entityId": "704e1533-cb4b-42d7-895d-ef71ff32ba5b"
+  },
+  "values": {
+    "customerEmail": "customer@example.com",
+    "inviterEmail": "sales@example.com",
+    "meetingDescription": "جلسه معرفی محصول",
+    "isUsePersonEmail": false
+  }
 }
 ```
 
-4. سرور تو `payload` را **دوباره** validate می‌کند (الزامی بودن، نوع، طول، قالب). حتی اگر در schema قواعدی مثل `required` و `maxLength` گذاشته‌ای، `payload` ورودی کاربر است و endpoint تو باید مثل هر API دیگری با آن رفتار کند.
-5. سرور تو کار را انجام می‌دهد و یک پاسخ JSON با قرارداد زیر برمی‌گرداند. دیدار بر اساس `succeeded` و `message` به کاربر پیام نشان می‌دهد.
+1. کاربر فرم را پر می‌کند و دکمه‌ی ثبت را می‌زند. دیدار پیش از ارسال، قواعد schema (مثل `required` و `maxLength`) را در UI چک می‌کند.
+2. دیدار درخواست `extension.submit` را به endpoint تو می‌فرستد. مقدار هر فیلد با همان `key` در `values` است.
+3. سرور تو `values` را **دوباره** validate می‌کند (الزامی بودن، نوع، طول، قالب). اعتبارسنجی UI دیدار جای اعتبارسنجی سمت سرور تو را نمی‌گیرد؛ `values` ورودی کاربر است.
+4. سرور تو کار را انجام می‌دهد (برای کار با داده‌ی دیدار، با [Runtime Token](/runtime-token)) و پاسخ JSON برمی‌گرداند. دیدار بر اساس `ok` و `message` به کاربر پیام نشان می‌دهد، خطای هر فیلد را کنار همان فیلد می‌گذارد و اگر `close` (یا `submit.closeOnSuccess`) بخواهد، modal را می‌بندد.
+
+`context` بدنه می‌گوید کاربر کجاست: `location` محل اجرا، `locale` زبان فعال دیدار (`fa`، `en` یا `ar`)، و در صفحه‌ی جزئیات `entityId`؛ در اجرای گروهی روی لیست به‌جایش `entityIds` می‌آید و اگر کاربر همه‌ی نتایج را انتخاب کرده باشد `allSelected` برابر `true` است. به وجود همه‌ی این فیلدها تکیه نکن؛ فقط مقدارهای مرتبط با محل جاری را بررسی کن. این بدنه از مرورگر می‌آید، پس برای کار با داده‌ی دیدار، شناسه‌ی رکوردها را از Runtime Context بخوان. [قرارداد کامل endpoint](/api-app-endpoints#json-extension)
 
 ### قرارداد پاسخ {#response}
 
 ```json title="موفق"
 {
-  "succeeded": true,
+  "ok": true,
   "message": "جلسه ساخته شد و یادداشت معامله ذخیره شد.",
-  "data": {
-    "dealId": "704e1533-cb4b-42d7-895d-ef71ff32ba5b",
-    "url": "https://meet.google.com/mock-53c79f7df0"
-  }
+  "close": true
 }
 ```
 
-```json title="خطا"
+```json title="ناموفق، با خطای فیلدها"
 {
-  "succeeded": false,
-  "message": "ایمیل دعوت‌کننده معتبر نیست."
+  "ok": false,
+  "message": "بعضی از مقادیر معتبر نیستند.",
+  "errors": {
+    "inviterEmail": "ایمیل دعوت‌کننده معتبر نیست."
+  }
 }
 ```
 
 | فیلد | نوع | توضیح |
 | --- | --- | --- |
-| `succeeded` | boolean | الزامی. نتیجه‌ی عملیات. |
-| `message` | string | پیامی که به کاربر نشان داده می‌شود. در خطا الزامی است؛ آن را برای کاربر بنویس، نه برای برنامه‌نویس. |
-| `data` | object | اختیاری؛ داده‌ی دلخواه پلاگین. |
+| `ok` | boolean | الزامی. نتیجه‌ی عملیات. |
+| `message` | string | پیامی که به کاربر نشان داده می‌شود؛ آن را برای کاربر بنویس، نه برای برنامه‌نویس. |
+| `errors` | object | در خطا: کلید هر پراپرتی همان `key` فیلد و مقدارش پیام خطای آن فیلد است. |
+| `close` | boolean | modal پس از پاسخ بسته شود. |
+| `data` | object | برای `extension.load`: مقدارهای اولیه در `data.values`. |
 
 [قرارداد کامل پاسخ](/api-app-endpoints#json-response)
 
 ### CORS {#cors}
 
-چون endpoint با fetch مرورگر از داخل دیدار صدا زده می‌شود، مرورگر جواب را فقط وقتی به دیدار می‌دهد که endpoint تو origin دیدار را مجاز کرده باشد. endpoint باید HTTPS باشد، به درخواست `OPTIONS` جواب بدهد، و دقیقاً origin دیدار را مجاز کند:
+چون endpoint با fetch مرورگر از داخل دیدار صدا زده می‌شود، مرورگر جواب را فقط وقتی به دیدار می‌دهد که endpoint تو مبدأهای رسمی دیدار را در سیاست CORS مجاز کرده باشد. endpoint باید HTTPS باشد، درخواست `POST` با بدنه‌ی JSON را بپذیرد و به درخواست `OPTIONS` جواب بدهد:
 
 ```http title="Response headers"
 Access-Control-Allow-Origin: https://app.didar.me
 Vary: Origin
-Access-Control-Allow-Methods: GET, OPTIONS
+Access-Control-Allow-Methods: POST, OPTIONS
 Access-Control-Allow-Headers: Content-Type
 ```
 
 > [!WARNING]
-> از wildcard (`*`) استفاده نکن. CORS فقط به مرورگر می‌گوید چه کسی جواب را بخواند؛ جای launchCode، token و validation سمت سرور را نمی‌گیرد.
+> از wildcard (`*`) استفاده نکن. CORS فقط به مرورگر می‌گوید چه کسی جواب را بخواند؛ جای Runtime Token و validation سمت سرور را نمی‌گیرد.
 
 ## تمپلیت کد {#template}
 
-این تمپلیت فرمی را پیاده می‌کند که روی یک یا چند معامله یادداشت ثبت می‌کند: CORS را باز می‌کند، کد را تبدیل می‌کند، `payload` را دوباره چک می‌کند، روی هر معامله‌ی `entityIds` یک یادداشت می‌سازد و پاسخ را با قرارداد بالا برمی‌گرداند. آدرس آن (`/didar/note-form`) را در فیلد API endpoint ثبت کن. scope لازم: **Activities · Full access**. از کلاینت مشترک [Runtime Token](/runtime-token#template) استفاده می‌کند.
+این تمپلیت فرمی را پیاده می‌کند که روی یک یا چند معامله یادداشت ثبت می‌کند: CORS را برای `POST` باز می‌کند، به `extension.load` مقدار اولیه می‌دهد، در `extension.submit` مقدار `values` را دوباره چک می‌کند و خطای فیلد را برمی‌گرداند، کد را به Runtime Token تبدیل می‌کند، روی هر معامله‌ی `entityIds` یک یادداشت می‌سازد و پاسخ را با قرارداد بالا برمی‌گرداند. آدرس آن (`/didar/note-form`) را در فیلد API endpoint ثبت کن. scope لازم: **Activities · Full access**. از کلاینت مشترک [Runtime Token](/runtime-token#template) استفاده می‌کند.
 
 فرمی که این تمپلیت انتظار دارد فقط یک جزء دارد:
 
@@ -219,10 +239,11 @@ Access-Control-Allow-Headers: Content-Type
 ## هنوز مستند نشده {#open}
 
 > [!WARNING]
-> این موارد هنوز در منبع فنی نیامده‌اند و در این داک حدس زده نمی‌شوند: فهرست کامل انواع اجزای فرم بیشتر از `text`، `textarea` و `checkbox`، رفتار دقیق `loadOnOpen`، و حداکثر حجم فایل schema.
+> قرارداد جدید تیم فنی (`extension.load` و `extension.submit`) نمی‌گوید endpoint اکستنشن JSON چطور به Runtime Token می‌رسد. تمپلیت‌های این داک فرض می‌کنند دیدار مثل بقیه‌ی اکستنشن‌ها `launchCode` را به آدرس endpoint اضافه می‌کند ([Runtime Token](/runtime-token)). این فرض و رابطه‌ی `values` بدنه با `context.payload` در Runtime Context هنوز باید با تیم فنی تأیید شود. حداکثر حجم فایل schema هم هنوز منتشر نشده است.
 
 ## بعد از این بخوان {#read-next}
 
 - [ساخت اولین پلاگین](/tutorial-first-app): یک JSON modal کامل، قدم‌به‌قدم.
+- [ساختار JSON اکستنشن](/json-extension-schema)
 - [JSON panel](/json-panels)
 - [endpointهای پلاگین تو](/api-app-endpoints)

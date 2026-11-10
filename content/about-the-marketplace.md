@@ -69,6 +69,10 @@ description: چرخه‌ی عمر پلاگین مارکت‌پلیس دیدار 
 | Runtime Token | JWT کوتاه‌عمری که سرور پلاگین با launchCode می‌گیرد؛ فقط برای همان اجرا. |
 | Runtime Context | `target`، `runtimeId`، `location`، `entityType`، `entityIds` و `payload` همان اجرا. |
 | ApiKey (کلید نصب) | کلیدی که پس از تکمیل نصب می‌گیری؛ فقط رمزگذاری‌شده نگه‌داری می‌شود. |
+| RuntimeId | شناسه‌ی هر نمونه‌ی اکستنشن؛ در درخواست‌های اکستنشن JSON (`runtimeId`) و پارامتر `didar_runtime_id` آدرس iframe و لینک می‌آید. |
+| ساختار JSON اکستنشن | فایل JSONی (با `schemaVersion` برابر `1`) که فرم یا پنل اکستنشن JSON را تعریف می‌کند و دیدار آن را رندر می‌کند. [مرجع](/json-extension-schema) |
+| Marketplace SDK | پکیج `@didar/marketplace-sdk` که صفحه‌ی iframe با آن از طریق `postMessage` با دیدار حرف می‌زند؛ مثل نمایش toast، confirm یا بستن popup. [مرجع](/marketplace-sdk) |
+| Permission (SDK) | اجازه‌ی اپ برای یک action در SDK، مثل `toast:show` یا `popup:close`؛ با scopeهای API فرق دارد. |
 
 ## بعد از این بخوان {#read-next}
 

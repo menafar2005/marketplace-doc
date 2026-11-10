@@ -69,13 +69,15 @@ description: ساختار یک پلاگین مارکت‌پلیس دیدار د�
 | اکستنشن | کجای دیدار | UI را چه کسی می‌سازد |
 | --- | --- | --- |
 | [Links](/link-actions) | منوی عملیات؛ صفحه‌ای روی سایت تو را باز می‌کند | تو، روی سایت خودت |
-| [JSON modal](/json-modals) | منوی عملیات؛ یک فرم داخل دیدار | دیدار، از روی فایل JSON تو |
-| [JSON panel](/json-panels) | ستون کناری صفحه‌ی جزئیات | دیدار، از روی فایل JSON تو |
+| [JSON modal](/json-modals) | منوی عملیات؛ یک فرم داخل دیدار | دیدار، از روی [فایل JSON](/json-extension-schema) تو |
+| [JSON panel](/json-panels) | ستون کناری صفحه‌ی جزئیات | دیدار، از روی [فایل JSON](/json-extension-schema) تو |
 | [Custom modal](/custom-modals) | منوی عملیات؛ صفحه‌ی تو داخل یک modal | تو، داخل iframe |
 | [Custom panel](/custom-panels) | ستون کناری صفحه‌ی جزئیات | تو، داخل iframe |
 | [App settings](/app-settings) | بخش تنظیمات اپ‌های نصب‌شده | تو، با لینک خارجی یا iframe |
 
 با همه‌ی تفاوت‌هایشان، همه‌ی اکستنشن‌ها از یک سازوکار پیروی می‌کنند: کاربر اکستنشن را باز می‌کند، دیدار آدرس ثبت‌شده‌ی آن را با `launchCode` صدا می‌زند و سرور تو از [مسیر اجرا](#launch-route) جلو می‌رود. پس وقتی یک اکستنشن را ساختی، ساختن بقیه بیشتر انتخاب جای نمایش و نوع UI است. [مرور اکستنشن‌ها](/app-extensions)
+
+دو ابزار کمکی هم کنار اکستنشن‌ها داری: [ساختار JSON اکستنشن](/json-extension-schema) که فرم و پنل JSON را تعریف می‌کند، و [Marketplace SDK](/marketplace-sdk) که صفحه‌ی iframe تو (Custom modal، Custom panel و App settings) با آن از داخل دیدار toast نشان می‌دهد، از کاربر تأیید می‌گیرد یا popup را می‌بندد. SDK فقط برای اکستنشن‌های iframe است؛ اکستنشن‌های JSON و Links به آن نیاز ندارند.
 
 
 ## بعد از این بخوان {#read-next}
